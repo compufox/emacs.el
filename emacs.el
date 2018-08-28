@@ -16,7 +16,7 @@
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
-    (fish-mode exec-path-from-shell js2-mode vala-mode cmake-ide cmake-mode company-irony flycheck-irony irony irony-eldoc enh-ruby-mode emojify mastodon robe win-switch virtualenvwrapper twilight-anti-bright-theme swiper slime-company slime request rainbow-delimiters racket-mode paredit origami org oauth2 multiple-cursors multi-term markdown-mode magit love-minor-mode jedi hy-mode go-stacktracer go-scratch go-gopath go-eldoc go-dlv go-complete go-autocomplete foggy-night-theme flymake-python-pyflakes flymake-go exwm elpy contextual company-go blog-admin)))
+    (csharp-mode fish-mode exec-path-from-shell js2-mode vala-mode cmake-ide cmake-mode company-irony flycheck-irony irony irony-eldoc enh-ruby-mode emojify robe win-switch virtualenvwrapper twilight-anti-bright-theme swiper slime-company slime request rainbow-delimiters paredit origami org oauth2 multiple-cursors multi-term markdown-mode magit jedi go-stacktracer go-scratch go-gopath go-eldoc go-dlv go-complete go-autocomplete foggy-night-theme flymake-python-pyflakes flymake-go elpy contextual company-go)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(tool-bar-mode nil)
@@ -52,7 +52,6 @@
 (require 'multiple-cursors)
 (require 'robe)
 (require 'emojify)
-(require 'omnisharp)
 (require 'irony)
 (require 'company-irony)
 (require 'vala-mode)

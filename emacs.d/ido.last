@@ -182,18 +182,18 @@
 
 ;; ----- ido-work-directory-list -----
 (
+ "/tmp/"
+ "/home/ztepps/"
  "/home/ztepps/.config/fish/functions/"
  "/home/ztepps/Documents/programming/go/src/git.computerfox.xyz/ztepps/Mastodon-OverwatchPorn-Bot/"
  "/home/ztepps/Documents/programming/go/src/git.computerfox.xyz/ztepps/hak-mastodon/"
  "/home/ztepps/Documents/programming/go/src/git.computerfox.xyz/ztepps/mastodon-go-gtk/"
- "/home/ztepps/"
  "/home/ztepps/.config/fish/"
  "/home/ztepps/Documents/"
  "/home/ztepps/Documents/Fall2018/cts120/"
  "/home/ztepps/Documents/programming/go/src/git.computerfox.xyz/ztepps/DiscordQuoteBot-Go/"
  "/sudo::/run/media/ztepps/multibootusb/multibootusb/"
  "/home/ztepps/Documents/Glade/"
- "/tmp/"
  "/home/ztepps/Documents/programming/go/src/git.computerfox.xyz/ztepps/zweb/"
  "/home/ztepps/Documents/programming/go/src/git.computerfox.xyz/ztepps/zweb/templates/"
  "/home/ztepps/Documents/programming/go/src/git.computerfox.xyz/ztepps/zweb/static/"
@@ -236,6 +236,9 @@
 
 ;; ----- ido-work-file-list -----
 (
+ "test.note"
+ "test.notes"
+ ".emacs"
  "test.fish"
  "functions.fish"
  "main.go"
@@ -243,22 +246,21 @@
  "mastodon.go"
  "settings.go"
  "bots_in_space.mconfig"
- "path_linux.go"
- "path_windows.go"
- "settings_windows.go"
 )
 
 ;; ----- ido-dir-file-cache -----
 (
+ ("/home/ztepps/Documents/emacs_config/" (23429 30993 534574 287000) "./" "emacs.el" ".git/" "emacs.d/" "mklink.fish" "README.md" "../" "mklink.bash")
+
+ ("/tmp/" (23429 30911 284211 901000) ".X11-unix/" ".ICE-unix/" ".XIM-unix/" ".font-unix/" ".Test-unix/" "systemd-private-0eef34f25e0c48feafb747b692a6f4d8-ntpd.service-z2hzX8/" ".X1024-lock" ".esd-120/" "systemd-private-0eef34f25e0c48feafb747b692a6f4d8-colord.service-boWl9B/" ".xfsm-ICE-QF1SOZ" "ssh-ntGKRjnYHX2H/" ".esd-1000/" "Temp-8b1e14c0-8477-43d0-b65e-2a6a2c1a9531/" "babel-qHr4pc/" "../" "./")
+
+ ("/home/ztepps/" (23429 30391 895256 919000) ".ssh/" ".zshrc" ".bundle/" "Documents/" ".xbindkeysrc" "./" ".bash_logout" ".icons/" ".aliases" "Angler/" ".git-credentials" ".esd_auth" ".cache/" ".sqlite_history" ".emacs.d/" ".sbclrc" ".zprofile" ".emacs.b" ".emacs.d.bak/" "Downloads/" ".zprezto/" ".xinitrc" ".zcompdump" ".gnupg/" ".bashrc" "IBM/" ".zcompdump.zwc" ".subversion/" ".bin/" ".bash_profile" "packettracer/" "func.sh" ".zlogin" ".terminfo/" ".antigen/" ".xbindkeys_config/" "CVCC RPG.hod" ".bash_history" ".emacs.bak" ".fonts/" ".themes/" "Desktop/" ".config/" ".hex/" ".pki/" ".zhistory" ".ICEauthority" ".fltk/" ".Xauthority" ".java/" "Music/" ".zlogout" ".mix/" ".thumbnails/" ".zpreztorc" "../" ".mozilla/" ".gem/" "Pictures/" ".face" ".gitconfig" ".zsh_history" ".emacs" ".local/" ".ccache/" "Videos/" ".packettracer")
+
  ("/home/ztepps/.config/fish/functions/" (23429 28097 918483 433000) "./" "fisher.fish" "fish_prompt.fish" "functions.fish~" "emat.fish" "../" "functions.fish" "rmrf.fish")
 
  ("/home/ztepps/.config/" (23428 9635 791012 307000) "gedit/" "./" "libreoffice/" "glade.conf" "gconf/" "evolution/" "gtk-3.0/" "user-dirs.dirs" "goa-1.0/" "gladeui/" "autostart/" "xfce4/" "com.github.bleakgrey.tootle/" "icedtea-web/" "discord/" "hakDM/" "gajim/" "ibus/" "mimeapps.list" "godot/" "ristretto/" "fish/" "enchant/" "xfce4-session/" "omf/" "albert/" "pulse/" "GIMP/" "Loginized/" "../" "Mousepad/" "Thunar/" "user-dirs.locale" "inkscape/" "gtk-2.0/" "nautilus/" "pavucontrol.ini" "fisherman/" "Google Play Music Desktop Player/" "wireshark/" "geary/" "procps/" "QtProject.conf" "dconf/" "common-lisp/" "GTKMasto/")
 
- ("/home/ztepps/" (23429 20936 756932 404000) ".ssh/" ".zshrc" ".bundle/" "Documents/" ".xbindkeysrc" "./" ".bash_logout" ".icons/" ".aliases" "Angler/" ".git-credentials" ".esd_auth" ".cache/" ".sqlite_history" ".emacs.d/" ".sbclrc" ".zprofile" "Downloads/" ".zprezto/" ".xinitrc" ".zcompdump" ".gnupg/" ".bashrc" "IBM/" ".zcompdump.zwc" ".subversion/" ".bin/" ".bash_profile" "packettracer/" "func.sh" ".zlogin" ".terminfo/" ".antigen/" ".xbindkeys_config/" "CVCC RPG.hod" ".bash_history" ".fonts/" ".themes/" "Desktop/" ".config/" ".hex/" ".pki/" ".zhistory" ".ICEauthority" ".fltk/" ".Xauthority" ".java/" "Music/" ".zlogout" ".mix/" ".thumbnails/" ".zpreztorc" "../" ".mozilla/" ".gem/" "Pictures/" ".face" ".gitconfig" ".zsh_history" ".emacs" ".local/" ".ccache/" "Videos/" ".packettracer")
-
  ("/home/ztepps/Documents/programming/go/src/git.computerfox.xyz/ztepps/hak-mastodon/" (23424 28519 93705 286000) "hak-mastodon" "path_windows.go" "./" "cross_compile.fish" ".cross_compiled" "hak_mastodon_windows.zip" ".git/" "settings.go" "build/" "main.go" "path_linux.go" "glade/" "mastodon.go" "../" "gtk.go" ".gitignore")
-
- ("/tmp/" (23423 41815 160644 953000) ".X11-unix/" ".ICE-unix/" ".XIM-unix/" ".font-unix/" ".Test-unix/" "systemd-private-2c3947db2eaa403b87a4d2e40653d621-ntpd.service-kMOJ5z/" ".esd-120/" "systemd-private-2c3947db2eaa403b87a4d2e40653d621-colord.service-mcZZpo/" ".xfsm-ICE-XIGZNZ" "ssh-f4zOleJQFMKu/" ".esd-1000/" "gocode-daemon.ztepps" "OWP/" "Temp-8b1e14c0-8477-43d0-b65e-2a6a2c1a9531/" "firefox_ztepps/" "go-build083848495/" "go-build881327810/" "go-build024817811/" "go-build719806678/" "go-link-968157135/" "cc2Q1fWz.res" "ccbzVtPz.c" "ccF7bf9M.o" "ccNwx0s0.ld" "cczmWLMd.le" "../" "./")
 
  ("/home/ztepps/.config/fish/" (23422 59626 557094 540000) "./" "config.fish" "fishd.mobile-dungeon" "functions/" "completions/" "../" "conf.d/" "fishfile")
 
@@ -447,8 +449,6 @@
  ("/home/ztepps/Documents/summer-class-work/CSC134/Ch7/" (23372 31750 302036 317000) "./" "Chapter 7, Arrays and vectors,NOV09/" "Chapter 7 Homework - Zachary Epps/" "Chapter 7 Test - Zachary Epps/" "../")
 
  ("/home/ztepps/Documents/resume/" (23365 62632 961037 74000) "my_resume.pdf" "./" "old/" ".git/" "my_resume.out" "my_resume.log" "my_resume.aux" "my_resume.tex" "template.tex" "structure.tex" "fonts/" "../" ".gitignore")
-
- ("/home/ztepps/Documents/resume/templates/cv_3/" (23365 61092 641618 251000) "my_resume.pdf" "./" "my_resume.out" "my_resume.log" "my_resume.aux" "my_resume.tex" "cv_3.tex" "structure.tex" "fonts/" "../")
 )
 
 ;; ----- ido-unc-hosts-cache -----

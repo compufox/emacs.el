@@ -6,8 +6,9 @@
                          (or (file-name-directory #$) (car load-path))))
 
 
-;;;### (autoloads nil "csharp-mode" "csharp-mode.el" (0 0 0 0))
-;;; Generated autoloads from csharp-mode.el
+;;;### (autoloads nil "csharp-mode" "../../../../../.emacs.d/elpa/csharp-mode-20180828.814/csharp-mode.el"
+;;;;;;  "7cc93bb931d3701c19c36fa675733e7c")
+;;; Generated autoloads from ../../../../../.emacs.d/elpa/csharp-mode-20180828.814/csharp-mode.el
 
 (add-to-list 'auto-mode-alist '("\\.cs$" . csharp-mode))
 
@@ -52,8 +53,21 @@ Key bindings:
 \\{csharp-mode-map}
 
 \(fn)" t nil)
+
+;;;### (autoloads "actual autoloads are elsewhere" "csharp-mode"
+;;;;;;  "../../../../../.emacs.d/elpa/csharp-mode-20180828.814/csharp-mode.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from ../../../../../.emacs.d/elpa/csharp-mode-20180828.814/csharp-mode.el
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "csharp-mode" '("c-looking-at-inexpr-block" "csharp-")))
+
+;;;***
+
+;;;***
+
+;;;### (autoloads nil nil ("../../../../../.emacs.d/elpa/csharp-mode-20180828.814/csharp-mode-autoloads.el"
+;;;;;;  "../../../../../.emacs.d/elpa/csharp-mode-20180828.814/csharp-mode.el")
+;;;;;;  (0 0 0 0))
 
 ;;;***
 
