@@ -30,7 +30,6 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :background "#14191f" :foreground "#dcdddd" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 113 :width normal :foundry "unknown" :family "Fira Mono")))))
-; '(term ((t nil))))
 
 ;; adds the MELPA repo to my package archive list
 (require 'package)
@@ -40,8 +39,6 @@
 
 ;; glorious package loading
 (require 'lua-mode)
-(require 'hy-mode)
-(require 'racket-mode)
 (require 'elpy)
 (require 'info-look)
 (require 'ido)
@@ -52,16 +49,15 @@
 (require 'yasnippet)
 (require 'go-autocomplete)
 (require 'go-complete)
-(require 'love-minor-mode)
 (require 'multiple-cursors)
 (require 'robe)
-(require 'mastodon)
 (require 'emojify)
 (require 'omnisharp)
 (require 'irony)
 (require 'company-irony)
 (require 'vala-mode)
-;(require 'enh-ruby-mode)
+
+;; settings for yasnippet
 (global-set-key (kbd "C-c s") 'yas-insert-snippet)
 
 ;; setting up autocomplete
@@ -73,11 +69,8 @@
   (exec-path-from-shell-copy-env "GOPATH"))
 
 ;; sets ruby-mode equal to enh-ruby-mode
-;;(add-to-list 'auto-mode-alist
-;;	     '(("\\(?:\\.\\(?:rbw?\\|ru\\|rake\\|thor\\|jbuilder\\|rabl\\|gemspec\\|podspec\\)\\|/\\(?:Gem\\|Rake\\|Cap\\|Thor\\|Puppet\\|Berks\\|Vagrant\\|Guard\\|Pod\\)file\\)\\'" . ruby-mode)
-;;	       ("\\.notes" . org-mode)))
-;(add-to-list 'interpreter-mode-alist '("ruby" . enh-ruby-mode))
-;(setq enh-ruby-program "/bin/ruby")
+(add-to-list 'auto-mode-alist
+	     '("\\.notes?" . org-mode))
 
 ;; load rainbow-delim and paredit for programming
 (add-hook 'prog-mode-hook (lambda ()
@@ -100,9 +93,6 @@
 (setq erc-autojoin-channels-list '(("freenode.net" "#archlinux-offtopic")))
 
 ;; setting up go-mode
-(setenv "GOPATH" "/home/ztepps/Documents/programming/go")
-;(setenv "PATH"
-;      (concat (getenv "PATH") path-separator (getenv "GOPATH") "/bin"))
 (add-hook 'go-mode-hook (lambda ()
 			  (go-eldoc-setup)
 			  (yas-minor-mode)
@@ -134,9 +124,7 @@
 (setq slime-contribs '(slime-fancy slime-banner slime-autodoc))
 (require 'slime)
 
-;; sets stuff up for mastodon
-(setq mastodon-instance-url "https://cybre.space")
-
+;; sets up stuff for flyspell
 (setq ispell-program-name "hunspell")
 (setq ispell-local-dictionary "en_US")
 
@@ -333,24 +321,6 @@ INCLUDES is a space seperated list of headers to include"
 ;	     "xrandr" nil "xrandr --output HDMI1 --left-of eDPI --auto")))
 ;(exwm-randr-enable)
 
-;; stuff for the reddit client
-;(require 'request)
-;(require 'oauth2)
-
-;(setq reddit--user-agent "emacs:com.theZacAttacks.emacs-reddit-client:v0.0.1 (by /u/theZacAttacks)")
-;(setq reddit--client-id "k6pdSqfENTFTwQ")
-;(setq reddit--response-type "code")
-;(setq reddit--state "")
-;(setq reddit--redirect-uri "")
-;(setq reddit--duration "permanent")
-;(setq reddit--scope "identity,privatemessages,vote,subscribe,mysubreddits,submit,edit,save,read")
-;(setq reddit--oauth-api (concat "https://www.reddit.com/api/v1/authorize?client_id=" reddit--client-id
-;				"&response_type=" reddit--response-type
-;				"&state=" reddit--state
-;				"&redirect_uri=" reddit--redirect-uri
-;				"&duration=" reddit--duration
-;				"&scope=" reddit--scope))
-
 ;; sets the speedbar to open when emacs opens and
 ;;  gets everything to the right size
 ;(when (window-system)
@@ -376,7 +346,7 @@ INCLUDES is a space seperated list of headers to include"
 			    (define-key term-raw-map (kbd "C-j") 'term-line-mode)
 			    (define-key term-mode-map (kbd "C-M-j") 'term-char-mode)))
 
-;;; Fira code
+;;; Fira code font and ligatures
 (when (window-system)
   (set-default-font "Fira Code Light"))
 (add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol")))
@@ -510,5 +480,5 @@ INCLUDES is a space seperated list of headers to include"
 (add-hook 'prog-mode-hook
           #'add-fira-code-symbol-keywords)
 
-(setq max-specpdl-size 5)
+
 (setq debug-on-error t)
