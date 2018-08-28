@@ -1,0 +1,246 @@
+((("fileName" .
+   [1 0 0 0 0 0 0 0])
+  ("url" .
+   [2 0 0])
+  ("URL" .
+   [1 0 0])
+  ("Contains" .
+   [1 0 0 1 0 0 0 0])
+  ("Show" .
+   [1 0 0 0])
+  ("pCloseBtn" .
+   [0 0 0 0 1 0 0 0 0])
+  ("Hide" .
+   [2 0 0 0])
+  ("Button" .
+   [1 0 0 0 0 0])
+  ("GetObject" .
+   [1 0 0 0 0 0 0 0 0])
+  ("obj" .
+   [1 0 0])
+  ("DMProgress" .
+   [0 0 0 1 0 0 0 0 0 0])
+  ("count" .
+   [2 0 0 0 0])
+  ("GetVisible" .
+   [0 0 0 0 0 1 0 0 0 0])
+  ("Connect" .
+   [2 0 0 0 0 0 0])
+  ("Destroy" .
+   [3 0 0 0 0 0 0])
+  ("buffer-string" .
+   [1 0 0 0 0 0 0 0 0 0 0 0 0])
+  ("shell" .
+   [2 0 0 0 0])
+  ("message" .
+   [2 0 0 0 0 0 0])
+  ("redditBot" .
+   [0 0 0 0 0 0 0 1 0])
+  ("Parse" .
+   [2 0 0 0 0])
+  ("RedditConfigFile" .
+   [0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0])
+  ("UserToken" .
+   [0 0 0 0 1 0 0 0 0])
+  ("AppName" .
+   [1 0 0 0 0 0 0])
+  ("RestoreApp" .
+   [0 0 0 0 1 1 0 0 0 0])
+  ("mClient" .
+   [2 0 0 0 0 0 0])
+  ("Fatal" .
+   [3 0 0 0 0])
+  ("dat" .
+   [1 0 0])
+  ("nil" .
+   [3 0 0])
+  ("err" .
+   [13 0 0])
+  ("ReadFile" .
+   [0 0 0 0 1 0 0 0])
+  ("Unmarshal" .
+   [0 0 0 1 0 0 0 0 0])
+  ("Key" .
+   [3 0 0])
+  ("Secret" .
+   [3 0 1 0 0 0])
+  ("MastoConfig" .
+   [0 0 0 0 0 3 0 0 0 0 0])
+  ("mConfig" .
+   [3 0 0 0 1 0 0])
+  ("AccessToken" .
+   [2 0 0 2 1 0 0 0 0 0 0])
+  ("strings" .
+   [0 0 0 0 0 0 1])
+  ("MastoConfigFile" .
+   [3 0 0 0 1 0 0 0 0 0 0 0 0 0 0])
+  ("tbuf" .
+   [1 0 0 0])
+  ("TextBuffer" .
+   [2 0 0 0 0 0 0 0 0 0])
+  ("b" .
+   [1])
+  ("buf" .
+   [3 0 0])
+  ("s" .
+   [3])
+  ("string" .
+   [8 0 0 0 0 0])
+  ("GetCharCount" .
+   [0 0 0 1 0 0 0 0 0 0 0 0])
+  ("GetBuffer" .
+   [1 0 0 1 0 0 0 0 0])
+  ("int64" .
+   [3 0 0 0 0])
+  ("curAmt" .
+   [3 0 0 0 0 0])
+  ("amt" .
+   [5 0 0])
+  ("_" .
+   [10])
+  ("ParseInt" .
+   [0 0 0 1 0 0 0 0])
+  ("GetText" .
+   [2 0 0 0 0 0 0])
+  ("charCnt" .
+   [0 0 0 1 0 0 0])
+  ("tootAmt" .
+   [1 0 0 0 0 0 0])
+  ("FormatInt" .
+   [1 0 0 0 0 0 0 0 0])
+  ("Widget" .
+   [0 0 0 1 0 0])
+  ("authBtn" .
+   [0 0 0 0 1 0 0])
+  ("accel" .
+   [1 0 0 0 0])
+  ("addAccelerator" .
+   [0 0 0 2 0 0 0 0 0 0 0 0 0 0])
+  ("loginAccel" .
+   [2 0 0 0 0 0 0 0 0 0])
+  ("AddAccelGroup" .
+   [1 0 0 0 0 0 0 0 0 0 0 0 0])
+  ("AccelGroupNew" .
+   [1 0 0 0 0 0 0 0 0 0 0 0 0])
+  ("AccelGroup" .
+   [1 0 0 0 0 1 1 0 0 0])
+  ("HandlerFunc" .
+   [0 0 0 0 1 0 0 0 0 0 0])
+  ("Webfinger" .
+   [0 0 0 1 0 0 0 0 0])
+  ("Lshortfile" .
+   [0 0 0 0 1 0 0 0 0 0])
+  ("Logger" .
+   [1 0 0 0 0 0])
+  ("outputLogger" .
+   [2 0 0 0 0 0 2 0 0 0 0 0])
+  ("Writer" .
+   [1 0 0 0 0 0])
+  ("InitLoggers" .
+   [1 1 0 0 0 0 0 0 0 0 0])
+  ("Stdout" .
+   [2 0 0 0 0 0])
+  ("Println" .
+   [9 0 0 0 0 0 0])
+  ("hostname" .
+   [2 0 0 0 0 0 0 0])
+  ("WrapHandler" .
+   [0 0 0 0 2 0 0 0 0 0 0])
+  ("customResolver" .
+   [0 0 0 0 0 1 0 0 0 0 0 0 0 0])
+  ("Error" .
+   [2 0 0 0 0])
+  ("Rel" .
+   [1 0 0])
+  ("Links" .
+   [1 0 0 0 0])
+  ("Properties" .
+   [0 0 0 0 1 0 0 0 0 0])
+  ("Aliases" .
+   [0 0 0 1 0 0 0])
+  ("Subject" .
+   [1 0 0 0 0 0 0])
+  ("Resource" .
+   [0 0 0 1 0 0 0 0])
+  ("username" .
+   [2 0 0 0 0 0 0 0])
+  ("error" .
+   [2 0 0 0 0])
+  ("webfingerResolver" .
+   [0 0 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0])
+  ("Resolver" .
+   [0 0 2 0 0 0 0 0])
+  ("wf" .
+   [1 0])
+  ("GET" .
+   [1 0 0])
+  ("New" .
+   [5 0 0])
+  ("webfinger" .
+   [0 0 0 4 0 0 0 0 0])
+  ("when" .
+   [1 0 0 0])
+  ("memq" .
+   [1 0 0 0])
+  ("window-system" .
+   [0 0 0 0 0 0 0 0 0 0 1 0 0])
+  ("max" .
+   [1 0 0])
+  ("exec-path-from-shell" .
+   [0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0])
+  ("exec-path-from-shell-initialize" .
+   [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0])
+  ("exec-path-from-shell-copy-env" .
+   [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0])
+  ("GOPATH" .
+   [1 0 0 0 0 0])
+  ("require" .
+   [2 0 0 0 0 0 0])
+  ("go-autocomplete" .
+   [0 0 0 0 0 0 0 1 0 0 0 0 0 0 0])
+  ("go-complete" .
+   [1 0 0 0 0 0 0 0 0 0 0])
+  ("yas-minor-mode" .
+   [1 0 0 0 0 0 0 0 0 0 0 0 0 0])
+  ("main" .
+   [1 0 0 0])
+  ("Scanln" .
+   [3 0 0 0 0 0])
+  ("Instance" .
+   [2 0 0 0 0 0 0 0])
+  ("Print" .
+   [3 0 0 0 0])
+  ("Email" .
+   [1 0 0 0 0])
+  ("Pass" .
+   [2 0 0 0])
+  ("c" .
+   [3])
+  ("Client" .
+   [2 0 0 0 0 0])
+  ("Exit" .
+   [1 0 0 0])
+  ("concat" .
+   [1 0 0 0 0 0])
+  ("shell-args" .
+   [1 0 0 0 0 0 0 1 0 0])
+  ("ShowAll" .
+   [1 0 0 0 0 0 0])
+  ("GetRevealChild" .
+   [0 0 0 0 1 0 0 0 0 0 0 0 0 0])
+  ("cwAmt" .
+   [2 0 0 0 0])
+  ("UpdateCharCount" .
+   [0 0 0 0 0 1 0 0 0 0 0 0 0 0 0])
+  ("LoadedConfigs" .
+   [1 0 0 0 0 0 2 0 0 0 0 0 0])
+  ("i" .
+   [2])
+  ("GetLabel" .
+   [1 0 0 0 0 0 0 0])
+  ("ConfigFile" .
+   [1 0 0 0 1 0 0 0 0 0])
+  ("cf" .
+   [1 0])
+  ("confs" .
+   [1 0 0 0 0])))

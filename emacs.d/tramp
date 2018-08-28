@@ -1,0 +1,25 @@
+;; -*- emacs-lisp -*- <18/08/28 09:28:13 /home/ztepps/.emacs.d/tramp>
+;; Tramp connection history.  Don't change this file.
+;; You can delete it, forcing Tramp to reapply the checks.
+
+(((tramp-file-name "sudo" "root" nil "mobile-dungeon" nil nil nil)
+  ("uname" "Linux 4.17.14-arch1-1-ARCH")
+  ("locale" "LC_ALL=en_US.utf8")
+  ("test" "test")
+  ("remote-path"
+   ("/bin" "/usr/bin" "/sbin" "/usr/sbin" "/usr/local/bin" "/usr/local/sbin"))
+  ("remote-shell" "/bin/sh")
+  ("stat" "env QUOTING_STYLE=locale \\stat")
+  ("file-exists" "test -e")
+  ("id" "/bin/id")
+  ("gid-string" "root")
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl")
+  ("tmpdir" "/sudo:root@mobile-dungeon:/tmp")
+  ("uid-integer" 0)
+  ("gid-integer" 0)
+  ("case-insensitive" nil)
+  ("readlink" "\\readlink"))
+ ((tramp-file-name "telnet" "ztepps" nil "tethys.sealinc.org" nil nil nil)
+  nil))

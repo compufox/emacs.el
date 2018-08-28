@@ -1,0 +1,128 @@
+ls
+git status
+git add *
+git commit -m "organized systems into custom package; updated readme"
+git status
+git rm Lifter.py
+git rm Shooter.py
+git rm Swerve.py
+git commit -a -m "removed system files from root dir"
+git push
+git pull
+cp ../python-frc/frc_enums.py enums.py
+ls
+git status
+git add enums.py 
+git commit -m "added enums file from previous year"
+git push
+git status
+git commit -a -m "added preliminary shooting code into Shooter.py"
+git push
+git pull
+git commit -a -m "added prelim SwerveDrive code"
+git push
+git pull
+git pull
+git pull
+git commit -a -m "started editing the copied code"; git push
+cd ..
+git status
+git add util/config.py
+git status
+git commit -a -m "reworked some of the swerve code.added a config.py file for specifying vars.updated robot.py to reflect changes in code."
+git push
+git commit -a -m "updated some references in Swerve.py"
+git push
+git pull
+sudo apt-get update
+sudo apt-get upgrade
+git pull
+git status
+git commit -a -m "removed silly stuff"
+git push
+git pull
+git rm forzac.py
+git rm forzac.py --cached
+git commit -m "removed silly stuff: the sequal"
+git push
+ls
+mv forzac.py ../../
+ls ../..
+python3
+python3
+git status
+rm util/util.py 
+git status
+mv Subsystems/Swerve.py Subsystems/Drive.py
+git status
+git add Subsystems/Drive.py 
+git status
+git status
+git commit -a -m "drastic changes to Drive mechanismupdated references to it throughout the codeadded code to change drive system from our rudimentary Swerve implementation to a basic Tank implementation"
+git push
+mv enums util/
+mv enums.py util/
+git status
+git commit -a -m "added commentsmoved init_buttons call into configmoved enums into the util folder"
+git status
+git add util/enums.py
+git status
+git commit -m "push to add enums.py back"
+git push
+cd ..
+cd ..
+virtualenv python=python3 frc2016
+virtualenv --python=python3 frc2016
+ls frc2016
+source bin/activate
+cd frc2016/
+source bin/activate.csh
+xinput disable 14
+xinput enable 14
+xinput enable 15
+cd ~/.loval
+cd ~/.local
+ls
+cd share/
+ls
+rm -rf Steam Skullgirls/ Terraria/
+sudo apt-get install herbstluftwm
+sudo apt-get upgrade
+cd ..
+cd ..
+git clone git@github.com:DemontrapGames/7drl-2016.git
+ls 7drl-2016/
+mv 7drl/* 7drl-2016/
+cd 7drl-2016/
+ls
+ls util
+cd ..
+rm -rf 7drl
+cd 7drl-2016/
+cd ..
+cd libtcod/
+ls
+cp libtcod* ../7drl-2016/
+cp libSDL.so ../7drl-2016/
+cd ../7drl-2016/
+ls
+git status
+git add *
+ls
+git status
+git add .gitignore util/ main.py *.so libtcodpy.py
+git status
+git commit -a -m "added in base item and creture classesstarted on some helper randomizing functionsadded gitignoreupdated README"
+git status
+git push
+git status
+cd ..
+git status
+git pull
+cd Documents/python/7drl-2016/
+git pull
+ls
+rm *.dll
+git pull
+xinput list
+crun 
