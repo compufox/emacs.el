@@ -1,2 +1,13 @@
 *
 !.gitignore
+
+
+!auto-save-list
+!backups
+!elpa
+!emojis
+!eshell
+!irony
+!snippets
+!thumbs
+!url
