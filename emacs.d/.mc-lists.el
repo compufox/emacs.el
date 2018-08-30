@@ -10,6 +10,7 @@
 	c-indent-line-or-region
 	dabbrev-expand
 	kill-region
+	org-self-insert-command
 	))
 
 (setq mc/cmds-to-run-once
