@@ -55,6 +55,7 @@
 (require 'irony)
 (require 'company-irony)
 (require 'vala-mode)
+(require 'magit)
 
 ;; settings for yasnippet
 (global-set-key (kbd "C-c s") 'yas-insert-snippet)
