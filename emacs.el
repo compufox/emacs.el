@@ -71,6 +71,8 @@
 ;; sets ruby-mode equal to enh-ruby-mode
 (add-to-list 'auto-mode-alist
 	     '("\\.notes?" . org-mode))
+(add-to-list 'auto-mode-alist
+	     '("\\.stumpwmrc$" . lisp-mode))
 
 ;; load rainbow-delim and paredit for programming
 (add-hook 'prog-mode-hook (lambda ()
@@ -482,3 +484,9 @@ INCLUDES is a space seperated list of headers to include"
 
 
 (setq debug-on-error t)
+
+;; perform different tasks on different machines
+;;  TODO: check hostname
+(global-set-key (kbd "C-s-l") (lambda ()
+				(interactive)
+				(slime-connect "127.0.0.1" 4004)))
