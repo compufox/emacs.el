@@ -1,13 +1,3 @@
-*
-!.gitignore
-
-
-!auto-save-list
-!backups
-!elpa
-!emojis
-!eshell
-!irony
-!snippets
-!thumbs
-!url
+ac-comphist.dat
+ido.last
+auto-save-list/*
