@@ -122,7 +122,7 @@
 (ido-everywhere)
 
 ;; setup and initialize SLIME
-(setq inferior-lisp-program "/usr/bin/sbcl")
+(setq inferior-lisp-program "sbcl")
 (setq slime-contribs '(slime-fancy slime-banner slime-autodoc))
 (require 'slime)
 
