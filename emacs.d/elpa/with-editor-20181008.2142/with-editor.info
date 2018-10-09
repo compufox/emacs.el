@@ -38,7 +38,7 @@ library is made available as a separate package.  It also defines some
 additional functionality which makes it useful even for end-users, who
 don’t use Magit or another package which uses it internally.
 
-This manual is for With-Editor version 2.7.4.
+This manual is for With-Editor version 2.7.4 (v2.7.4-2-g48e1b2d+1).
 
      Copyright (C) 2015-2018 Jonas Bernoulli <jonas@bernoul.li>
 
@@ -170,15 +170,18 @@ it receives a signal.
      performant implementation:
 
           "sh -c '\
-          echo \"WITH-EDITOR: $$ OPEN $0\"; \
+          echo \"WITH-EDITOR: $$ OPEN $0 IN $(pwd)\"; \
           trap \"exit 0\" USR1; \
           trap \"exit 1\" USR2; \
           while true; do sleep 1; done'"
 
-     This leads to a delay of up to a second.  The delay can be
-     shortened by replacing ‘sleep 1’ with ‘sleep 0.01’, or if your
-     implementation does not support floats, then by using ‘nanosleep
-     0.01’ instead.
+     Note that the unit seperator character () right after the file name
+     ($0) is required.
+
+     Also note that using this alternative implementation leads to a
+     delay of up to a second.  The delay can be shortened by replacing
+     ‘sleep 1’ with ‘sleep 0.01’, or if your implementation does not
+     support floats, then by using ‘nanosleep’ instead.
 
 
 File: with-editor.info,  Node: Using With-Editor commands,  Prev: Configuring With-Editor,  Up: Using the With-Editor package
@@ -317,11 +320,11 @@ Emacs and what is the output of ‘M-x with-editor-debug RET’.
 
 Tag Table:
 Node: Top772
-Node: Using the With-Editor package2512
-Node: Configuring With-Editor3098
-Node: Using With-Editor commands7495
-Node: Using With-Editor as a library10758
-Node: Debugging12454
+Node: Using the With-Editor package2534
+Node: Configuring With-Editor3120
+Node: Using With-Editor commands7669
+Node: Using With-Editor as a library10932
+Node: Debugging12628
 
 End Tag Table
 
