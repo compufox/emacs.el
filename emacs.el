@@ -495,3 +495,8 @@ TYPE-NAMES is either a single string or a list of strings which represent the sy
 (global-set-key (kbd "C-s-l") (lambda ()
 				(interactive)
 				(slime-connect "127.0.0.1" 4004)))
+
+
+;; check and recompile the init file and also the emacs.d dir
+(byte-recompile-file (concat (getenv "HOME") "/.emacs"))
+(byte-recompile-directory (concat (getenv "HOME") "/.emacs.d/"))
