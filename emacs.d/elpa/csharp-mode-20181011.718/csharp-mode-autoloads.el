@@ -53,7 +53,7 @@ Key bindings:
 
 \(fn)" t nil)
 
-(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "csharp-mode" '("c-looking-at-inexpr-block" "csharp-")))
+(if (fboundp 'register-definition-prefixes) (register-definition-prefixes "csharp-mode" '("csharp-")))
 
 ;;;***
 
