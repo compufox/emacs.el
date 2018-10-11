@@ -256,25 +256,41 @@ INCLUDES is a space seperated list of headers to include"
 
     (goto-char point)))
 
+(defun mkstr (&rest args)
+  "Make a string out of arbitrary list of objects"
+  (with-output-to-string
+    (dolist (a args) (princ a))))
+
 ;;;
 ;;  END CUSTOM FUCTIONS
 ;;;
 
 ;;;
 ;;  BEGIN CUSTOM MACROS
-;;
+;;;
 
-(defmacro when-on-linux (&rest body)
-  `(when (string-equal system-type "gnu/linux")
-     ,@body))
+(defun when-on (os type-names)
+  "define a macro (named when-on-OS) to run code when SYSTEM-TYPE matches any string in TYPE-NAMES
 
-(defmacro when-on-bsd (&rest body)
-  `(when (string-equal system-type "berkeley-unix")
-     ,@body))
+OS is a symbol (or string) to be placed in the macro name
+TYPE-NAMES is either a single string or a list of strings which represent the system-type string"
+  (eval
+   `(defmacro ,(intern (mkstr "when-on-" os)) (&rest body)
+      (let ((sys-name ,(if (listp type-names)
+			   `(quote ,type-names)
+			 type-names)))
+	`(when ,(if (listp sys-name)
+		    `(or ,@(loop for name in sys-name
+			    collect `(string-equal system-type ,name)))
+		  `(string-equal system-type ,sys-name))
+	   ,@body)))))
+
+(when-on 'bsd "berkeley-unix")
+(when-on 'linux "gnu/linux")
 
 ;;;
 ;;  END CUSTOM MACROS
-;;
+;;;
 
 ;; i don't remember what this does
 (info-lookup-add-help
