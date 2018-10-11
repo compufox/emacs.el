@@ -307,7 +307,7 @@ TYPE-NAMES is either a single string or a list of strings which represent the sy
   '(push 'company-robe company-backends))
 
 ;; sets up virtual envs and elpy mode
-(setq venv-location "/home/ztepps/Documents/python/")
+(setq venv-location "/home/ztepps/Documents/programming/python/")
 (add-hook 'python-mode-hook
 	  (lambda ()
 	    (elpy-mode)))
@@ -339,33 +339,6 @@ TYPE-NAMES is either a single string or a list of strings which represent the sy
 (add-hook 'erc-mode-hook 'visual-line-mode)
 (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 (add-hook 'python-mode-hook 'flyspell-prog-mode)
-
-;; sets up EXWM
-;(require 'exwm)
-;(require 'exwm-randr)
-;(require 'exwm-config)
-;(require 'exwm-systemtray)
-;(exwm-config-default)
-;(exwm-systemtray-enable)
-;(exwm-layout-hide-mode-line)
-;(setq exwm-randr-workspace-output-plist '(0 "HDMI1"))
-;(add-hook 'exwm-randr-screen-change-hook
-;	  (lambda ()
-;	    (start-process-shell-command
-;	     "xrandr" nil "xrandr --output HDMI1 --left-of eDPI --auto")))
-;(exwm-randr-enable)
-
-;; sets the speedbar to open when emacs opens and
-;;  gets everything to the right size
-;(when (window-system)
-;    (let ((main-win (car (frame-list)))
-;	  (speed-win nil))
-;      (speedbar)
-;      (setq speed-win (car (frame-list)))
-;      (set-frame-position speed-win 0 0)
-;      (set-frame-position main-win (* (frame-width speed-win) 11) 0)
-;      (set-frame-size main-win 124 80)
-;      (select-frame-set-input-focus main-win)))
 
 (load-theme 'twilight-anti-bright)
 
