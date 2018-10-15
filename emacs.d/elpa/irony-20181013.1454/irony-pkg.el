@@ -1,4 +1,4 @@
-(define-package "irony" "20180703.1740" "C/C++ minor mode powered by libclang"
+(define-package "irony" "20181013.1454" "C/C++ minor mode powered by libclang"
   '((cl-lib "0.5")
     (json "1.2"))
   :keywords
