@@ -64,6 +64,7 @@
 (ac-config-default)
 
 ;; copy my envvars
+(setq shell-file-name "/usr/local/bin/fish")
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize)
   (exec-path-from-shell-copy-env "GOPATH"))
