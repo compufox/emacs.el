@@ -12,7 +12,7 @@
 ;; Maintainer: Jonas Bernoulli <jonas@bernoul.li>
 
 ;; Package-Requires: ((emacs "25.1") (dash "20180413") (with-editor "20180414"))
-;; Package-Version: 20181029.947
+;; Package-Version: 20181103.1247
 ;; Keywords: git tools vc
 ;; Homepage: https://github.com/magit/magit
 
@@ -436,8 +436,9 @@ This is only used if Magit is available."
   ;; try to handle this in window-nt Emacs.
   (--when-let
       (and (or (string-match-p git-commit-filename-regexp buffer-file-name)
-               (if (boundp 'git-rebase-filename-regexp)
-                   (string-match-p git-rebase-filename-regexp buffer-file-name)))
+               (and (boundp 'git-rebase-filename-regexp)
+                    (string-match-p git-rebase-filename-regexp
+                                    buffer-file-name)))
            (not (file-accessible-directory-p
                  (file-name-directory buffer-file-name)))
            (if (require 'magit-git nil t)
