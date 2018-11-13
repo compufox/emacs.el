@@ -14,9 +14,6 @@
  '(fci-rule-character-color "#192028")
  '(inhibit-startup-screen t)
  '(make-backup-files nil)
- '(package-selected-packages
-   (quote
-    (csharp-mode fish-mode exec-path-from-shell js2-mode vala-mode cmake-ide cmake-mode company-irony flycheck-irony irony irony-eldoc enh-ruby-mode emojify robe win-switch virtualenvwrapper twilight-anti-bright-theme swiper slime-company slime request rainbow-delimiters paredit origami org oauth2 multiple-cursors multi-term markdown-mode magit jedi go-stacktracer go-scratch go-gopath go-eldoc go-dlv go-complete go-autocomplete foggy-night-theme flymake-python-pyflakes flymake-go elpy contextual company-go)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(tool-bar-mode nil)
@@ -31,118 +28,10 @@
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :background "#14191f" :foreground "#dcdddd" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 113 :width normal :foundry "unknown" :family "Fira Mono")))))
 
-;; adds the MELPA repo to my package archive list
-(require 'package)
-(package-initialize)
-(add-to-list 'package-archives
-	     '("melpa" . "http://melpa.org/packages/"))
-
-;; glorious package loading
-(require 'lua-mode)
-(require 'elpy)
-(require 'info-look)
-(require 'ido)
-(require 'erc)
-(require 'go-mode)
-(require 'rainbow-delimiters)
-(require 'origami)
-(require 'yasnippet)
-(require 'go-autocomplete)
-(require 'go-complete)
-(require 'multiple-cursors)
-(require 'robe)
-(require 'emojify)
-(require 'irony)
-(require 'company-irony)
-(require 'vala-mode)
-(require 'magit)
-
-;; settings for yasnippet
-(global-set-key (kbd "C-c s") 'yas-insert-snippet)
-
-;; setting up autocomplete
-(ac-config-default)
-
-;; copy my envvars
-(setq shell-file-name "/usr/local/bin/fish")
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize)
-  (exec-path-from-shell-copy-env "GOPATH"))
-
-;; sets ruby-mode equal to enh-ruby-mode
-(add-to-list 'auto-mode-alist
-	     '("\\.notes?" . org-mode))
-(add-to-list 'auto-mode-alist
-	     '("\\.stumpwmrc$" . lisp-mode))
-
-;; load rainbow-delim and paredit for programming
-(add-hook 'prog-mode-hook (lambda ()
-			    (rainbow-delimiters-mode)
-			    (origami-mode)))
-
-;; load spell checking for org mode
-(add-hook 'org-mode-hook (lambda ()
-		      (flyspell-mode)))
-
-;; set up multi-cursor mode vars
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
-
-;; basic erc config
-(setq erc-kill-buffer-on-part t)
-(setq erc-kill-server-buffer-on-quit t)
-(setq erc-kill-queries-on-part t)
-(setq erc-autojoin-channels-list '(("freenode.net" "#archlinux-offtopic")))
-
-;; setting up go-mode
-(add-hook 'go-mode-hook (lambda ()
-			  (go-eldoc-setup)
-			  (yas-minor-mode)
-			  (flycheck-mode)))
-
-;; setting stuff up for c++ dev
-(setq-default irony-cdb-compilation-databases '(irony-cdb-libclang irony-cdb-clang-complete))
-(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
-(add-to-list 'company-backends 'company-irony)
-(add-hook 'irony-mode-hook 'irony-eldoc)
-(add-hook 'flycheck-mode-hook 'flycheck-irony-setup)
-
-(add-hook 'c++-mode-hook (lambda ()
-			  (local-set-key (kbd "C-c i") 'init-cpp-file)
-			  (irony-mode)
-			  (flycheck-mode)
-			  (company-mode)))
-
-;; emacs config stuff
-(display-time-mode)
-(display-battery-mode)
-
-;; setup ido mode
-(ido-mode)
-(ido-everywhere)
-
-;; setup and initialize SLIME
-(setq inferior-lisp-program "sbcl")
-(setq slime-contribs '(slime-fancy slime-banner slime-autodoc))
-(require 'slime)
-
-;; sets up stuff for flyspell
-(setq ispell-program-name "hunspell")
-(setq ispell-local-dictionary "en_US")
 
 ;;;
 ;; BEGIN CUSTOM FUCTIONS
 ;;;
-
-(defvar *class-home* (concat (getenv "HOME") "/Documents/Fall" (format-time-string "%Y")))
-
-(defun create-notes-org-file (class)
-  "creates an empty notes file for the class thats specified by CLASS"
-  (interactive "Mwhat class: ")
-  (setq cur-file (concat *class-home* "/" class "/notes_" (format-time-string "%m%d%y") ".org"))
-  (write-region "" nil cur-file)
-  (find-file cur-file))
 
 (defun send-shell-commands (commands-to-send &optional shell-buf)
   "Sends commands to the *shell* buffer
@@ -183,48 +72,11 @@ I'm lazy
   (setq buf-list (loop for i in (buffer-list) collect (buffer-name i)))
   (in-list buf-list buf-name))
 
-(defun deploy-code ()
-  "Deploys code to the robot automatically from a shell inside Emacs
-
-   Starts a shell if there isn't already one open"
-  (interactive)
-  (unless (buffer-existp "*frc*")
-    (create-shell "*frc*")
-    (setq file-names (split-string (buffer-file-name (get-buffer "robot.py")) "/" t))
-    (send-shell-commands `(,(format "cd /home/ztepps/Documents/python/%s"
-				    (nth 4 file-names))
-					; ^ dynamically builds the file path
-			   "source bin/activate")
-			 "*frc*"))
-  (send-shell-commands '("python robot.py deploy"
-				 "y"
-				 "y")
-		       "*frc*"))
-
 (defun in-list (containing-list obj)
   "Checks to see if OBJ is in CONTAININNG-LIST
 
    Returns T if it OBJ is there, otherwise returns NIL"
   (loop for i in containing-list do (when (equal i obj) (return t))))
-
-(defun create-shell (&optional name)
-  "creates a shell with a given name"
-  (interactive);; "Prompt\n shell name:")
-  (if name
-      (shell name)
-    (let ((shell-name (read-string "shell name: " nil)))
-      (shell (concat "*" shell-name "*")))))
-
-(defun multi-term-dedicated-find-dedicated-open ()
-  (interactive)
-  "Sees if a dedicated multi-term window is open
-
-If there is one then it changes to it, otherwise
- it opens one"
-  (if (buffer-existp "*MULTI-TERM-DEDICATED*")
-      (switch-to-buffer "*MULTI-TERM-DEDICATED*")
-    (progn
-      (multi-term-dedicated-open))))
 
 (defun get-file-info ()
   (let* ((split (split-string buffer-file-name "\\/" t))
@@ -293,62 +145,115 @@ TYPE-NAMES is either a single string or a list of strings which represent the sy
 ;;  END CUSTOM MACROS
 ;;;
 
-;; i don't remember what this does
-(info-lookup-add-help
- :mode 'python-mode
- :regexp "[[:alnum:]_]+"
- :doc-spec
- '(("(python)Index" nil "")))
 
-;; sets up completions for ruby
-(add-hook 'enh-ruby-mode-hook 'robe-start)
-(add-hook 'enh-ruby-mode-hook 'robe-mode)
-(add-hook 'enh-ruby-mode-hook 'company-mode)
-(eval-after-load 'company
-  '(push 'company-robe company-backends))
+;; adds the MELPA repo to my package archive list
+(require 'package)
+(package-initialize)
+(add-to-list 'package-archives
+	     '("melpa" . "http://melpa.org/packages/"))
 
-;; sets up virtual envs and elpy mode
-(setq venv-location "/home/ztepps/Documents/programming/python/")
-(add-hook 'python-mode-hook
-	  (lambda ()
-	    (elpy-mode)))
 
-(add-hook 'find-file-hook
-	  (lambda ()
-	    (when (string= (buffer-name) "robot.py")
-	      (local-set-key (kbd "C-c d c") 'deploy-code)
-	      (local-set-key (kbd "C-c p") 'git-push))))
+(require 'use-package)
+
+;; glorious package loading
+(require 'info-look)
+(require 'irony)
+(require 'company-irony)
+
+(use-package yasnippet
+  :bind ("C-c s" . yas-insert-snippet))
+
+(use-package magit)
+
+(use-package ido
+  :init
+  (ido-mode)
+  (ido-everywhere))
+
+(use-package go-autocomplete
+  :init (ac-config-default))
+
+(use-package go-complete)
+
+(use-package go-mode
+  :hook (go-mode . flyspell-mode)
+  :init
+  (setq shell-file-name "/usr/local/bin/fish")
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)
+    (exec-path-from-shell-copy-env "GOPATH"))
+  (go-eldoc-setup))
+
+(use-package origami-mode
+  :hook prog-mode
+  :bind (([C-tab] . origami-toggle-node)
+	 ([C-s-tab] . origami-toggle-all-nodes)))
+
+(use-package org
+  :mode "\\.notes?"
+  :hook (org-mode . flyspell-mode))
+
+(use-package lisp
+  :mode "\\.stumpwmrc$")
+
+(use-package multiple-cursors-mode
+  :bind (("C->" . mc/mark-next-like-this)
+	 ("C-<" . mc/mark-previous-like-this)
+	 ("C-c C-<" . mc/mark-all-like-this)))
+
+(use-package multi-term
+  :disabled
+  :init
+  (setq multi-term-program "/usr/bin/fish"))
+
+(use-package win-switch
+  :bind ("C-x o" . win-switch-dispatch))
+
+(use-package slime
+  :bind ("s-l" . slime)
+  :custom
+  (slime-contribs '(slime-fancy slime-banner slime-autodoc))
+  (inferior-lisp-program "sbcl"))
+(global-set-key (kbd "C-s-l") (lambda ()
+				(interactive)
+				(slime-connect "127.0.0.1" 4004)))
+
+(use-package elpy
+  :hook python-mode
+  :custom
+  (venv-location (mkstr (getenv "HOME") "/programming/python/")))
+
+(use-package irony
+  :hook c++-mode
+  :init
+  (add-hook 'irony-mode 'irony-cdb-autosetup-compile-options)
+  (add-hook 'irony-mode 'irony-eldoc)
+  (setq-default irony-cdb-compilation-databases '(irony-cdb-libclang irony-cdb-clang-complete)))
+
+(use-package company-irony
+  :init (add-to-list 'company-backends 'company-irony))
+
+(use-package flycheck-mode
+  :hook c++-mode
+  :init
+  (add-hook 'flycheck-mode-hook 'flycheck-irony-setup))
+
+;; setting stuff up for c++ dev
+(add-hook 'c++-mode-hook (lambda ()
+			  (local-set-key (kbd "C-c i") 'init-cpp-file)))
+
 
 ;; sets up my custom key bindings
-(global-set-key (kbd "C-x o") 'win-switch-dispatch)
 (global-set-key (kbd "C-x M-f") 'horz-flip-buffers)
-(global-set-key (kbd "s-l") 'slime)
-(global-set-key (kbd "C-c e f") (lambda () (interactive)
-				(erc :server "irc.freenode.net"
-				     :port "6667"
-				     :nick "theZacAttack"
-				     :password "supersecretpass13")))
-(global-set-key (kbd "C-c n f") 'origami-next-fold)
-(global-set-key (kbd "C-c n M-f") 'origami-previous-fold)
-(global-set-key (kbd "C-c n TAB") 'origami-toggle-node)
-(global-set-key (kbd "C-c n M-TAB") 'origami-show-only-node)
-(global-set-key (kbd "C-c n C-M-TAB") 'origami-open-all-nodes)
-(global-set-key (kbd "C-c n C-TAB") 'origami-close-all-nodes)
 
 ;; adds the visual line wrapping mode into text mode
 (add-hook 'text-mode-hook 'visual-line-mode)
-(add-hook 'erc-mode-hook 'visual-line-mode)
 (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 (add-hook 'python-mode-hook 'flyspell-prog-mode)
 
-(load-theme 'twilight-anti-bright)
-
-(require 'multi-term)
-(setq multi-term-program "/usr/bin/fish")
-(global-set-key (kbd "s-s") 'multi-term)
-(global-set-key (kbd "s-C-s") 'multi-term-dedicated-find-dedicated-open)
-(global-set-key (kbd "s-n") 'multi-term-next)
-(global-set-key (kbd "s-p") 'multi-term-prev)
+;; if we're running under X load a theme
+(when window-system
+  (load-theme 'twilight-anti-bright))
 
 (add-hook 'term-mode-hook (lambda ()
 			    (define-key term-raw-map (kbd "C-j") 'term-line-mode)
@@ -356,6 +261,10 @@ TYPE-NAMES is either a single string or a list of strings which represent the sy
 
 ;;; Fira code font and ligatures
 (when-on-linux
+ (display-time-mode)
+ (display-battery-mode)
+ (setq ispell-program-name "hunspell")
+ (setq ispell-local-dictionary "en_US")
  (when (window-system)
    (set-default-font "Fira Code Light"))
  (add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol")))
@@ -488,15 +397,6 @@ TYPE-NAMES is either a single string or a list of strings which represent the sy
  
  (add-hook 'prog-mode-hook
            #'add-fira-code-symbol-keywords))
-
-(setq debug-on-error t)
-
-;; perform different tasks on different machines
-;;  TODO: check hostname
-(global-set-key (kbd "C-s-l") (lambda ()
-				(interactive)
-				(slime-connect "127.0.0.1" 4004)))
-
 
 ;; check and recompile the init file and also the emacs.d dir
 (byte-recompile-file (concat (getenv "HOME") "/.emacs"))
