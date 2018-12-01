@@ -184,7 +184,8 @@ TYPE-NAMES is either a single string or a list of strings which represent the sy
 (use-package go-mode
   :hook (go-mode . flyspell-mode)
   :init
-  (setq shell-file-name "/usr/local/bin/fish")
+  (when-on-bsd (setq shell-file-name "/usr/local/bin/fish"))
+  (when-on-linux (setq shell-file-name "/bin/fish"))
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)
     (exec-path-from-shell-copy-env "GOPATH"))
