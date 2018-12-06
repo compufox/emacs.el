@@ -10,6 +10,8 @@
 	c-indent-line-or-region
 	dabbrev-expand
 	kill-region
+	markdown-outdent-or-delete
+	org-open-line
 	org-self-insert-command
 	))
 
