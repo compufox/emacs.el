@@ -1,4 +1,4 @@
-(define-package "lua-mode" "20180323.1021" "a major-mode for editing Lua scripts" 'nil :keywords
+(define-package "lua-mode" "20190113.1050" "a major-mode for editing Lua scripts" 'nil :keywords
   '("languages" "processes" "tools")
   :authors
   '(("2011-2013 immerrr" . "immerrr+lua@gmail.com")
