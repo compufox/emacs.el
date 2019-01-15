@@ -169,7 +169,8 @@ TYPE-NAMES is either a single string or a list of strings which represent the sy
 (use-package yasnippet
   :bind ("C-c s" . yas-insert-snippet))
 
-(use-package magit)
+(use-package magit
+  :bind ("C-x a" . magit-status))
 
 (use-package ido
   :init
