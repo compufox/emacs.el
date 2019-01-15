@@ -4,8 +4,8 @@
 ;;
 ;; Author: Ole Arndt <anwyn@sugarshark.com>
 ;; Keywords: convenience, lisp, abbrev
-;; Package-Version: 20180119.1843
-;; Version: 1.1
+;; Package-Version: 20190115.1601
+;; Version: 1.2
 ;; Package-Requires: ((emacs "24.4") (slime "2.13") (company "0.9.0"))
 ;;
 ;; This file is free software; you can redistribute it and/or modify
@@ -127,8 +127,9 @@ be active in derived modes as well."
   :group 'slime-company
   :type '(repeat symbol))
 
-(defun slime-company-just-one-space (_)
-  (just-one-space))
+(defun slime-company-just-one-space (completion-string)
+  (unless (string-suffix-p ":" completion-string)
+    (just-one-space)))
 
 (defsubst slime-company-active-p ()
   "Test if the slime-company backend should be active in the current buffer."
@@ -253,8 +254,20 @@ be active in derived modes as well."
 
 (defun slime-company--post-completion (candidate)
   (slime-company--echo-arglist candidate)
-  (when slime-company-after-completion
+  (when (functionp slime-company-after-completion)
     (funcall slime-company-after-completion candidate)))
+
+(defun slime-company--in-string-or-comment ()
+  "Return non-nil if point is within a string or comment.
+In the REPL we disregard anything not in the current input area."
+  (save-restriction
+    (when (derived-mode-p 'slime-repl-mode)
+      (narrow-to-region slime-repl-input-start-mark (point)))
+    (let* ((sp (syntax-ppss))
+           (beg (nth 8 sp)))
+      (when (or (eq (char-after beg) ?\")
+                (nth 4 sp))
+        beg))))
 
 ;;; ----------------------------------------------------------------------------
 ;;; * Company backend function
@@ -268,7 +281,7 @@ be active in derived modes as well."
      (when (and (slime-company-active-p)
                 (slime-connected-p)
                 (or slime-company-complete-in-comments-and-strings
-                    (null (company-in-string-or-comment))))
+                    (null (slime-company--in-string-or-comment))))
        (company-grab-symbol)))
     (candidates
      (slime-company--fetch-candidates-async (substring-no-properties arg)))
