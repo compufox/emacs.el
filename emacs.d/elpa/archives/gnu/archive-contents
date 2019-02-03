@@ -862,7 +862,7 @@
 	  ((:url . "http://elpa.gnu.org/packages/oauth2.html")
 	   (:keywords "comm"))])
  (objed .
-	[(0 4 0)
+	[(0 4 1)
 	 ((emacs
 	   (25))
 	  (cl-lib
@@ -888,7 +888,7 @@
        ((:keywords "outlines" "hypermedia" "calendar" "wp")
 	(:url . "http://elpa.gnu.org/packages/org.html"))])
  (org-edna .
-	   [(1 0 1)
+	   [(1 0 2)
 	    ((emacs
 	      (25 1))
 	     (seq

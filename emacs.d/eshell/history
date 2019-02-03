@@ -1,4 +1,3 @@
-ls
 git status
 git add *
 git commit -m "organized systems into custom package; updated readme"
@@ -126,3 +125,4 @@ rm *.dll
 git pull
 xinput list
 crun 
+chsh
