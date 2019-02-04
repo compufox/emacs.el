@@ -4,7 +4,7 @@
 
 ;; Author: Oleh Krehel <ohwoeowho@gmail.com>
 ;; URL: https://github.com/abo-abo/swiper
-;; Package-Version: 20190126.2035
+;; Package-Version: 20190204.1237
 ;; Version: 0.11.0
 ;; Package-Requires: ((emacs "24.1") (ivy "0.11.0"))
 ;; Keywords: matching
@@ -307,7 +307,8 @@
     twittering-mode
     vc-dir-mode
     w3m-mode
-    woman-mode)
+    woman-mode
+    xref--xref-buffer-mode)
   "List of major-modes that are incompatible with `font-lock-ensure'.")
 
 (defun swiper-font-lock-ensure-p ()
@@ -676,8 +677,10 @@ Matched candidates should have `swiper-invocation-face'."
                     (setq swiper--current-match-start (match-beginning 0))))
                 (isearch-range-invisible (line-beginning-position)
                                          (line-end-position))
-                (unless (and (>= (point) (window-start))
-                             (<= (point) (window-end (ivy-state-window ivy-last) t)))
+                (when (and (display-graphic-p)
+                           (or
+                            (< (point) (window-start))
+                            (> (point) (window-end (ivy-state-window ivy-last) t))))
                   (recenter))
                 (setq swiper--current-window-start (window-start))))
             (swiper--add-overlays
