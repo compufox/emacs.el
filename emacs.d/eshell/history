@@ -1,5 +1,3 @@
-git rm Lifter.py
-git rm Shooter.py
 git rm Swerve.py
 git commit -a -m "removed system files from root dir"
 git push
@@ -126,3 +124,5 @@ cd src
 mv rcrpg.cr main.cr
 crystal play
 crystal play
+ifconfig
+exit
