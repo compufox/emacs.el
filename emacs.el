@@ -139,13 +139,14 @@ TYPE-NAMES is either a single string or a list of strings which represent the sy
 			   `(quote ,type-names)
 			 type-names)))
 	`(when ,(if (listp sys-name)
-		    `(or ,@(loop for name in sys-name
+		    `(or ,@(cl-loop for name in sys-name
 			    collect `(string-equal system-type ,name)))
 		  `(string-equal system-type ,sys-name))
 	   ,@body)))))
 
 (when-on 'bsd "berkeley-unix")
 (when-on 'linux "gnu/linux")
+(when-on 'linux-or-bsd '("gnu/linux" "berkeley-unix"))
 
 ;;;
 ;;  END CUSTOM MACROS
@@ -272,12 +273,21 @@ TYPE-NAMES is either a single string or a list of strings which represent the sy
 			    (define-key term-raw-map (kbd "C-j") 'term-line-mode)
 			    (define-key term-mode-map (kbd "C-M-j") 'term-char-mode)))
 
+(when-on-bsd
+ (setq ispell-dictionary "en_US")
+ (setq ispell-program-name "aspell")
+ (setq ispell-aspell-dict-dir "/usr/local/share/aspell/")
+ (setq ispell-aspell-data-dir "/usr/local/lib/aspell-0.60/")
+ (setq ispell-dictionary-keyword "american"))
+
+(when-on-linux-or-bsd
+ (display-time-mode)
+ (setq ispell-local-dictionary "en_US"))
+
 ;;; Fira code font and ligatures
 (when-on-linux
- (display-time-mode)
  (display-battery-mode)
  (setq ispell-program-name "hunspell")
- (setq ispell-local-dictionary "en_US")
  (when (window-system)
    (set-default-font "Fira Code Light"))
  (add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol")))
