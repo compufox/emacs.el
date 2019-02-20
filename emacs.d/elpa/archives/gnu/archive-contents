@@ -320,6 +320,13 @@
 	    "Dired with recursive directory sizes" tar
 	    ((:keywords "files" "unix" "convenience")
 	     (:url . "http://elpa.gnu.org/packages/dired-du.html"))])
+ (disk-usage .
+	     [(1 1 0)
+	      ((emacs
+		(25 1)))
+	      "Sort and browse disk usage listings" single
+	      ((:url . "https://gitlab.com/Ambrevar/emacs-disk-usage")
+	       (:keywords "files" "convenience" "tools"))])
  (dismal .
 	 [(1 5)
 	  ((cl-lib
@@ -653,7 +660,7 @@
 	       ((:url . "http://elpa.gnu.org/packages/jgraph-mode.html")
 		(:keywords "tex" "wp"))])
  (js2-mode .
-	   [(20180301)
+	   [(20190219)
 	    ((emacs
 	      (24 1))
 	     (cl-lib
