@@ -17,7 +17,7 @@
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
-    (crystal-mode crystal-playground poly-erb poly-markdown win-switch virtualenvwrapper vala-mode use-package twilight-anti-bright-theme swiper spinner slime-company shut-up robe request rainbow-delimiters queue paredit origami org oauth2 names multiple-cursors multi-term markdown-mode magit lua-mode js2-mode jedi irony-eldoc go-stacktracer go-scratch go-gopath go-eldoc go-dlv go-complete go-autocomplete foggy-night-theme flymake-python-pyflakes flymake-go flycheck-irony fish-mode faceup f exec-path-from-shell enh-ruby-mode emojify elpy dash-functional csharp-mode contextual company-irony company-go cmake-mode cmake-ide cl-generic)))
+    (captain crystal-mode crystal-playground poly-erb poly-markdown win-switch virtualenvwrapper vala-mode use-package twilight-anti-bright-theme swiper spinner slime-company shut-up robe request rainbow-delimiters queue paredit origami org oauth2 names multiple-cursors multi-term markdown-mode magit lua-mode js2-mode jedi irony-eldoc go-stacktracer go-scratch go-gopath go-eldoc go-dlv go-complete go-autocomplete foggy-night-theme flymake-python-pyflakes flymake-go flycheck-irony fish-mode faceup f exec-path-from-shell enh-ruby-mode emojify elpy dash-functional csharp-mode contextual company-irony company-go cmake-mode cmake-ide cl-generic)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(slime-contribs (quote (slime-fancy slime-banner slime-autodoc)) t)
@@ -251,6 +251,21 @@ TYPE-NAMES is either a single string or a list of strings which represent the sy
   :hook c++-mode
   :init
   (add-hook 'flycheck-mode-hook 'flycheck-irony-setup))
+
+(use-package captain
+  :init
+  (global-captain-mode)
+  (setq captain-predicate
+	(lambda ()
+	  (nth 8 (syntax-ppss (point)))))
+  (add-hook 'text-mode-hook
+	    (lambda ()
+	      (setq captain-predicate
+		    (lambda () t))))
+  (add-hook 'org-mode-hook
+	    (lambda ()
+	      (setq captain-predicate
+		    (lambda () t)))))
 
 ;; setting stuff up for c++ dev
 (add-hook 'c++-mode-hook (lambda ()
