@@ -296,6 +296,7 @@ TYPE-NAMES is either a single string or a list of strings which represent the sy
  (setq ispell-dictionary-keyword "american"))
 
 (when-on-linux-or-bsd
+ (setq display-time-24hr-format t)
  (display-time-mode)
  (setq ispell-local-dictionary "en_US"))
 
