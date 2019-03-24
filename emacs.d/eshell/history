@@ -1,5 +1,3 @@
-git pull
-git pull
 git commit -a -m "started editing the copied code"; git push
 cd ..
 git status
@@ -126,3 +124,5 @@ echo $(pgrep telegram-desktop)
 echo $(/usr/local/bin/pgrep telegram-desktop)
 which pgrep
 echo $(/bin/pgrep telegram-desktop)
+git-eup
+fish -c "git-eup"
