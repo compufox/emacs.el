@@ -1,4 +1,4 @@
-(define-package "enh-ruby-mode" "20180730.2309" "Major mode for editing Ruby files"
+(define-package "enh-ruby-mode" "20190325.2132" "Major mode for editing Ruby files"
   '((emacs "24"))
   :keywords
   '("languages" "elisp" "ruby")
