@@ -146,7 +146,7 @@ TYPE-NAMES is either a single string or a list of strings which represent the sy
 
 (when-on 'bsd "berkeley-unix")
 (when-on 'linux "gnu/linux")
-(when-on 'linux-or-bsd '("gnu/linux" "berkeley-unix"))
+(when-on 'unix '("gnu/linux" "berkeley-unix"))
 
 ;;;
 ;;  END CUSTOM MACROS
@@ -170,8 +170,9 @@ TYPE-NAMES is either a single string or a list of strings which represent the sy
 (use-package yasnippet
   :bind ("C-c s" . yas-insert-snippet))
 
-(use-package magit
-  :bind ("C-x a" . magit-status))
+(when-on-unix
+ (use-package magit
+   :bind ("C-x a" . magit-status)))
 
 (use-package ido
   :init
@@ -295,7 +296,7 @@ TYPE-NAMES is either a single string or a list of strings which represent the sy
  (setq ispell-aspell-data-dir "/usr/local/lib/aspell-0.60/")
  (setq ispell-dictionary-keyword "american"))
 
-(when-on-linux-or-bsd
+(when-on-unix
  (setq display-time-24hr-format t)
  (display-time-mode)
  (setq ispell-local-dictionary "en_US"))
