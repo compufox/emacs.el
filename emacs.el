@@ -255,15 +255,7 @@ TYPE-NAMES is either a single string or a list of strings which represent the sy
 
 (use-package captain
   :init
-  (global-captain-mode)
-  (setq captain-predicate
-	(lambda ()
-	  (nth 8 (syntax-ppss (point)))))
   (add-hook 'text-mode-hook
-	    (lambda ()
-	      (setq captain-predicate
-		    (lambda () t))))
-  (add-hook 'org-mode-hook
 	    (lambda ()
 	      (setq captain-predicate
 		    (lambda () t)))))
