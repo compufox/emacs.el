@@ -17,13 +17,13 @@
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
-    (captain crystal-mode crystal-playground poly-erb poly-markdown win-switch virtualenvwrapper vala-mode use-package twilight-anti-bright-theme swiper spinner slime-company shut-up robe request rainbow-delimiters queue paredit origami org oauth2 names multiple-cursors multi-term markdown-mode magit lua-mode js2-mode jedi irony-eldoc go-stacktracer go-scratch go-gopath go-eldoc go-dlv go-complete go-autocomplete foggy-night-theme flymake-python-pyflakes flymake-go flycheck-irony fish-mode faceup f exec-path-from-shell enh-ruby-mode emojify elpy dash-functional csharp-mode contextual company-irony company-go cmake-mode cmake-ide cl-generic)))
+    (neotree captain crystal-mode crystal-playground poly-erb poly-markdown win-switch virtualenvwrapper vala-mode use-package twilight-anti-bright-theme swiper spinner slime-company shut-up robe request rainbow-delimiters queue paredit origami org oauth2 names multiple-cursors multi-term markdown-mode magit lua-mode js2-mode jedi irony-eldoc go-stacktracer go-scratch go-gopath go-eldoc go-dlv go-complete go-autocomplete foggy-night-theme flymake-python-pyflakes flymake-go flycheck-irony fish-mode faceup f exec-path-from-shell enh-ruby-mode emojify elpy dash-functional csharp-mode contextual company-irony company-go cmake-mode cmake-ide cl-generic)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(slime-contribs (quote (slime-fancy slime-banner slime-autodoc)) t)
  '(tool-bar-mode nil)
  '(tool-bar-position (quote left))
- '(venv-location "/home/zac/programming/python/" t)
+ '(venv-location "/home/ava/programming/python/" t)
  '(yas-prompt-functions
    (quote
     (yas-ido-prompt yas-completing-prompt yas-maybe-ido-prompt yas-no-prompt))))
@@ -253,12 +253,8 @@ TYPE-NAMES is either a single string or a list of strings which represent the sy
   :init
   (add-hook 'flycheck-mode-hook 'flycheck-irony-setup))
 
-(use-package captain
-  :init
-  (add-hook 'text-mode-hook
-	    (lambda ()
-	      (setq captain-predicate
-		    (lambda () t)))))
+(use-package neotree
+  :bind ([f8] . neotree-toggle))
 
 ;; setting stuff up for c++ dev
 (add-hook 'c++-mode-hook (lambda ()
