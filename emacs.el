@@ -226,9 +226,11 @@ TYPE-NAMES is either a single string or a list of strings which represent the sy
 
 (use-package slime
   :bind ("s-l" . slime)
+  :init
+  (load (expand-file-name "~/.roswell/helper.el"))
   :custom
   (slime-contribs '(slime-fancy slime-banner slime-autodoc))
-  (inferior-lisp-program "sbcl"))
+  (inferior-lisp-program "ros run -Q"))
 (global-set-key (kbd "C-s-l") (lambda ()
 				(interactive)
 				(slime-connect "127.0.0.1" 4004)))
