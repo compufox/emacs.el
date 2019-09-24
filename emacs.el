@@ -12,18 +12,18 @@
    (quote
     ("/home/ztepps/.emacs.d/elpa/twilight-anti-bright-theme-20160622.148/" custom-theme-directory t)) t)
  '(fci-rule-character-color "#192028")
- '(inferior-lisp-program "sbcl" t)
+ '(inferior-lisp-program "ros run -Q" t)
  '(inhibit-startup-screen t)
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
-    (neotree captain crystal-mode crystal-playground poly-erb poly-markdown win-switch virtualenvwrapper vala-mode use-package twilight-anti-bright-theme swiper spinner slime-company shut-up robe request rainbow-delimiters queue paredit origami org oauth2 names multiple-cursors multi-term markdown-mode magit lua-mode js2-mode jedi irony-eldoc go-stacktracer go-scratch go-gopath go-eldoc go-dlv go-complete go-autocomplete foggy-night-theme flymake-python-pyflakes flymake-go flycheck-irony fish-mode faceup f exec-path-from-shell enh-ruby-mode emojify elpy dash-functional csharp-mode contextual company-irony company-go cmake-mode cmake-ide cl-generic)))
+    (common-lisp-snippets neotree captain crystal-mode crystal-playground poly-erb poly-markdown win-switch virtualenvwrapper vala-mode use-package twilight-anti-bright-theme swiper spinner slime-company shut-up robe request rainbow-delimiters queue paredit origami org oauth2 names multiple-cursors multi-term markdown-mode magit lua-mode js2-mode jedi irony-eldoc go-stacktracer go-scratch go-gopath go-eldoc go-dlv go-complete go-autocomplete foggy-night-theme flymake-python-pyflakes flymake-go flycheck-irony fish-mode faceup f exec-path-from-shell enh-ruby-mode emojify elpy dash-functional csharp-mode contextual company-irony company-go cmake-mode cmake-ide cl-generic)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(slime-contribs (quote (slime-fancy slime-banner slime-autodoc)) t)
  '(tool-bar-mode nil)
  '(tool-bar-position (quote left))
- '(venv-location "/home/ava/programming/python/" t)
+ '(venv-location "/home/zac/programming/python/" t)
  '(yas-prompt-functions
    (quote
     (yas-ido-prompt yas-completing-prompt yas-maybe-ido-prompt yas-no-prompt))))
