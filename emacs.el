@@ -120,6 +120,14 @@ INCLUDES is a space seperated list of headers to include"
   (with-output-to-string
     (dolist (a args) (princ a))))
 
+(defun fox-me-up ()
+  (interactive)
+  (message "
+  _,-=._              /|_/|
+  `-.}   `=._,.-=-._.,  @ @._,   <(reet)
+     `._ _,-.   )      _,.-'
+        `    G.m-\"^m`m'"))
+
 ;;;
 ;;  END CUSTOM FUCTIONS
 ;;;
