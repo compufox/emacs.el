@@ -122,8 +122,8 @@ INCLUDES is a space seperated list of headers to include"
 
 (defun fox-me-up ()
   (interactive)
-  (message "
-  _,-=._              /|_/|
+  (message 
+"  _,-=._              /|_/|
   `-.}   `=._,.-=-._.,  @ @._,   <(reet)
      `._ _,-.   )      _,.-'
         `    G.m-\"^m`m'"))
@@ -136,25 +136,21 @@ INCLUDES is a space seperated list of headers to include"
 ;;  BEGIN CUSTOM MACROS
 ;;;
 
-(defun when-on (os type-names)
+(defmacro when-on (os type-names)
   "define a macro (named when-on-OS) to run code when SYSTEM-TYPE matches any string in TYPE-NAMES
 
 OS is a symbol (or string) to be placed in the macro name
 TYPE-NAMES is either a single string or a list of strings which represent the system-type string"
-  (eval
-   `(defmacro ,(intern (mkstr "when-on-" os)) (&rest body)
-      (let ((sys-name ,(if (listp type-names)
-			   `(quote ,type-names)
-			 type-names)))
-	`(when ,(if (listp sys-name)
-		    `(or ,@(cl-loop for name in sys-name
-			    collect `(string-equal system-type ,name)))
-		  `(string-equal system-type ,sys-name))
-	   ,@body)))))
+  `(defmacro ,(intern (mkstr "when-on-" os)) (&rest body)
+     `(when ,(if (listp ',type-names)
+		 `(or ,@(mapcar (lambda (name) `(string-equal system-type ,name))
+				',type-names))
+	       `(string-equal system-type ,,type-names))
+	,@body)))
 
-(when-on 'bsd "berkeley-unix")
-(when-on 'linux "gnu/linux")
-(when-on 'unix '("gnu/linux" "berkeley-unix"))
+(when-on bsd "berkeley-unix")
+(when-on linux "gnu/linux")
+(when-on unix ("gnu/linux" "berkeley-unix"))
 
 ;;;
 ;;  END CUSTOM MACROS
