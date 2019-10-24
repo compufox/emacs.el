@@ -266,6 +266,13 @@ TYPE-NAMES is either a single string or a list of strings which represent the sy
 (add-hook 'c++-mode-hook (lambda ()
 			  (local-set-key (kbd "C-c i") 'init-cpp-file)))
 
+;; sets up a keystroke way to do macrostepper
+(add-hook 'slime-mode-hook
+	  (lambda ()
+	    (local-set-key (kbd "C-c e") 'macrostep-expand)))
+(add-hook 'emacs-lisp-mode-hook
+	  (lambda ()
+	    (local-set-key (kbd "C-c e") 'macrostep-expand)))
 
 ;; sets up my custom key bindings
 (global-set-key (kbd "C-x M-f") 'horz-flip-buffers)
