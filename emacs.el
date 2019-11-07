@@ -136,21 +136,19 @@ INCLUDES is a space seperated list of headers to include"
 ;;  BEGIN CUSTOM MACROS
 ;;;
 
-(defmacro when-on (os type-names)
+(defmacro when-on (os &rest type-names)
   "define a macro (named when-on-OS) to run code when SYSTEM-TYPE matches any string in TYPE-NAMES
 
 OS is a symbol (or string) to be placed in the macro name
-TYPE-NAMES is either a single string or a list of strings which represent the system-type string"
+TYPE-NAMES is a list of strings that correspond to values returned by system-type"
   `(defmacro ,(intern (mkstr "when-on-" os)) (&rest body)
-     `(when ,(if (listp ',type-names)
-		 `(or ,@(mapcar (lambda (name) `(string-equal system-type ,name))
-				',type-names))
-	       `(string-equal system-type ,,type-names))
+     `(when (or ,@(mapcar (lambda (name) `(string-equal system-type ,name))
+			  ',type-names))
 	,@body)))
 
 (when-on bsd "berkeley-unix")
 (when-on linux "gnu/linux")
-(when-on unix ("gnu/linux" "berkeley-unix"))
+(when-on unix "gnu/linux" "berkeley-unix")
 
 ;;;
 ;;  END CUSTOM MACROS
