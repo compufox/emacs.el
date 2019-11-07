@@ -439,4 +439,4 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 
 ;; check and recompile the init file and also the emacs.d dir
 (byte-recompile-file (concat (getenv "HOME") "/.emacs"))
-(byte-recompile-directory (concat (getenv "HOME") "/.emacs.d/"))
+;(byte-recompile-directory (concat (getenv "HOME") "/.emacs.d/"))
