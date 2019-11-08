@@ -121,12 +121,27 @@ INCLUDES is a space seperated list of headers to include"
     (dolist (a args) (princ a))))
 
 (defun fox-me-up ()
+  "FOX ME UP INSIDE"
   (interactive)
   (message 
 "  _,-=._              /|_/|
   `-.}   `=._,.-=-._.,  @ @._,   <(reet)
      `._ _,-.   )      _,.-'
         `    G.m-\"^m`m'"))
+
+(defun program-present-p (progam)
+  "checks to see if PROGAM exists in the current user's path"
+  (let ((separator (or (and (string= system-type "windows-nt")
+			    "\\")
+		       "/")))
+    (dolist (f (split-string (getenv "PATH") ";") result)
+      (when (file-exists-p (concat f
+				   (unless (string-suffix-p separator f t)
+				     separator)
+				   progam
+				   (when (string= system-type "windows-nt")
+				     ".exe")))
+	(setq result t)))))
 
 ;;;
 ;;  END CUSTOM FUCTIONS
@@ -172,7 +187,7 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 (use-package yasnippet
   :bind ("C-c s" . yas-insert-snippet))
 
-(when-on-unix
+(when (program-present-p "git")
  (use-package magit
    :bind ("C-x a" . magit-status)))
 
