@@ -131,13 +131,16 @@ INCLUDES is a space seperated list of headers to include"
 
 (defun program-present-p (progam)
   "checks to see if PROGAM exists in the current user's path"
-  (let ((separator (or (and (string= system-type "windows-nt")
-			    "\\")
-		       "/")))
-    (dolist (f (split-string (getenv "PATH") ";") result)
+  (let ((path-sep (or (and (string= system-type "windows-nt")
+			  ";")
+		     ":"))
+	(dir-sep (or (and (string= system-type "windows-nt")
+			  "\\")
+		     "/")))
+    (dolist (f (split-string (getenv "PATH") path-sep) result)
       (when (file-exists-p (concat f
-				   (unless (string-suffix-p separator f t)
-				     separator)
+				   (unless (string-suffix-p dir-sep f t)
+				     dir-sep)
 				   progam
 				   (when (string= system-type "windows-nt")
 				     ".exe")))
