@@ -3,14 +3,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(backup-directory-alist (quote ((".*" . "/home/ztepps/.emacs.d/backups"))))
+ '(backup-directory-alist (quote ((".*" . (concat (getenv "HOME") "/.emacs.d/backups")))))
  '(column-number-mode t)
  '(custom-safe-themes
    (quote
     ("34c2161f5af530df4a63cabcfc380acd7b5a138640cbe9ad3721aa61dcbe3b55" "72085337718a3a9b4a7d8857079aa1144ea42d07a4a7696f86627e46ac52f50b" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" "5e2dc1360a92bb73dafa11c46ba0f30fa5f49df887a8ede4e3533c3ab6270e08" "95db78d85e3c0e735da28af774dfa59308db832f84b8a2287586f5b4f21a7a5b" default)))
- '(custom-theme-load-path
-   (quote
-    ("/home/ztepps/.emacs.d/elpa/twilight-anti-bright-theme-20160622.148/" custom-theme-directory t)) t)
  '(fci-rule-character-color "#192028")
  '(inferior-lisp-program "ros run -Q" t)
  '(inhibit-startup-screen t)
@@ -23,7 +20,6 @@
  '(slime-contribs (quote (slime-fancy slime-banner slime-autodoc)) t)
  '(tool-bar-mode nil)
  '(tool-bar-position (quote left))
- '(venv-location "C:\\Users\\admin\\AppData\\Roaming/programming/python/" t)
  '(yas-prompt-functions
    (quote
     (yas-ido-prompt yas-completing-prompt yas-maybe-ido-prompt yas-no-prompt))))
@@ -186,16 +182,20 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 (require 'info-look)
 (require 'irony)
 (require 'company-irony)
+(require 'telephone-line)
 
-(use-package telephone-line
-  :custom
-  (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
-	telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
-	telephone-line-primary-right-separator 'telephone-line-cubed-right
-	telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right
-	telephone-line-height 24
-	telephone-line-evil-use-short-tag t)
-  (telephone-line-mode t))
+;; sets up telephone line stuff
+(setq telephone-line-primary-left-separator 'telephone-line-cubed-left
+      telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
+      telephone-line-primary-right-separator 'telephone-line-cubed-right
+      telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
+(setq telephone-line-height 24)
+(setq telephone-line-lhs '((accent . (telephone-line-vc-segment
+				      telephone-line-erc-modified-channels-segment
+				      telephone-line-process-segment))
+			   (nil . (telephone-line-projectile-segment
+				   telephone-line-buffer-segment))))
+(telephone-line-mode t)
 
 (use-package yasnippet
   :bind ("C-c s" . yas-insert-snippet))
