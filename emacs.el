@@ -300,6 +300,9 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 	  (lambda ()
 	    (local-set-key (kbd "C-c e") 'macrostep-expand)))
 
+(when (daemonp)
+  (global-set-key (kbd "C-x M-C-c") 'kill-emacs))
+
 ;; sets up my custom key bindings
 (global-set-key (kbd "C-x M-f") 'horz-flip-buffers)
 
