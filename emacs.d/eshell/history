@@ -1,0 +1,35 @@
+cd .config/fish
+ls
+ls functions
+cd ..
+cd fish
+rm fish_variables 
+ls
+rm fish_variables 
+ls ~/.local/share/
+ls ~/.local/share/fish
+ls ~/.local/share/folks
+rm fish_variables 
+ls
+ls
+less fish_variables 
+cd ..
+rm -rf fish
+cd ../.local
+cd share
+rm -rf fish/ omf
+ls
+cd 
+sudo pacman -S fish
+ls .config/fish
+cd .local/share
+ls
+rm -rf fish
+cd ../..
+ls .cache
+ls .cache/fish/
+rm -rf .cache/fish
+sudo rm -rf /usr/share/fish /usr/share/doc/fish /etc/fish
+cat .fishrc
+pidof fish
+pgrep fish
