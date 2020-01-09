@@ -3,23 +3,24 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(backup-directory-alist (quote ((".*" . (concat (getenv "HOME") "/.emacs.d/backups")))))
+ '(backup-directory-alist (quote ((".*" concat (getenv "HOME") "/.emacs.d/backups"))))
  '(column-number-mode t)
  '(custom-safe-themes
    (quote
-    ("34c2161f5af530df4a63cabcfc380acd7b5a138640cbe9ad3721aa61dcbe3b55" "72085337718a3a9b4a7d8857079aa1144ea42d07a4a7696f86627e46ac52f50b" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" "5e2dc1360a92bb73dafa11c46ba0f30fa5f49df887a8ede4e3533c3ab6270e08" "95db78d85e3c0e735da28af774dfa59308db832f84b8a2287586f5b4f21a7a5b" default)))
+    ("6bc387a588201caf31151205e4e468f382ecc0b888bac98b2b525006f7cb3307" "34c2161f5af530df4a63cabcfc380acd7b5a138640cbe9ad3721aa61dcbe3b55" "72085337718a3a9b4a7d8857079aa1144ea42d07a4a7696f86627e46ac52f50b" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" "5e2dc1360a92bb73dafa11c46ba0f30fa5f49df887a8ede4e3533c3ab6270e08" "95db78d85e3c0e735da28af774dfa59308db832f84b8a2287586f5b4f21a7a5b" default)))
  '(fci-rule-character-color "#192028")
  '(inferior-lisp-program "ros run -Q" t)
  '(inhibit-startup-screen t)
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
-    (telephone-line common-lisp-snippets neotree captain crystal-mode crystal-playground poly-erb poly-markdown win-switch virtualenvwrapper vala-mode use-package twilight-anti-bright-theme swiper spinner slime-company shut-up robe request rainbow-delimiters queue paredit origami org oauth2 names multiple-cursors multi-term markdown-mode magit lua-mode js2-mode jedi irony-eldoc go-stacktracer go-scratch go-gopath go-eldoc go-dlv go-complete go-autocomplete foggy-night-theme flymake-python-pyflakes flymake-go flycheck-irony fish-mode faceup f exec-path-from-shell enh-ruby-mode emojify elpy dash-functional csharp-mode contextual company-irony company-go cmake-mode cmake-ide cl-generic)))
+    (cyberpunk-2019-theme cyberpunk-theme telephone-line common-lisp-snippets neotree captain crystal-mode crystal-playground poly-erb poly-markdown win-switch virtualenvwrapper vala-mode use-package twilight-anti-bright-theme swiper spinner slime-company shut-up robe request rainbow-delimiters queue paredit origami org oauth2 names multiple-cursors multi-term markdown-mode magit lua-mode js2-mode jedi irony-eldoc go-stacktracer go-scratch go-gopath go-eldoc go-dlv go-complete go-autocomplete foggy-night-theme flymake-python-pyflakes flymake-go flycheck-irony fish-mode faceup f exec-path-from-shell enh-ruby-mode emojify elpy dash-functional csharp-mode contextual company-irony company-go cmake-mode cmake-ide cl-generic)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(slime-contribs (quote (slime-fancy slime-banner slime-autodoc)) t)
  '(tool-bar-mode nil)
  '(tool-bar-position (quote left))
+ '(venv-location "C:\\Users\\admin\\AppData\\Roaming/programming/python/" t)
  '(yas-prompt-functions
    (quote
     (yas-ido-prompt yas-completing-prompt yas-maybe-ido-prompt yas-no-prompt))))
@@ -313,7 +314,7 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 
 ;; if we're running under X load a theme
 (when (or window-system (daemonp))
-  (load-theme 'twilight-anti-bright))
+  (load-theme 'cyberpunk t))
 
 (add-hook 'term-mode-hook (lambda ()
 			    (define-key term-raw-map (kbd "C-j") 'term-line-mode)
