@@ -198,6 +198,11 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 				   telephone-line-buffer-segment))))
 (telephone-line-mode t)
 
+(use-package rainbow-delimiters
+  :hook ((lisp-mode . rainbow-delimiters-mode)
+	 (emacs-lisp-mode . rainbow-delimiters-mode)
+	 (slime-mode . rainbow-delimiters-mode)))
+
 (use-package yasnippet
   :bind ("C-c s" . yas-insert-snippet))
 
