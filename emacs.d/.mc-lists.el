@@ -3,12 +3,14 @@
 
 (setq mc/cmds-to-run-for-all
       '(
+	backward-sexp
 	c-electric-colon
 	c-electric-delete-forward
 	c-electric-lt-gt
 	c-electric-semi&comma
 	c-indent-line-or-region
 	dabbrev-expand
+	indent-for-tab-command
 	kill-region
 	markdown-outdent-or-delete
 	org-open-line
@@ -17,6 +19,7 @@
 
 (setq mc/cmds-to-run-once
       '(
+	ido-switch-buffer
 	shell-command
 	slime-autodoc-space
 	))

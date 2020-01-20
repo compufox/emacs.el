@@ -1,20 +1,14 @@
 ((magit-branch nil)
- (magit-commit nil
-	       ("--reset-author")
-	       ("--all" "--reset-author"))
- (magit-diff
-  ("--no-ext-diff" "--stat"))
+ (magit-commit nil)
  (magit-dispatch nil)
  (magit-fetch nil)
  (magit-gitignore nil)
- (magit-pull nil)
- (magit-push nil
-	     ("--force-with-lease"))
- (magit-rebase nil)
+ (magit-pull nil
+	     ("--rebase"))
+ (magit-push
+  ("--force-with-lease")
+  nil)
  (magit-remote
   ("-f"))
- (magit-reset nil)
- (magit-revert
-  ("--edit"))
- (magit-run nil)
+ (magit-remote\.<remote>\.*url "https://github.com/compufox/cl-activitypub" "https://github.com/jfmcbrayer/cl-activitypub")
  (magit-stash nil))

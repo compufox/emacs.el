@@ -33,3 +33,4 @@ sudo rm -rf /usr/share/fish /usr/share/doc/fish /etc/fish
 cat .fishrc
 pidof fish
 pgrep fish
+curl -X "POST" "localhost:5000/register"
