@@ -14,10 +14,6 @@
  '(lisp-mode-hook
    (quote
     (common-lisp-lisp-mode-hook sly-editing-mode
-				(lambda nil
-				  (add-hook
-				   (quote font-lock-extend-region-functions)
-				   t t))
 				rainbow-delimiters-mode)))
  '(make-backup-files nil)
  '(package-selected-packages
