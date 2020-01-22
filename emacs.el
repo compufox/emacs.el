@@ -311,7 +311,7 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 			  (local-set-key (kbd "C-c i") 'init-cpp-file)))
 
 ;; sets up a keystroke way to do macrostepper
-(add-hook 'slime-mode-hook
+(add-hook 'sly-mode-hook
 	  (lambda ()
 	    (local-set-key (kbd "C-c e") 'macrostep-expand)))
 (add-hook 'emacs-lisp-mode-hook
