@@ -13,8 +13,7 @@
  '(inhibit-startup-screen t)
  '(lisp-mode-hook
    (quote
-    (common-lisp-lisp-mode-hook sly-editing-mode
-				rainbow-delimiters-mode)))
+    (sly-editing-mode)))
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
@@ -205,7 +204,7 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 (use-package rainbow-delimiters
   :hook ((lisp-mode . rainbow-delimiters-mode)
 	 (emacs-lisp-mode . rainbow-delimiters-mode)
-	 (slime-mode . rainbow-delimiters-mode)))
+	 (sly-mode . rainbow-delimiters-mode)))
 
 (use-package yasnippet
   :bind ("C-c s" . yas-insert-snippet))
