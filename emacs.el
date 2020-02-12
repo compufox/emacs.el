@@ -15,7 +15,7 @@
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
-    (parinfer sly sly-asdf sly-macrostep sly-named-readtables sly-quicklisp sly-repl-ansi-color cyberpunk-2019-theme cyberpunk-theme telephone-line common-lisp-snippets neotree captain crystal-mode crystal-playground poly-erb poly-markdown win-switch virtualenvwrapper vala-mode use-package twilight-anti-bright-theme swiper spinner slime-company shut-up robe request rainbow-delimiters queue paredit origami org oauth2 names multiple-cursors multi-term markdown-mode magit lua-mode js2-mode jedi irony-eldoc go-stacktracer go-scratch go-gopath go-eldoc go-dlv go-complete go-autocomplete foggy-night-theme flymake-python-pyflakes flymake-go flycheck-irony fish-mode faceup f exec-path-from-shell enh-ruby-mode emojify elpy dash-functional csharp-mode contextual company-irony company-go cmake-mode cmake-ide cl-generic)))
+    (smex parinfer sly sly-asdf sly-macrostep sly-named-readtables sly-quicklisp sly-repl-ansi-color cyberpunk-2019-theme cyberpunk-theme telephone-line common-lisp-snippets neotree captain crystal-mode crystal-playground poly-erb poly-markdown win-switch virtualenvwrapper vala-mode use-package twilight-anti-bright-theme swiper spinner slime-company shut-up robe request rainbow-delimiters queue paredit origami org oauth2 names multiple-cursors multi-term markdown-mode magit lua-mode js2-mode jedi irony-eldoc go-stacktracer go-scratch go-gopath go-eldoc go-dlv go-complete go-autocomplete foggy-night-theme flymake-python-pyflakes flymake-go flycheck-irony fish-mode faceup f exec-path-from-shell enh-ruby-mode emojify elpy dash-functional csharp-mode contextual company-irony company-go cmake-mode cmake-ide cl-generic)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(slime-contribs
@@ -205,6 +205,11 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
   :hook ((lisp-mode . rainbow-delimiters-mode)
 	 (emacs-lisp-mode . rainbow-delimiters-mode)
 	 (sly-mode . rainbow-delimiters-mode)))
+
+(use-package smex
+  :ensure t
+  :bind (("M-x" . smex))
+  :init (smex-initialize))
 
 ;(use-package parinfer
 ;  :ensure t
