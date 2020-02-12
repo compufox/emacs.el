@@ -15,7 +15,7 @@
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
-    (smex parinfer sly sly-asdf sly-macrostep sly-named-readtables sly-quicklisp sly-repl-ansi-color cyberpunk-2019-theme cyberpunk-theme telephone-line common-lisp-snippets neotree captain crystal-mode crystal-playground poly-erb poly-markdown win-switch virtualenvwrapper vala-mode use-package twilight-anti-bright-theme swiper spinner slime-company shut-up robe request rainbow-delimiters queue paredit origami org oauth2 names multiple-cursors multi-term markdown-mode magit lua-mode js2-mode jedi irony-eldoc go-stacktracer go-scratch go-gopath go-eldoc go-dlv go-complete go-autocomplete foggy-night-theme flymake-python-pyflakes flymake-go flycheck-irony fish-mode faceup f exec-path-from-shell enh-ruby-mode emojify elpy dash-functional csharp-mode contextual company-irony company-go cmake-mode cmake-ide cl-generic)))
+    (ido-completing-read+ amx smex parinfer sly sly-asdf sly-macrostep sly-named-readtables sly-quicklisp sly-repl-ansi-color cyberpunk-2019-theme cyberpunk-theme telephone-line common-lisp-snippets neotree captain crystal-mode crystal-playground poly-erb poly-markdown win-switch virtualenvwrapper vala-mode use-package twilight-anti-bright-theme swiper spinner slime-company shut-up robe request rainbow-delimiters queue paredit origami org oauth2 names multiple-cursors multi-term markdown-mode magit lua-mode js2-mode jedi irony-eldoc go-stacktracer go-scratch go-gopath go-eldoc go-dlv go-complete go-autocomplete foggy-night-theme flymake-python-pyflakes flymake-go flycheck-irony fish-mode faceup f exec-path-from-shell enh-ruby-mode emojify elpy dash-functional csharp-mode contextual company-irony company-go cmake-mode cmake-ide cl-generic)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(slime-contribs
@@ -206,10 +206,19 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 	 (emacs-lisp-mode . rainbow-delimiters-mode)
 	 (sly-mode . rainbow-delimiters-mode)))
 
-(use-package smex
+(use-package ido
+  :init
+  (ido-mode)
+  (ido-everywhere))
+
+(use-package ido-completing-read+
   :ensure t
-  :bind (("M-x" . smex))
-  :init (smex-initialize))
+  :init (ido-ubiquitous-mode 1))
+
+(use-package amx
+  :ensure t
+  :init
+  (amx-mode))
 
 ;(use-package parinfer
 ;  :ensure t
@@ -234,11 +243,6 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 (when (program-present-p "git")
  (use-package magit
    :bind ("C-x a" . magit-status)))
-
-(use-package ido
-  :init
-  (ido-mode)
-  (ido-everywhere))
 
 (use-package go-autocomplete
   :init (ac-config-default))
