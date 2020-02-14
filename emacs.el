@@ -9,13 +9,13 @@
    (quote
     ("6bc387a588201caf31151205e4e468f382ecc0b888bac98b2b525006f7cb3307" "34c2161f5af530df4a63cabcfc380acd7b5a138640cbe9ad3721aa61dcbe3b55" "72085337718a3a9b4a7d8857079aa1144ea42d07a4a7696f86627e46ac52f50b" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" "5e2dc1360a92bb73dafa11c46ba0f30fa5f49df887a8ede4e3533c3ab6270e08" "95db78d85e3c0e735da28af774dfa59308db832f84b8a2287586f5b4f21a7a5b" default)))
  '(fci-rule-character-color "#192028")
- '(inferior-lisp-program "ros run -Q" t)
+ '(inferior-lisp-program "ros run -Q")
  '(inhibit-startup-screen t)
  '(lisp-mode-hook (quote (sly-editing-mode)))
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
-    (ido-completing-read+ amx smex parinfer sly sly-asdf sly-macrostep sly-named-readtables sly-quicklisp sly-repl-ansi-color cyberpunk-2019-theme cyberpunk-theme telephone-line common-lisp-snippets neotree captain crystal-mode crystal-playground poly-erb poly-markdown win-switch virtualenvwrapper vala-mode use-package twilight-anti-bright-theme swiper spinner slime-company shut-up robe request rainbow-delimiters queue paredit origami org oauth2 names multiple-cursors multi-term markdown-mode magit lua-mode js2-mode jedi irony-eldoc go-stacktracer go-scratch go-gopath go-eldoc go-dlv go-complete go-autocomplete foggy-night-theme flymake-python-pyflakes flymake-go flycheck-irony fish-mode faceup f exec-path-from-shell enh-ruby-mode emojify elpy dash-functional csharp-mode contextual company-irony company-go cmake-mode cmake-ide cl-generic)))
+    (elcord ido-completing-read+ amx smex parinfer sly sly-asdf sly-macrostep sly-named-readtables sly-quicklisp sly-repl-ansi-color cyberpunk-2019-theme cyberpunk-theme telephone-line common-lisp-snippets neotree captain crystal-mode crystal-playground poly-erb poly-markdown win-switch virtualenvwrapper vala-mode use-package twilight-anti-bright-theme swiper spinner slime-company shut-up robe request rainbow-delimiters queue paredit origami org oauth2 names multiple-cursors multi-term markdown-mode magit lua-mode js2-mode jedi irony-eldoc go-stacktracer go-scratch go-gopath go-eldoc go-dlv go-complete go-autocomplete foggy-night-theme flymake-python-pyflakes flymake-go flycheck-irony fish-mode faceup f exec-path-from-shell enh-ruby-mode emojify elpy dash-functional csharp-mode contextual company-irony company-go cmake-mode cmake-ide cl-generic)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(slime-contribs
@@ -23,7 +23,7 @@
     (sly-fancy sly-macrostep sly-quicklisp sly-asdf sly-reply-ansi-color sly-named-readtables)) t)
  '(tool-bar-mode nil)
  '(tool-bar-position (quote left))
- '(venv-location "C:\\Users\\admin\\AppData\\Roaming/programming/python/" t)
+ '(venv-location "/home/ava/programming/python/" t)
  '(yas-prompt-functions
    (quote
     (yas-ido-prompt yas-completing-prompt yas-maybe-ido-prompt yas-no-prompt))))
@@ -200,6 +200,11 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 			   (nil . (telephone-line-projectile-segment
 				   telephone-line-buffer-segment))))
 (telephone-line-mode t)
+
+(when (program-present-p "discord")
+  (use-package elcord
+    :ensure t
+    :hook ((lisp-mode . elcord-mode))))
 
 (use-package rainbow-delimiters
   :hook ((lisp-mode . rainbow-delimiters-mode)
