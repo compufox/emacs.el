@@ -15,7 +15,7 @@
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
-    (elcord ido-completing-read+ amx smex parinfer sly sly-asdf sly-macrostep sly-named-readtables sly-quicklisp sly-repl-ansi-color cyberpunk-2019-theme cyberpunk-theme telephone-line common-lisp-snippets neotree captain crystal-mode crystal-playground poly-erb poly-markdown win-switch virtualenvwrapper vala-mode use-package twilight-anti-bright-theme swiper spinner slime-company shut-up robe request rainbow-delimiters queue paredit origami org oauth2 names multiple-cursors multi-term markdown-mode magit lua-mode js2-mode jedi irony-eldoc go-stacktracer go-scratch go-gopath go-eldoc go-dlv go-complete go-autocomplete foggy-night-theme flymake-python-pyflakes flymake-go flycheck-irony fish-mode faceup f exec-path-from-shell enh-ruby-mode emojify elpy dash-functional csharp-mode contextual company-irony company-go cmake-mode cmake-ide cl-generic)))
+    (kaolin-themes emr ido-completing-read+ amx smex parinfer sly sly-asdf sly-macrostep sly-named-readtables sly-quicklisp sly-repl-ansi-color cyberpunk-2019-theme cyberpunk-theme telephone-line common-lisp-snippets neotree captain crystal-mode crystal-playground poly-erb poly-markdown win-switch virtualenvwrapper vala-mode use-package twilight-anti-bright-theme swiper spinner slime-company shut-up robe request rainbow-delimiters queue paredit origami org oauth2 names multiple-cursors multi-term markdown-mode magit lua-mode js2-mode jedi irony-eldoc go-stacktracer go-scratch go-gopath go-eldoc go-dlv go-complete go-autocomplete foggy-night-theme flymake-python-pyflakes flymake-go flycheck-irony fish-mode faceup f exec-path-from-shell enh-ruby-mode emojify elpy dash-functional csharp-mode contextual company-irony company-go cmake-mode cmake-ide cl-generic)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(slime-contribs
@@ -136,7 +136,8 @@ INCLUDES is a space seperated list of headers to include"
 		     ":"))
 	(dir-sep (or (and (string= system-type "windows-nt")
 			  "\\")
-		     "/")))
+		     "/"))
+	result)
     (dolist (f (split-string (getenv "PATH") path-sep) result)
       (when (file-exists-p (concat f
 				   (unless (string-suffix-p dir-sep f t)
@@ -205,6 +206,17 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
   (use-package elcord
     :ensure t
     :hook ((lisp-mode . elcord-mode))))
+
+(use-package emr
+  :ensure t
+  :bind (("M-RET" . emr-show-refactor-menu)))
+
+(use-package kaolin-themes
+  :ensure t
+  :config
+  (setq kaolin-themes-italic-comments t
+	kaolin-themes-distinct-fringe t)
+  (load-theme 'kaolin-galaxy t))
 
 (use-package rainbow-delimiters
   :hook ((lisp-mode . rainbow-delimiters-mode)
@@ -360,8 +372,8 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 (add-hook 'python-mode-hook 'flyspell-prog-mode)
 
 ;; if we're running under X load a theme
-(when (or window-system (daemonp))
-  (load-theme 'cyberpunk t))
+;(when (or window-system (daemonp))
+;  (load-theme 'cyberpunk t))
 
 (add-hook 'term-mode-hook (lambda ()
 			    (define-key term-raw-map (kbd "C-j") 'term-line-mode)
