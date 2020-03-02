@@ -289,7 +289,10 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 
 (use-package org
   :mode "\\.notes?"
-  :hook (org-mode . flyspell-mode))
+  :hook (org-mode . (lambda ()
+		      (when (or (program-present-p "ispell")
+				(program-present-p "aspell"))
+			(flyspell-mode)))))
 
 (use-package poly-erb
   :mode "\\.erb")
