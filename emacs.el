@@ -263,8 +263,7 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 	doom-themes-enable-italic t
 	doom-outrun-electric-brighter-modeline t
 	doom-outrun-electric-comment-bg t
-	doom-outrun-electric-brighter-comments t
-	doom-outrun-electric-padded-modeline 3)
+	doom-outrun-electric-brighter-comments t)
   (load-theme 'doom-outrun-electric t)
   (doom-themes-org-config))
 
