@@ -228,7 +228,11 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
   :ensure t
   :config
   (setq doom-themes-enable-bold t
-	doom-themes-enable-italic t)
+	doom-themes-enable-italic t
+	doom-outrun-electric-brighter-modeline t
+	doom-outrun-electric-comment-bg t
+	doom-outrun-electric-brighter-comments t
+	doom-outrun-electric-padded-modeline 3)
   (load-theme 'doom-outrun-electric t)
   (doom-themes-org-config))
 
