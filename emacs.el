@@ -11,7 +11,6 @@
  '(fci-rule-character-color "#192028")
  '(inferior-lisp-program "ros run -Q")
  '(inhibit-startup-screen t)
- '(lisp-mode-hook (quote (sly-editing-mode)))
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
