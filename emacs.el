@@ -196,22 +196,29 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 
 ;; glorious package loading
 (require 'info-look)
-(require 'irony)
-(require 'company-irony)
 
-(use-package telephone-line
   :config
-  (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
-	telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
-	telephone-line-primary-right-separator 'telephone-line-cubed-right
-	telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
-  (setq telephone-line-height 24)
-  (setq telephone-line-lhs '((accent . (telephone-line-vc-segment
-					telephone-line-erc-modified-channels-segment
-					telephone-line-process-segment))
-			     (nil . (telephone-line-projectile-segment
-				     telephone-line-buffer-segment))))
-  (telephone-line-mode t))
+;; modeline altering addons
+
+;(use-package moody
+;  :ensure t
+;  :config
+;  (setq x-underline-at-descent-line t)
+;  (moody-replace-mode-line-buffer-identification))
+;(use-package telephone-line
+;  :ensure t
+;  :config
+;  (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
+;	telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
+;	telephone-line-primary-right-separator 'telephone-line-cubed-right
+;	telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
+;  (setq telephone-line-height 24)
+;  (setq telephone-line-lhs '((accent . (telephone-line-vc-segment
+;					telephone-line-erc-modified-channels-segment
+;					telephone-line-process-segment))
+;			     (nil . (telephone-line-projectile-segment
+;				     telephone-line-buffer-segment))))
+;  (telephone-line-mode t))
 
 (when (program-present-p "discord")
   (use-package elcord
@@ -385,8 +392,8 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
   :init
   (add-hook 'flycheck-mode-hook 'flycheck-irony-setup))
 
-(use-package neotree
-  :bind ([f8] . neotree-toggle))
+;(use-package neotree
+;  :bind ([f8] . neotree-toggle))
 
 ;; setting stuff up for c++ dev
 (add-hook 'c++-mode-hook (lambda ()
