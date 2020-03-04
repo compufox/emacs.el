@@ -400,21 +400,6 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
   :custom
   (venv-location (mkstr (getenv "HOME") "/programming/python/")))
 
-(use-package irony
-  :hook c++-mode
-  :init
-  (add-hook 'irony-mode 'irony-cdb-autosetup-compile-options)
-  (add-hook 'irony-mode 'irony-eldoc)
-  (setq-default irony-cdb-compilation-databases '(irony-cdb-libclang irony-cdb-clang-complete)))
-
-(use-package company-irony
-  :init (add-to-list 'company-backends 'company-irony))
-
-(use-package flycheck-mode
-  :hook c++-mode
-  :init
-  (add-hook 'flycheck-mode-hook 'flycheck-irony-setup))
-
 ;(use-package neotree
 ;  :bind ([f8] . neotree-toggle))
 
