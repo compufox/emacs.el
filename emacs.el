@@ -180,6 +180,16 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 (add-to-list 'package-archives
 	     '("melpa" . "http://melpa.org/packages/"))
 
+;; remove slime stuff
+(when (package-installed-p 'slime-company)
+  (package-delete (cadr (assoc 'slime-company package-alist))))
+(when (package-installed-p 'slime)
+  (package-delete (cadr (assoc 'slime package-alist)))
+
+  ;; this is needed because slime-lisp-mode-hook gets like auto
+  ;; added into lisp-mode-hook when emacs loads
+  (setq lisp-mode-hook
+	(remove 'slime-lisp-mode-hook lisp-mode-hook)))
 
 (require 'use-package)
 
@@ -334,6 +344,7 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
   :bind ("s-l" . sly)
 ;  :init
 ;  (load (expand-file-name "~/.roswell/helper.el"))
+  :hook ((lisp-mode . sly-editing-mode))
   :custom
   (slime-contribs '(sly-fancy sly-macrostep sly-quicklisp sly-asdf sly-reply-ansi-color sly-named-readtables))
   (inferior-lisp-program "ros run -Q"))
