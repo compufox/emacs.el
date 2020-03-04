@@ -197,7 +197,31 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 ;; glorious package loading
 (require 'info-look)
 
+(use-package minions
+  :ensure t
+  :config (minions-mode 1))
+
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1)
   :config
+  (setq doom-modeline-buffer-encoding nil
+	doom-modeline-minor-modes t
+	doom-modeline-gnus-timer nil
+	doom-modeline-bar-width 3)
+  (when-on-windows
+   (setq inihibit-compacting-font-caches t)))
+
+(use-package treemacs
+  :ensure t
+  :bind ([f8] . treemacs))
+
+(use-package projectile
+  :ensure t
+  :init (projectile-mode +1)
+  :bind (:map projectile-mode-map
+	      ("C-c p" . projectile-command-map)))
+
 ;; modeline altering addons
 
 ;(use-package moody
