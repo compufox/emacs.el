@@ -210,6 +210,7 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 (use-package prism
   :ensure t
   :hook ((lisp-mode . prism-mode)
+	 (common-lisp-mode . prism-mode)
 	 (ruby-mode . prism-mode)
 	 (emacs-lisp-mode . prism-mode)))
 
@@ -218,7 +219,7 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
   :config
   (setq doom-themes-enable-bold t
 	doom-themes-enable-italic t)
-  (load-theme 'doom-challenger-deep t)
+  (load-theme 'doom-outrun-electric t)
   (doom-themes-org-config))
 
 (use-package emr
