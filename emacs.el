@@ -207,16 +207,30 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
     :ensure t
     :hook ((lisp-mode . elcord-mode))))
 
+(use-package prism
+  :ensure t
+  :hook ((lisp-mode . prism-mode)
+	 (ruby-mode . prism-mode)
+	 (emacs-lisp-mode . prism-mode)))
+
+(use-package doom-themes
+  :ensure t
+  :config
+  (setq doom-themes-enable-bold t
+	doom-themes-enable-italic t)
+  (load-theme 'doom-challenger-deep t)
+  (doom-themes-org-config))
+
 (use-package emr
   :ensure t
   :bind (("M-RET" . emr-show-refactor-menu)))
 
-(use-package kaolin-themes
-  :ensure t
-  :config
-  (setq kaolin-themes-italic-comments t
-	kaolin-themes-distinct-fringe t)
-  (load-theme 'kaolin-galaxy t))
+;(use-package kaolin-themes
+;  :ensure t
+;  :config
+;  (setq kaolin-themes-italic-comments t
+;	kaolin-themes-distinct-fringe t)
+;  (load-theme 'kaolin-galaxy t))
 
 (use-package dimmer
   :ensure t
