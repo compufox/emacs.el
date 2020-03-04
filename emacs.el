@@ -9,7 +9,7 @@
    (quote
     ("6bc387a588201caf31151205e4e468f382ecc0b888bac98b2b525006f7cb3307" "34c2161f5af530df4a63cabcfc380acd7b5a138640cbe9ad3721aa61dcbe3b55" "72085337718a3a9b4a7d8857079aa1144ea42d07a4a7696f86627e46ac52f50b" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" "5e2dc1360a92bb73dafa11c46ba0f30fa5f49df887a8ede4e3533c3ab6270e08" "95db78d85e3c0e735da28af774dfa59308db832f84b8a2287586f5b4f21a7a5b" default)))
  '(fci-rule-character-color "#192028")
- '(inferior-lisp-program "ros run -Q")
+ '(inferior-lisp-program "ros run -Q" t)
  '(inhibit-startup-screen t)
  '(make-backup-files nil)
  '(package-selected-packages
@@ -415,6 +415,7 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 	    (local-set-key (kbd "C-c e") 'macrostep-expand)))
 
 (when (daemonp)
+  (setq doom-modeline-icon (display-graphic-p))
   (global-set-key (kbd "C-x M-C-c") 'kill-emacs))
 
 ;; sets up my custom key bindings
