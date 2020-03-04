@@ -168,6 +168,7 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 (when-on bsd "berkeley-unix")
 (when-on linux "gnu/linux")
 (when-on unix "gnu/linux" "berkeley-unix")
+(when-on windows "windows-nt")
 
 ;;;
 ;;  END CUSTOM MACROS
