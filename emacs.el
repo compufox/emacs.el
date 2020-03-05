@@ -5,27 +5,16 @@
  ;; If there is more than one, they won't work right.
  '(backup-directory-alist (quote ((".*" concat (getenv "HOME") "/.emacs.d/backups"))))
  '(column-number-mode t)
- '(custom-safe-themes
-   (quote
-    ("6bc387a588201caf31151205e4e468f382ecc0b888bac98b2b525006f7cb3307" "34c2161f5af530df4a63cabcfc380acd7b5a138640cbe9ad3721aa61dcbe3b55" "72085337718a3a9b4a7d8857079aa1144ea42d07a4a7696f86627e46ac52f50b" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" "5e2dc1360a92bb73dafa11c46ba0f30fa5f49df887a8ede4e3533c3ab6270e08" "95db78d85e3c0e735da28af774dfa59308db832f84b8a2287586f5b4f21a7a5b" default)))
  '(fci-rule-character-color "#192028")
- '(inferior-lisp-program "ros run -Q" t)
  '(inhibit-startup-screen t)
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
-    (dimmer kaolin-themes emr ido-completing-read+ amx smex parinfer sly sly-asdf sly-macrostep sly-named-readtables sly-quicklisp sly-repl-ansi-color cyberpunk-2019-theme cyberpunk-theme telephone-line common-lisp-snippets neotree captain crystal-mode crystal-playground poly-erb poly-markdown win-switch virtualenvwrapper vala-mode use-package twilight-anti-bright-theme swiper spinner slime-company shut-up robe request rainbow-delimiters queue paredit origami org oauth2 names multiple-cursors multi-term markdown-mode magit lua-mode js2-mode jedi irony-eldoc go-stacktracer go-scratch go-gopath go-eldoc go-dlv go-complete go-autocomplete foggy-night-theme flymake-python-pyflakes flymake-go flycheck-irony fish-mode faceup f exec-path-from-shell enh-ruby-mode emojify elpy dash-functional csharp-mode contextual company-irony company-go cmake-mode cmake-ide cl-generic)))
+    (magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
- '(slime-contribs
-   (quote
-    (sly-fancy sly-macrostep sly-quicklisp sly-asdf sly-reply-ansi-color sly-named-readtables)) t)
  '(tool-bar-mode nil)
- '(tool-bar-position (quote left))
- '(venv-location "/home/ava/programming/python/" t)
- '(yas-prompt-functions
-   (quote
-    (yas-ido-prompt yas-completing-prompt yas-maybe-ido-prompt yas-no-prompt))))
+ '(tool-bar-position (quote left)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -38,19 +27,6 @@
 ;; BEGIN CUSTOM FUCTIONS
 ;;;
 
-(defun send-shell-commands (commands-to-send &optional shell-buf)
-  "Sends commands to the *shell* buffer
-   
-   COMMANDS-TO-SEND is a list of strings that are commands to be sent"
-  (unless shell-buf
-    (setq shell-buf "*shell*"))
-  (set-buffer shell-buf)
-  (loop for i in commands-to-send
-	do
-	(progn
-	  (insert i)
-	  (comint-send-input))))
-
 (defun horz-flip-buffers ()
   "Flips the open buffers between two windows"
   (interactive)
@@ -61,27 +37,9 @@
     (switch-to-buffer c-buf)
     (other-window (- (length (window-list)) 1))))
 
-(defun git-push ()
-  "Pushes code changes automatically so I don't have to type everything
-I'm lazy
-#TeamZac"
-  (interactive)
-  (when (buffer-existp "*frc*")
-    (send-shell-commands `(,(concat "git commit -a -m \""
-				   (read-string "git commit message: ")
-				   "\"")
-			   "git push")
-			 "*frc*")))
-
 (defun buffer-existp (buf-name)
   (setq buf-list (loop for i in (buffer-list) collect (buffer-name i)))
-  (in-list buf-list buf-name))
-
-(defun in-list (containing-list obj)
-  "Checks to see if OBJ is in CONTAININNG-LIST
-
-   Returns T if it OBJ is there, otherwise returns NIL"
-  (loop for i in containing-list do (when (equal i obj) (return t))))
+  (member buf-name buf-list))
 
 (defun get-file-info ()
   (let* ((split (split-string buffer-file-name "\\/" t))
@@ -164,10 +122,10 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 			  ',type-names))
 	,@body)))
 
-(when-on bsd "berkeley-unix")
-(when-on linux "gnu/linux")
-(when-on unix "gnu/linux" "berkeley-unix")
-(when-on windows "windows-nt")
+(when-on bsd 'berkeley-unix)
+(when-on linux 'gnu/linux)
+(when-on unix 'gnu/linux 'berkeley-unix)
+(when-on windows 'windows-nt)
 
 ;;;
 ;;  END CUSTOM MACROS
@@ -179,6 +137,11 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 (package-initialize)
 (add-to-list 'package-archives
 	     '("melpa" . "http://melpa.org/packages/"))
+(eval-when-compile
+  (add-to-list 'load-path (mkstr (file-name-directory
+				  (file-truename "~/.emacs"))
+				 "use-package"))
+  (require 'use-package))
 
 ;; remove slime stuff
 (when (package-installed-p 'slime-company)
@@ -191,9 +154,7 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
   (setq lisp-mode-hook
 	(remove 'slime-lisp-mode-hook lisp-mode-hook)))
 
-(require 'use-package)
-
-;; glorious package loading
+;; package loading and configuration
 (require 'info-look)
 
 (use-package minions
@@ -221,28 +182,7 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
   :bind (:map projectile-mode-map
 	      ("C-c p" . projectile-command-map)))
 
-;; modeline altering addons
-
-;(use-package moody
-;  :ensure t
-;  :config
-;  (setq x-underline-at-descent-line t)
-;  (moody-replace-mode-line-buffer-identification))
-;(use-package telephone-line
-;  :ensure t
-;  :config
-;  (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
-;	telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
-;	telephone-line-primary-right-separator 'telephone-line-cubed-right
-;	telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
-;  (setq telephone-line-height 24)
-;  (setq telephone-line-lhs '((accent . (telephone-line-vc-segment
-;					telephone-line-erc-modified-channels-segment
-;					telephone-line-process-segment))
-;			     (nil . (telephone-line-projectile-segment
-;				     telephone-line-buffer-segment))))
-;  (telephone-line-mode t))
-
+;; only install elcord when discord is installed
 (when (program-present-p "discord")
   (use-package elcord
     :ensure t
@@ -284,11 +224,13 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
   (dimmer-mode 1))
 
 (use-package rainbow-delimiters
+  :ensure t
   :hook ((lisp-mode . rainbow-delimiters-mode)
 	 (emacs-lisp-mode . rainbow-delimiters-mode)
 	 (sly-mode . rainbow-delimiters-mode)))
 
 (use-package ido
+  :ensure t
   :init
   (ido-mode)
   (ido-everywhere))
@@ -299,40 +241,23 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 
 (use-package amx
   :ensure t
-  :init
-  (amx-mode))
+  :init (amx-mode))
 
-;(use-package parinfer
-;  :ensure t
-;  :bind
-;  (("C-," . parinfer-toggle-mode))
-;  :init
-;  (progn
-;    (setq parinfer-extensions
-;          '(defaults       ; should be included.
-;             pretty-parens  ; different paren styles for different modes.
-;             paredit        ; Introduce some paredit commands.
-;             smart-tab      ; C-b & C-f jump positions and smart shift with tab & S-tab.
-;             smart-yank   ; Yank behavior depend on mode.
-;    (add-hook 'clojure-mode-hook #'parinfer-mode)
-;    (add-hook 'emacs-lisp-mode-hook #'parinfer-mode)
-;    (add-hook 'scheme-mode-hook #'parinfer-mode)))
-
-
-(use-package yasnippet
-  :bind ("C-c s" . yas-insert-snippet))
-
+;; make sure we only use magit WHEN WE HAVE GIT
 (when (program-present-p "git")
- (use-package magit
-   :bind ("C-x a" . magit-status)))
+  (use-package magit
+    :ensure t
+    :bind ("C-x a" . magit-status)))
 
 (use-package go-autocomplete
+  :disabled
   :init (ac-config-default))
 
-(use-package go-complete)
+(use-package go-complete
+  :disabled)
 
 (use-package go-mode
-  :hook (go-mode . flyspell-mode)
+  :disabled
   :init
   (when-on-bsd (setq shell-file-name "/usr/local/bin/fish"))
   (when-on-linux (setq shell-file-name "/bin/fish"))
@@ -340,11 +265,6 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
     (exec-path-from-shell-initialize)
     (exec-path-from-shell-copy-env "GOPATH"))
   (go-eldoc-setup))
-
-(use-package origami-mode
-  :hook prog-mode
-  :bind (([C-tab] . origami-toggle-node)
-	 ([C-s-tab] . origami-toggle-all-nodes)))
 
 (use-package org
   :mode "\\.notes?"
@@ -354,66 +274,53 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 			(flyspell-mode)))))
 
 (use-package poly-erb
+  :ensure t
   :mode "\\.erb")
 
-(use-package lisp
+(use-package lisp-mode
   :mode "\\.stumpwmrc$")
 
-(use-package crystal-mode)
-
-(use-package multiple-cursors-mode
+(use-package multiple-cursors
+  :ensure t
   :bind (("C->" . mc/mark-next-like-this)
 	 ("C-<" . mc/mark-previous-like-this)
 	 ("C-c C-<" . mc/mark-all-like-this)))
 
-(use-package multi-term
-  :disabled
-  :init
-  (setq multi-term-program "/usr/bin/fish"))
-
 (use-package win-switch
+  :ensure t
   :bind ("C-x o" . win-switch-dispatch))
 
-(use-package sly
-  :bind ("s-l" . sly)
-;  :init
-;  (load (expand-file-name "~/.roswell/helper.el"))
-  :hook ((lisp-mode . sly-editing-mode))
-  :custom
-  (slime-contribs '(sly-fancy sly-macrostep sly-quicklisp sly-asdf sly-reply-ansi-color sly-named-readtables))
-  (inferior-lisp-program "ros run -Q"))
+(use-package c++-mode
+  :bind (:map c++-mode-map
+	 ("C-c i" . init-cpp-file)))
 
-;(use-package slime
-;  :bind ("s-l" . slime)
-;  :init
-;  (load (expand-file-name "~/.roswell/helper.el"))
-;  :custom
-;  (slime-contribs '(slime-fancy slime-banner slime-autodoc))
-;  (inferior-lisp-program "ros run -Q"))
-;(global-set-key (kbd "C-s-l") (lambda ()
-;				(interactive)
-;				(slime-connect "127.0.0.1" 4004)))
+(use-package eldoc-mode
+  :hook emacs-lisp-mode)
+
+(use-package emacs-lisp-mode
+  :bind (:map emacs-lisp-mode-map
+	      ("C-c e" . macrostep-expand)))
+
+(use-package visual-line-mode
+  :hook text-mode)
+
+(use-package sly
+  :ensure t
+  :bind (("s-l" . sly)
+	 :map lisp-mode-map
+	 ("C-c e" . macrostep-expand))
+  :hook ((lisp-mode . sly-editing-mode))
+  :config
+  (setq slime-contribs '(sly-fancy sly-macrostep sly-quicklisp sly-asdf sly-reply-ansi-color sly-named-readtables)
+	inferior-lisp-program "ros run -Q"))
 
 (use-package elpy
+  :disabled
   :hook python-mode
-  :custom
-  (venv-location (mkstr (getenv "HOME") "/programming/python/")))
+  :config
+  (setq venv-location (mkstr (getenv "HOME") "/programming/python/")))
 
-;(use-package neotree
-;  :bind ([f8] . neotree-toggle))
-
-;; setting stuff up for c++ dev
-(add-hook 'c++-mode-hook (lambda ()
-			  (local-set-key (kbd "C-c i") 'init-cpp-file)))
-
-;; sets up a keystroke way to do macrostepper
-(add-hook 'sly-mode-hook
-	  (lambda ()
-	    (local-set-key (kbd "C-c e") 'macrostep-expand)))
-(add-hook 'emacs-lisp-mode-hook
-	  (lambda ()
-	    (local-set-key (kbd "C-c e") 'macrostep-expand)))
-
+;; run these options only when we're running in daemon mode
 (when (daemonp)
   (setq doom-modeline-icon (display-graphic-p))
   (global-set-key (kbd "C-x M-C-c") 'kill-emacs))
@@ -421,19 +328,7 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 ;; sets up my custom key bindings
 (global-set-key (kbd "C-x M-f") 'horz-flip-buffers)
 
-;; adds the visual line wrapping mode into text mode
-(add-hook 'text-mode-hook 'visual-line-mode)
-(add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
-(add-hook 'python-mode-hook 'flyspell-prog-mode)
-
-;; if we're running under X load a theme
-;(when (or window-system (daemonp))
-;  (load-theme 'cyberpunk t))
-
-(add-hook 'term-mode-hook (lambda ()
-			    (define-key term-raw-map (kbd "C-j") 'term-line-mode)
-			    (define-key term-mode-map (kbd "C-M-j") 'term-char-mode)))
-
+;; bsd specific loading
 (when-on-bsd
  (setq ispell-dictionary "en_US")
  (setq ispell-program-name "aspell")
@@ -441,12 +336,14 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
  (setq ispell-aspell-data-dir "/usr/local/lib/aspell-0.60/")
  (setq ispell-dictionary-keyword "american"))
 
+;; *nix specific loading
 (when-on-unix
  (setq display-time-24hr-format t)
  (display-time-mode)
  (setq ispell-local-dictionary "en_US"))
 
 ;;; Fira code font and ligatures
+;; linux specific loading
 (when-on-linux
  (display-battery-mode)
  (setq ispell-program-name "hunspell")
@@ -585,4 +482,3 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 
 ;; check and recompile the init file and also the emacs.d dir
 (byte-recompile-file (concat (getenv "HOME") "/.emacs"))
-;(byte-recompile-directory (concat (getenv "HOME") "/.emacs.d/"))
