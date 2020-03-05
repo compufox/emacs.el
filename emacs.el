@@ -11,7 +11,7 @@
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
-    (elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
+    (macrostep elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
@@ -286,7 +286,8 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 (use-package eldoc-mode
   :hook emacs-lisp-mode)
 
-(use-package emacs-lisp-mode
+(use-package macrostep
+  :ensure t
   :bind (:map emacs-lisp-mode-map
 	      ("C-c e" . macrostep-expand)))
 
@@ -300,7 +301,8 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 	 ("C-c e" . macrostep-expand))
   :hook ((lisp-mode . sly-editing-mode))
   :config
-  (setq slime-contribs '(sly-fancy sly-macrostep sly-quicklisp sly-asdf sly-reply-ansi-color sly-named-readtables)
+  (setq slime-contribs '(sly-fancy sly-macrostep sly-quicklisp
+			 sly-asdf sly-reply-ansi-color sly-named-readtables)
 	inferior-lisp-program "ros run -Q"))
 
 (use-package elpy
