@@ -7,4 +7,3 @@ if test -d ~/.emacs.d
 end
 
 ln -s (pwd)/emacs.el ~/.emacs
-ln -s (pwd)/emacs.d ~/.emacs.d

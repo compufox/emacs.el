@@ -2,4 +2,3 @@
 [[ -d ~/.emacs.d ]] ; mv ~/.emacs.d ~/.emacs.d.bak
 
 ln -sf $(pwd)/emacs.el ~/.emacs
-ln -sf $(pwd)/emacs.d ~/.emacs.d
