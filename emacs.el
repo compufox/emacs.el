@@ -11,7 +11,7 @@
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
-    (macrostep elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
+    (treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
@@ -157,19 +157,27 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
   (when-on-windows
    (setq inihibit-compacting-font-caches t)))
 
-(use-package treemacs
-  :ensure t
-  :bind ([f8] . treemacs))
-
-(use-package company
-  :ensure t
-  :init (global-company-mode))
-
 (use-package projectile
   :ensure t
   :init (projectile-mode +1)
   :bind (:map projectile-mode-map
 	      ("C-c p" . projectile-command-map)))
+
+(use-package treemacs
+  :ensure t
+  :bind ([f8] . treemacs))
+
+(use-package treemacs-projectile
+  :after treemacs projectile
+  :ensure t)
+
+(use-package treemacs-magit
+  :after treemacs magit
+  :ensure t)
+
+(use-package company
+  :ensure t
+  :init (global-company-mode))
 
 ;; only install elcord when discord is installed
 (when (executable-find "discord")
