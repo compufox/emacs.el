@@ -13,6 +13,7 @@
     (magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
+ '(size-indication-mode t)
  '(tool-bar-mode nil)
  '(tool-bar-position (quote left)))
 (custom-set-faces
@@ -322,7 +323,7 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 
 ;; run these options only when we're running in daemon mode
 (when (daemonp)
-  (setq doom-modeline-icon (display-graphic-p))
+  (setq doom-modeline-icon t)
   (global-set-key (kbd "C-x M-C-c") 'kill-emacs))
 
 ;; sets up my custom key bindings
@@ -480,5 +481,6 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
  (add-hook 'prog-mode-hook
            #'add-fira-code-symbol-keywords))
 
-;; check and recompile the init file and also the emacs.d dir
-(byte-recompile-file (concat (getenv "HOME") "/.emacs"))
+;; check and recompile the init file
+(eval-when (load)
+  (byte-recompile-file (file-truename "~/.emacs")))
