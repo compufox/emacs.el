@@ -88,24 +88,6 @@ INCLUDES is a space seperated list of headers to include"
      `._ _,-.   )      _,.-'
         `    G.m-\"^m`m'"))
 
-(defun program-present-p (progam)
-  "checks to see if PROGAM exists in the current user's path"
-  (let ((path-sep (or (and (string= system-type "windows-nt")
-			  ";")
-		     ":"))
-	(dir-sep (or (and (string= system-type "windows-nt")
-			  "\\")
-		     "/"))
-	result)
-    (dolist (f (split-string (getenv "PATH") path-sep) result)
-      (when (file-exists-p (concat f
-				   (unless (string-suffix-p dir-sep f t)
-				     dir-sep)
-				   progam
-				   (when (string= system-type "windows-nt")
-				     ".exe")))
-	(setq result t)))))
-
 ;;;
 ;;  END CUSTOM FUCTIONS
 ;;;
@@ -190,7 +172,7 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 	      ("C-c p" . projectile-command-map)))
 
 ;; only install elcord when discord is installed
-(when (program-present-p "discord")
+(when (executable-find "discord")
   (use-package elcord
     :ensure t
     :hook ((lisp-mode . elcord-mode))))
@@ -251,7 +233,7 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
   :init (amx-mode))
 
 ;; make sure we only use magit WHEN WE HAVE GIT
-(when (program-present-p "git")
+(when (executable-find "git")
   (use-package magit
     :ensure t
     :bind ("C-x a" . magit-status)))
@@ -276,8 +258,8 @@ TYPE-NAMES is a list of strings that correspond to values returned by system-typ
 (use-package org
   :mode "\\.notes?"
   :hook (org-mode . (lambda ()
-		      (when (or (program-present-p "ispell")
-				(program-present-p "aspell"))
+		      (when (or (executable-find "ispell")
+				(executable-find "aspell"))
 			(flyspell-mode)))))
 
 (use-package poly-erb
