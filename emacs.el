@@ -5,6 +5,7 @@
  ;; If there is more than one, they won't work right.
  '(backup-directory-alist (quote ((".*" concat (getenv "HOME") "/.emacs.d/backups"))))
  '(column-number-mode t)
+ '(dired-use-ls-dired nil)
  '(fci-rule-character-color "#192028")
  '(inhibit-startup-screen t)
  '(make-backup-files nil)
