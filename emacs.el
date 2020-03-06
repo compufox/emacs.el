@@ -11,7 +11,7 @@
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
-    (ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
+    (counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
@@ -206,6 +206,11 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 (use-package counsel
   :ensure t
   :init (counsel-mode 1))
+
+(use-package counsel-projectile
+  :ensure t
+  :after counsel projectile
+  :init (counsel-projectile-mode))
 
 (use-package swiper
   :ensure t
