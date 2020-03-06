@@ -142,6 +142,9 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 (use-package markdown-mode
   :ensure t)
 
+(use-package eshell
+  :bind ("C-x M-e" . eshell))
+
 (use-package info-look
   :ensure t)
 
