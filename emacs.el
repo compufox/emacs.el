@@ -11,7 +11,7 @@
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
-    (counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
+    (sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
@@ -351,6 +351,22 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
   (setq slime-contribs '(sly-fancy sly-macrostep sly-quicklisp
 			 sly-asdf sly-reply-ansi-color sly-named-readtables)
 	inferior-lisp-program "ros run -Q"))
+
+(use-package sly-macrostep
+  :after sly
+  :ensure t)
+
+(use-package sly-named-readtables
+  :after sly
+  :ensure t)
+
+(use-package sly-quicklisp
+  :after sly
+  :ensure t)
+
+(use-package sly-asdf
+  :after sly
+  :ensure t)
 
 (use-package elpy
   :disabled
