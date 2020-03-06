@@ -356,6 +356,10 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
   (setq doom-modeline-icon t)
   (global-set-key (kbd "C-x M-C-c") 'kill-emacs))
 
+;; puts the line number in the left fringe
+;(when (version<= "26.0.50" emacs-version)
+;  (global-display-line-numbers-mode))
+
 ;; sets up my custom key bindings
 (global-set-key (kbd "C-x M-f") 'horz-flip-buffers)
 
