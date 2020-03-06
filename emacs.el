@@ -190,7 +190,9 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 
 (use-package ivy
   :ensure t
-  :init (ivy-mode 1))
+  :init (ivy-mode 1)
+  :bind (:map ivy-minibuffer-map
+	      ("RET" . ivy-alt-done)))
 
 (use-package counsel
   :ensure t
