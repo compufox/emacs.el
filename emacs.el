@@ -195,7 +195,9 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
   :ensure t
   :init (ivy-mode 1)
   :bind (:map ivy-minibuffer-map
-	      ("RET" . ivy-alt-done)))
+	      ("RET" . ivy-alt-done))
+  :config
+  (setq ivy-use-virtual-buffers 'recentf))
 
 (use-package ivy-hydra
   :ensure t
