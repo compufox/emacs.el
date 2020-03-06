@@ -11,7 +11,7 @@
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
-    (treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
+    (markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
@@ -139,6 +139,9 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 	(remove 'slime-lisp-mode-hook lisp-mode-hook)))
 
 ;; package loading and configuration
+(use-package markdown-mode
+  :ensure t)
+
 (use-package info-look
   :ensure t)
 
