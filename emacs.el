@@ -11,7 +11,7 @@
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
-    (markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
+    (counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
@@ -185,6 +185,23 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
   :ensure t
   :init (global-company-mode))
 
+(use-package fish-mode
+  :ensure t)
+
+(use-package ivy
+  :ensure t
+  :init (ivy-mode 1))
+
+(use-package counsel
+  :ensure t
+  :init (counsel-mode 1))
+
+(use-package swiper
+  :ensure t
+  :bind
+  ("C-s" . swiper)
+  ("C-r" . swiper))
+
 ;; only install elcord when discord is installed
 (when (executable-find "discord")
   (use-package elcord
@@ -232,11 +249,11 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 	 (emacs-lisp-mode . rainbow-delimiters-mode)
 	 (sly-mode . rainbow-delimiters-mode)))
 
-(use-package ido
-  :ensure t
-  :init
-  (ido-mode)
-  (ido-everywhere))
+;(use-package ido
+;  :ensure t
+;  :init
+;  (ido-mode)
+;  (ido-everywhere))
 
 (use-package ido-completing-read+
   :ensure t
