@@ -324,7 +324,8 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 
 (use-package win-switch
   :ensure t
-  :bind ("C-x o" . win-switch-dispatch))
+  :bind (("C-x o" . win-switch-dispatch)
+	 ("C-c o" . win-switch-dispatch-once)))
 
 (use-package c++-mode
   :bind (:map c++-mode-map
