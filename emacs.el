@@ -142,7 +142,9 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 ;;; note: this may not work on bsd?
 (use-package symon
   :ensure t
-  :init (symon-mode))
+  :config
+  (setq symon-delay 20)
+  (symon-mode))
 
 (use-package markdown-mode
   :ensure t)
