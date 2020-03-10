@@ -106,10 +106,21 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 			  ',type-names))
 	,@body)))
 
+(defmacro unless-on (os &rest type-names)
+  "define a macro (named unless-on-OS) to run code when SYSTEM-TYPE matches any symbol in TYPE-NAMES
+
+OS is a symbol (or string) to be placed in the macro name
+TYPE-NAMES is a list of symbols that correspond to values returned by system-type"
+  `(defmacro ,(intern (mkstr "unless-on-" os)) (&rest body)
+     `(unless (or ,@(mapcar (lambda (name) `(eq system-type ',name))
+			  ',type-names))
+	,@body)))
+
 (when-on bsd berkeley-unix)
 (when-on linux gnu/linux)
 (when-on unix gnu/linux berkeley-unix)
 (when-on windows windows-nt)
+(unless-on bsd berkeley-unix)
 
 ;;;
 ;;  END CUSTOM MACROS
@@ -140,11 +151,12 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 
 ;; package loading and configuration
 ;;; note: this may not work on bsd?
-(use-package symon
-  :ensure t
-  :config
-  (setq symon-delay 20)
-  (symon-mode))
+(unless-on-bsd
+ (use-package symon
+   :ensure t
+   :config
+   (setq symon-delay 20)
+   (symon-mode)))
 
 (use-package markdown-mode
   :ensure t)
