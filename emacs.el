@@ -11,7 +11,7 @@
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
-    (symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
+    (request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
@@ -150,7 +150,17 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 	(remove 'slime-lisp-mode-hook lisp-mode-hook)))
 
 ;; package loading and configuration
-;;; note: this may not work on bsd?
+(use-package eros
+  :ensure t
+  :init (eros-mode t))
+
+(use-package css-eldoc
+  :ensure t
+  :hook ((css-mode . turn-on-css-eldoc)))
+
+(use-package request
+  :ensure t)
+
 (unless-on-bsd
  (use-package symon
    :ensure t
