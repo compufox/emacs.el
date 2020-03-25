@@ -11,7 +11,7 @@
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
-    (popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
+    (auto-package-update popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
@@ -150,6 +150,16 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 	(remove 'slime-lisp-mode-hook lisp-mode-hook)))
 
 ;; package loading and configuration
+(use-package auto-package-update
+  :ensure t
+  :hook (auto-package-update-before . (lambda ()
+					(message "updating packages")))
+  :config
+  (setq auto-package-update-interval 7
+	auto-package-update-prompt-before-update t)
+  (auto-package-update-at-time "18:30")
+  (auto-package-update-maybe))
+
 (use-package popwin
   :ensure t
   :init (popwin-mode t))
