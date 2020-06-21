@@ -29,6 +29,36 @@
 ;; BEGIN CUSTOM FUCTIONS
 ;;;
 
+(defun emojofy ()
+  "turns a string into a formatted string for shitposting
+
+prompts for PREFIX and WORD
+copies the resulting formatted string into the kill-ring and displays a message
+ showing what was put there
+
+ex: 
+PREFIX=wide
+WORD=test
+
+RESULT: :wide_t::wide_e::wide_s::wide_t:"
+  (interactive)
+  (let* ((prefix (read-string "prefix: "))
+	 (word (read-string "word: "))
+	 (result (loop with string = ""
+		       for letter across word
+		       do (setf string
+				(concatenate 'string
+					     string
+					     ":"
+					     prefix
+					     "_"
+					     (string letter)
+					     ":\u200d"))
+		       finally
+		       (return string))))
+    (kill-new result)
+    (message result)))
+
 (defun horz-flip-buffers ()
   "Flips the open buffers between two windows"
   (interactive)
