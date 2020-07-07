@@ -69,9 +69,9 @@ RESULT: :wide_t::wide_e::wide_s::wide_t:"
     (switch-to-buffer c-buf)
     (other-window (- (length (window-list)) 1))))
 
-(defun buffer-existp (buf-name)
-  (setq buf-list (loop for i in (buffer-list) collect (buffer-name i)))
-  (member buf-name buf-list))
+(defun buffer-existsp (buf-name)
+  "checks if buffer with BUF-NAME exists in (buffer-list)"
+  (member buf-name (loop for i in (buffer-list) collect (buffer-name i))))
 
 (defun get-file-info ()
   "returns an alist with path and extension under :PATH and :EXTENSION"
