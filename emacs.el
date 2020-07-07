@@ -74,11 +74,12 @@ RESULT: :wide_t::wide_e::wide_s::wide_t:"
   (member buf-name buf-list))
 
 (defun get-file-info ()
+  "returns an alist with path and extension under :PATH and :EXTENSION"
   (let* ((split (split-string buffer-file-name "\\/" t))
 	 (path (remove (1- (length split)) split))
 	 (ext (car (last (split-string (car (last split)) "\\.")))))
-    `((path . ,path)
-      (extension . ,ext))))
+    `((:path . ,path)
+      (:extension . ,ext))))
 
 (defun init-cpp-file (includes)
   "Quickly and easily initializes a c++ file with main
@@ -86,7 +87,7 @@ INCLUDES is a space seperated list of headers to include"
   (interactive "Mincludes: ")
   (let ((path (concat "/" (string-join
 			   (butlast
-			    (cdr (assoc 'path (get-file-info)))) "/")
+			    (cdr (assoc :path (get-file-info)))) "/")
 		      "/"))
 	(inc-list (split-string includes " "))
 	point)
