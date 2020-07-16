@@ -29,6 +29,59 @@
 ;; BEGIN CUSTOM FUCTIONS
 ;;;
 
+;; the built-in battery-bsd-apm function doesnt seem to work on freebsd
+;;  it has an extra command line argument, and doesnt properly parse the
+;;  command output. here's my updated version
+(defun battery-freebsd-apm ()
+  "Get APM status information from BSD apm binary.
+The following %-sequences are provided:
+%L AC line status (verbose)
+%B Battery status (verbose)
+%b Battery status, empty means high, `-' means low,
+ `!' means critical, and `+' means charging
+%p Battery charge percentage
+%s Remaining battery charge time in seconds
+%m Remaining battery charge time in minutes
+%h Remaining battery charge time in hours
+%t Remaining battery charge time in the form `h:min'"
+  (let* ((apm-cmd "/usr/sbin/apm -blta")
+	 (apm-output (split-string (shell-command-to-string apm-cmd)))
+	 ;; Battery status
+	 (battery-status
+	  (let ((stat (string-to-number (nth 1 apm-output))))
+	    (cond ((eq stat 0) '("high" . ""))
+		  ((eq stat 1) '("low" . "-"))
+		  ((eq stat 2) '("critical" . "!"))
+		  ((eq stat 3) '("charging" . "+"))
+		  ((eq stat 4) '("absent" . nil)))))
+	 ;; Battery percentage
+	 (battery-percentage (nth 2 apm-output))
+	 ;; Battery life
+	 (battery-life (nth 3 apm-output))
+	 ;; AC status
+	 (line-status
+	  (let ((ac (string-to-number (nth 0 apm-output))))
+	    (cond ((eq ac 0) "disconnected")
+		  ((eq ac 1) "connected")
+		  ((eq ac 2) "backup power"))))
+	 seconds minutes hours remaining-time)
+    (unless (member battery-life '("unknown" "-1"))
+      (setq seconds (string-to-number battery-life)
+	      minutes (truncate (/ seconds 60)))
+      (setq hours (truncate (/ minutes 60))
+	    remaining-time (format "%d:%02d" hours
+				   (- minutes (* 60 hours)))))
+    (list (cons ?L (or line-status "N/A"))
+	  (cons ?B (or (car battery-status) "N/A"))
+	  (cons ?b (or (cdr battery-status) "N/A"))
+	  (cons ?p (if (string= battery-percentage "255")
+		       "N/A"
+		     battery-percentage))
+	  (cons ?s (or (and seconds (number-to-string seconds)) "N/A"))
+	  (cons ?m (or (and minutes (number-to-string minutes)) "N/A"))
+	  (cons ?h (or (and hours (number-to-string hours)) "N/A"))
+	  (cons ?t (or remaining-time "N/A")))))
+
 (defun emojofy ()
   "turns a string into a formatted string for shitposting
 
@@ -470,15 +523,16 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
  (setq ispell-program-name "aspell")
  (setq ispell-aspell-dict-dir "/usr/local/share/aspell/")
  (setq ispell-aspell-data-dir "/usr/local/lib/aspell-0.60/")
- (setq ispell-dictionary-keyword "american"))
+ (setq ispell-dictionary-keyword "american")
+ (setq battery-status-function #'battery-freebsd-apm))
 
 ;; linux specific loading
 (when-on-linux
- (display-battery-mode)
  (setq ispell-program-name "hunspell"))
 
 ;; *nix specific loading
 (when-on-unix
+ (display-battery-mode)
  (setq ispell-local-dictionary "en_US"))
 
  ;; (when (window-system)
