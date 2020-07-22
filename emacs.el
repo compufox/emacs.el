@@ -11,7 +11,7 @@
  '(make-backup-files nil)
  '(package-selected-packages
    (quote
-    (auto-package-update popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
+    (workgroups2 auto-package-update popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
@@ -501,6 +501,13 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
   :hook python-mode
   :config
   (setq venv-location (mkstr (getenv "HOME") "/programming/python/")))
+
+(use-package workgroups2
+  :ensure t
+  :init (workgroups-mode 1)
+  :config
+  (setq wg-prefix-key (kbd "C-c w")
+	wg-session-file (file-truename "~/.emacs.d/workgroups")))
 
 ;; run these options only when we're running in daemon mode
 (when (daemonp)
