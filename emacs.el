@@ -422,8 +422,7 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 (use-package go-mode
   :disabled
   :init
-  (when-on-bsd (setq shell-file-name "/usr/local/bin/fish"))
-  (when-on-linux (setq shell-file-name "/bin/fish"))
+  (when-on-unix (setq shell-file-name (executable-find "fish")))
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)
     (exec-path-from-shell-copy-env "GOPATH"))
