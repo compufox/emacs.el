@@ -503,10 +503,10 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 
 (use-package workgroups2
   :ensure t
-  :init (workgroups-mode 1)
   :config
   (setq wg-prefix-key (kbd "C-c w")
-	wg-session-file (file-truename "~/.emacs.d/workgroups")))
+	wg-session-file (file-truename "~/.emacs.d/workgroups"))
+  (workgroups-mode 1))
 
 ;; run these options only when we're running in daemon mode
 (when (daemonp)
