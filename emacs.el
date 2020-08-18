@@ -211,6 +211,9 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 ;;;
 
 
+;; ensures that we NEVER have tabs in our code. ANYWHERE
+(setq-default indent-tabs-mode nil)
+
 ;; adds the MELPA repo to my package archive list
 (require 'package)
 (package-initialize)
