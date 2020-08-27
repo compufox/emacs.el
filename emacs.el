@@ -210,10 +210,6 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 ;;  END CUSTOM MACROS
 ;;;
 
-
-;; ensures that we NEVER have tabs in our code. ANYWHERE
-(setq-default indent-tabs-mode nil)
-
 ;; adds the MELPA repo to my package archive list
 (require 'package)
 (package-initialize)
@@ -415,21 +411,21 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
     :ensure t
     :bind ("C-x a" . magit-status)))
 
-(use-package go-autocomplete
-  :disabled
-  :init (ac-config-default))
+;; (use-package go-autocomplete
+;;   :disabled
+;;   :init (ac-config-default))
 
-(use-package go-complete
-  :disabled)
+;; (use-package go-complete
+;;   :disabled)
 
-(use-package go-mode
-  :disabled
-  :init
-  (when-on-unix (setq shell-file-name (executable-find "fish")))
-  (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize)
-    (exec-path-from-shell-copy-env "GOPATH"))
-  (go-eldoc-setup))
+;; (use-package go-mode
+;;   :disabled
+;;   :init
+;;   (when-on-unix (setq shell-file-name (executable-find "fish")))
+;;   (when (memq window-system '(mac ns x))
+;;     (exec-path-from-shell-initialize)
+;;     (exec-path-from-shell-copy-env "GOPATH"))
+;;   (go-eldoc-setup))
 
 (use-package org
   :mode "\\.notes?"
@@ -516,13 +512,20 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
   (setq doom-modeline-icon t)
   (global-set-key (kbd "C-x M-C-c") 'kill-emacs))
 
-;; puts the line number in the left fringe
-;(when (version<= "26.0.50" emacs-version)
-;  (global-display-line-numbers-mode))
-
 ;; sets up my custom key bindings
 (global-set-key (kbd "C-x M-f") 'horz-flip-buffers)
 
+;; puts the line number in the left fringe
+(when (version<= "26.0.50" emacs-version)
+  (global-display-line-numbers-mode))
+
+;; ensures that we NEVER have tabs in our code. ANYWHERE
+(setq-default indent-tabs-mode nil)
+
+;; disable the scroll bar
+(scroll-bar-mode 0)
+
+;; set the time format to 24hr and enable time display
 (setq display-time-24hr-format t)
 (display-time-mode)
 
