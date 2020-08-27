@@ -210,6 +210,55 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 ;;  END CUSTOM MACROS
 ;;;
 
+;; run these options only when we're running in daemon mode
+(when (daemonp)
+  (setq doom-modeline-icon t)
+  (global-set-key (kbd "C-x M-C-c") 'kill-emacs))
+
+;; sets up my custom key bindings
+(global-set-key (kbd "C-x M-f") 'horz-flip-buffers)
+
+;; puts the line number in the left fringe
+(when (version<= "26.0.50" emacs-version)
+  (global-display-line-numbers-mode))
+
+;; ensures that we NEVER have tabs in our code. ANYWHERE
+(setq-default indent-tabs-mode nil)
+
+;; disable the scroll bar
+(scroll-bar-mode 0)
+
+;; set the time format to 24hr and enable time display
+(setq display-time-24hr-format t)
+(display-time-mode)
+
+;; bsd specific loading
+(when-on-bsd
+ (setq ispell-dictionary "en_US")
+ (setq ispell-program-name "aspell")
+ (setq ispell-aspell-dict-dir "/usr/local/share/aspell/")
+ (setq ispell-aspell-data-dir "/usr/local/lib/aspell-0.60/")
+ (setq ispell-dictionary-keyword "american")
+ (setq battery-status-function #'battery-freebsd-apm))
+
+;; linux specific loading
+(when-on-linux
+ (setq ispell-program-name "hunspell"))
+
+;; *nix specific loading
+(when-on-unix
+ (display-battery-mode)
+ (setq ispell-local-dictionary "en_US"))
+
+;; loading a theme
+(setq enable-dark-theme t)
+
+
+;;;
+;; PACKAGE LOADING
+;;;
+
+
 ;; adds the MELPA repo to my package archive list
 (require 'package)
 (package-initialize)
@@ -365,7 +414,9 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 	doom-outrun-electric-brighter-modeline t
 	doom-outrun-electric-comment-bg t
 	doom-outrun-electric-brighter-comments t)
-  (load-theme 'doom-outrun-electric t)
+  (if enable-dark-theme
+      (load-theme 'doom-outrun-electric t)
+    (load-theme 'doom-solarized-light t))
   (doom-themes-org-config))
 
 (use-package emr
@@ -507,45 +558,6 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 	wg-session-file (file-truename "~/.emacs.d/workgroups"))
   (workgroups-mode 1))
 
-;; run these options only when we're running in daemon mode
-(when (daemonp)
-  (setq doom-modeline-icon t)
-  (global-set-key (kbd "C-x M-C-c") 'kill-emacs))
-
-;; sets up my custom key bindings
-(global-set-key (kbd "C-x M-f") 'horz-flip-buffers)
-
-;; puts the line number in the left fringe
-(when (version<= "26.0.50" emacs-version)
-  (global-display-line-numbers-mode))
-
-;; ensures that we NEVER have tabs in our code. ANYWHERE
-(setq-default indent-tabs-mode nil)
-
-;; disable the scroll bar
-(scroll-bar-mode 0)
-
-;; set the time format to 24hr and enable time display
-(setq display-time-24hr-format t)
-(display-time-mode)
-
-;; bsd specific loading
-(when-on-bsd
- (setq ispell-dictionary "en_US")
- (setq ispell-program-name "aspell")
- (setq ispell-aspell-dict-dir "/usr/local/share/aspell/")
- (setq ispell-aspell-data-dir "/usr/local/lib/aspell-0.60/")
- (setq ispell-dictionary-keyword "american")
- (setq battery-status-function #'battery-freebsd-apm))
-
-;; linux specific loading
-(when-on-linux
- (setq ispell-program-name "hunspell"))
-
-;; *nix specific loading
-(when-on-unix
- (display-battery-mode)
- (setq ispell-local-dictionary "en_US"))
 
 ;; (when (window-system)
 ;;   (set-default-font "Fira Code Light"))
@@ -679,6 +691,9 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 
 ;; (add-hook 'prog-mode-hook
 ;;           #'add-fira-code-symbol-keywords))
+;;;
+;; END PACKAGE LOADING
+;;;
 
 ;; check and recompile the init file
 (eval-when (load)
