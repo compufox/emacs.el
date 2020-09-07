@@ -171,6 +171,12 @@ INCLUDES is a space seperated list of headers to include"
      `._ _,-.   )      _,.-'
         `    G.m-\"^m`m'"))
 
+(defun list-cl-sources ()
+  "list files that depend on CL package
+(these need to be changed to use cl-lib)"
+  (interactive)
+  (file-dependents (feature-file 'cl)))
+
 ;;;
 ;;  END CUSTOM FUCTIONS
 ;;;
@@ -256,6 +262,8 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 (require 'cc-mode)
 (define-key c++-mode-map (kbd "C-c i") 'init-cpp-file)
 
+;; loading loadhist package (required for cl-sources function)
+(require 'loadhist)
 
 ;;;
 ;; PACKAGE LOADING
