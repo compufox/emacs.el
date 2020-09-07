@@ -97,16 +97,15 @@ RESULT: :wide_t::wide_e::wide_s::wide_t:"
   (interactive)
   (let* ((prefix (read-string "prefix: "))
 	 (word (read-string "word: "))
-	 (result (loop with string = ""
+	 (result (cl-loop with string = ""
 		       for letter across word
 		       do (setf string
-				(concatenate 'string
-					     string
-					     ":"
-					     prefix
-					     "_"
-					     (string letter)
-					     ":\u200d"))
+				(concat string
+					":"
+					prefix
+					"_"
+					(string letter)
+					":\u200d"))
 		       finally
 		       (return string))))
     (kill-new result)
@@ -124,7 +123,7 @@ RESULT: :wide_t::wide_e::wide_s::wide_t:"
 
 (defun buffer-existsp (buf-name)
   "checks if buffer with BUF-NAME exists in (buffer-list)"
-  (member buf-name (loop for i in (buffer-list) collect (buffer-name i))))
+  (member buf-name (cl-loop for i in (buffer-list) collect (buffer-name i))))
 
 (defun get-file-info ()
   "returns an alist with path and extension under :PATH and :EXTENSION"
@@ -252,6 +251,10 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 
 ;; loading a theme
 (setq enable-dark-theme t)
+
+;; sets shortcut for c++ mode
+(require 'cc-mode)
+(define-key c++-mode-map (kbd "C-c i") 'init-cpp-file)
 
 
 ;;;
@@ -503,20 +506,18 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
   :bind (("C-x o" . win-switch-dispatch)
 	 ("C-c o" . win-switch-dispatch-once)))
 
-(use-package c++-mode
-  :bind (:map c++-mode-map
-              ("C-c i" . init-cpp-file)))
-
-(use-package eldoc-mode
-  :hook emacs-lisp-mode)
+(use-package eldoc
+  :config
+  (add-hook 'emacs-lisp-mode #'eldoc-mode))
 
 (use-package macrostep
   :ensure t
   :bind (:map emacs-lisp-mode-map
 	      ("C-c e" . macrostep-expand)))
 
-(use-package visual-line-mode
-  :hook text-mode)
+(use-package text-mode
+  :config
+  (add-hook 'text-mode-hook #'visual-line-mode))
 
 (use-package sly
   :ensure t
@@ -563,5 +564,5 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 ;;;
 
 ;; check and recompile the init file
-(eval-when (load)
-  (byte-recompile-file (file-truename "~/.emacs")))
+(cl-eval-when (load)
+  (byte-compile-file (file-truename "~/.emacs")))
