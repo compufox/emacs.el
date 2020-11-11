@@ -1,3 +1,4 @@
+#!/bin/env fish
 if test -f ~/.emacs
   mv ~/.emacs ~/.emacs.bak
 end
