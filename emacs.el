@@ -3,20 +3,19 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(backup-directory-alist (quote ((".*" concat (getenv "HOME") "/.emacs.d/backups"))))
+ '(backup-directory-alist '((".*" concat (getenv "HOME") "/.emacs.d/backups")))
  '(column-number-mode t)
  '(dired-use-ls-dired nil)
  '(fci-rule-character-color "#192028")
  '(inhibit-startup-screen t)
  '(make-backup-files nil)
  '(package-selected-packages
-   (quote
-    (workgroups2 auto-package-update popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions)))
+   '(frog-jump-buffer workgroups2 auto-package-update popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
  '(tool-bar-mode nil)
- '(tool-bar-position (quote left)))
+ '(tool-bar-position 'left))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -26,7 +25,7 @@
 
 
 ;;;
-;; BEGIN CUSTOM FUCTIONS
+;; BEGIN CUSTOM FUNCTIONS
 ;;;
 
 ;; the built-in battery-bsd-apm function doesnt seem to work on freebsd
@@ -175,10 +174,15 @@ INCLUDES is a space seperated list of headers to include"
   "list files that depend on CL package
 (these need to be changed to use cl-lib)"
   (interactive)
-  (file-dependents (feature-file 'cl)))
+  (message (apply #'concat (file-dependents (feature-file 'cl)))))
+
+(defun posframe-fallback (buffer-or-name arg-name value)
+  (let ((info (list :internal-border-width 3
+                    :background-color "dark violet")))
+    (or (plist-get info arg-name) value)))
 
 ;;;
-;;  END CUSTOM FUCTIONS
+;;  END CUSTOM FUNCTIONS
 ;;;
 
 ;;;
@@ -306,6 +310,19 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 (use-package popwin
   :ensure t
   :init (popwin-mode t))
+
+(use-package posframe
+  :ensure t
+  :config
+  (setq posframe-arghandler #'posframe-fallback))
+
+(use-package frog-jump-buffer
+  :ensure t
+  :bind ("C-;" . frog-jump-buffer)
+  :config
+  (dolist (regexp '("TAGS" "^\\*Compile-log" "-debug\\*$" "^\\:" "errors\\*$" "^\\*Backtrace" "-ls\\*$"
+                    "stderr\\*$" "^\\*Flymake" "^\\*vc" "^\\*Warnings" "^\\*eldoc" "\\^*Shell Command"))
+    (push regexp frog-jump-buffer-ignore-buffers)))
 
 (use-package eros
   :ensure t
