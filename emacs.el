@@ -269,14 +269,6 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 ;; loading loadhist package (required for cl-sources function)
 (require 'loadhist)
 
-;; allow for local, git-ignored configurations
-(let ((local-filename (mkstr (file-name-directory (file-truename "~/.emacs"))
-                             "local.el")))
-  (unless (file-exists-p local-filename)
-    ;; if the local file doesn't exist we create it
-    (with-temp-file local-filename))
-  (load local-filename))
-
 ;;;
 ;; PACKAGE LOADING
 ;;;
@@ -291,6 +283,14 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 				  (file-truename "~/.emacs"))
 				 "use-package"))
   (require 'use-package))
+
+;; allow for local, git-ignored configurations
+(let ((local-filename (mkstr (file-name-directory (file-truename "~/.emacs"))
+                             "local.el")))
+  (unless (file-exists-p local-filename)
+    ;; if the local file doesn't exist we create it
+    (with-temp-file local-filename))
+  (load local-filename))
 
 ;; remove slime stuff
 (when (package-installed-p 'slime-company)
