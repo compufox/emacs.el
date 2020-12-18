@@ -451,7 +451,7 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 	doom-outrun-electric-brighter-comments t)
   (if enable-dark-theme
       (load-theme 'doom-outrun-electric t)
-    (load-theme 'doom-solarized-light t))
+    (load-theme 'doom-fairy-floss t))
   (doom-themes-org-config))
 
 (use-package emr
