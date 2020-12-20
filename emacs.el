@@ -584,12 +584,12 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
   :config
   (setq venv-location (mkstr (getenv "HOME") "/programming/python/")))
 
-(use-package workgroups2
-  :ensure t
-  :config
-  (setq wg-prefix-key (kbd "C-c w")
-	wg-session-file (file-truename "~/.emacs.d/workgroups"))
-  (workgroups-mode 1))
+;; (use-package workgroups2
+;;   :ensure t
+;;   :config
+;;   (setq wg-prefix-key (kbd "C-c w")
+;; 	wg-session-file (file-truename "~/.emacs.d/workgroups"))
+;;   (workgroups-mode 1))
 
 ;;;
 ;; END PACKAGE LOADING
