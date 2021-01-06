@@ -23,6 +23,13 @@
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 113 :width normal :foundry "unknown" :family "Fira Code")))))
 
+;; when we have ros installed go and include the path in the exec-path list
+(when (executable-find "ros")
+  (let* ((homedir (car (last (split-string (shell-command-to-string "ros version")
+                                           "\n" t))))
+         (path (concat (substring homedir 11 (1- (length homedir)))
+                       "bin")))
+    (setq exec-path (append exec-path (list path)))))
 
 ;;;
 ;; BEGIN CUSTOM FUNCTIONS
@@ -180,6 +187,15 @@ INCLUDES is a space seperated list of headers to include"
   (let ((info (list :internal-border-width 3
                     :background-color "dark violet")))
     (or (plist-get info arg-name) value)))
+
+(defun sly-qlot (directory)
+  (interactive (list (read-directory-name "Project directory: ")))
+  (require 'sly)
+  (sly-start :program "qlot"
+             :program-args '("exec" "ros" "-S" "." "run")
+             :directory directory
+             :name 'qlot
+             :env (list (concat "PATH=" (mapconcat 'identity exec-path ":")))))
 
 ;;;
 ;;  END CUSTOM FUNCTIONS
@@ -451,19 +467,20 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 	doom-outrun-electric-brighter-comments t)
   (if enable-dark-theme
       (load-theme 'doom-outrun-electric t)
-    (load-theme 'doom-fairy-floss t))
+    (load-theme 'doom-acario-light t))
   (doom-themes-org-config))
 
+;  ;; kaolin themes has a better light theme than the doom theme-set
+;  (use-package kaolin-themes
+;    :ensure t
+;    :config
+;    (setq kaolin-themes-italic-comments t
+;	  kaolin-themes-distinct-fringe t)
+;    (load-theme 'kaolin-light t))
+  
 (use-package emr
   :ensure t
   :bind (("M-RET" . emr-show-refactor-menu)))
-
-;(use-package kaolin-themes
-;  :ensure t
-;  :config
-;  (setq kaolin-themes-italic-comments t
-;	kaolin-themes-distinct-fringe t)
-;  (load-theme 'kaolin-galaxy t))
 
 (use-package dimmer
   :ensure t
@@ -551,17 +568,6 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
   :config
   (add-hook 'text-mode-hook #'visual-line-mode))
 
-(use-package sly
-  :ensure t
-  :bind (("s-l" . sly)
-	 :map lisp-mode-map
-	 ("C-c e" . macrostep-expand))
-  :hook ((lisp-mode . sly-editing-mode))
-  :config
-  (setq slime-contribs '(sly-fancy sly-macrostep sly-quicklisp
-                                   sly-asdf sly-reply-ansi-color sly-named-readtables)
-	inferior-lisp-program "ros run -Q"))
-
 (use-package sly-macrostep
   :after sly
   :ensure t)
@@ -577,6 +583,17 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 (use-package sly-asdf
   :after sly
   :ensure t)
+
+(use-package sly
+  :ensure t
+  :bind (("s-l" . sly)
+	 :map lisp-mode-map
+	 ("C-c e" . macrostep-expand))
+  :hook ((lisp-mode . sly-editing-mode))
+  :config
+  (setq slime-contribs '(sly-fancy sly-macrostep sly-quicklisp
+                                   sly-asdf sly-reply-ansi-color sly-named-readtables)
+	inferior-lisp-program "ros run -Q"))
 
 (use-package elpy
   :disabled
