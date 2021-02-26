@@ -225,6 +225,12 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
                             ',type-names))
 	,@body)))
 
+(defmacro os-cond (&rest forms)
+  `(cond
+    ,@(loop for f in forms
+            collect `((eq system-type ',(car f))
+                      ,(cdr f)))))
+
 (when-on bsd berkeley-unix)
 (when-on linux gnu/linux)
 (when-on unix gnu/linux berkeley-unix)
