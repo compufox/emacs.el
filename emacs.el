@@ -7,10 +7,11 @@
  '(column-number-mode t)
  '(dired-use-ls-dired nil)
  '(fci-rule-character-color "#192028")
+ '(global-emojify-mode t)
  '(inhibit-startup-screen t)
  '(make-backup-files nil)
  '(package-selected-packages
-   '(frog-jump-buffer workgroups2 auto-package-update popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
+   '(emojify frog-jump-buffer workgroups2 auto-package-update popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
@@ -614,6 +615,16 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 ;; 	wg-session-file (file-truename "~/.emacs.d/workgroups"))
 ;;   (workgroups-mode 1))
 
+(use-package emojify
+  :ensure t
+  :hook (after-init . global-emojify-mode)
+  :config
+  (setq emojify-display-style
+        (os-cond
+         (windows-nt . 'image)
+         (gnu/linux . 'unicode)
+         (t . 'image))))
+  
 ;;;
 ;; END PACKAGE LOADING
 ;;;
