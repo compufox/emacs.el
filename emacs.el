@@ -11,7 +11,7 @@
  '(inhibit-startup-screen t)
  '(make-backup-files nil)
  '(package-selected-packages
-   '(emojify frog-jump-buffer workgroups2 auto-package-update popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
+   '(parinfer-rust-mode emojify frog-jump-buffer workgroups2 auto-package-update popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
@@ -341,6 +341,18 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 	auto-package-update-prompt-before-update t)
   (auto-package-update-at-time "18:30")
   (auto-package-update-maybe))
+
+(use-package parinfer-rust-mode
+  :ensure t
+  :hook ((emacs-lisp-mode . parinfer-rust-mode)
+         (common-lisp-mode . parinfer-rust-mode))
+  :init
+  (setq parinfer-rust-library
+        (os-cond
+         (windows-nt "~/.emacs.d/parinfer-rust/parinfer_rust.dll")
+         (t "~/.emacs.d/parinfer-rust/libparinfer_rust.so")))
+  (unless-on-windows
+   (setq parinfer-rust-auto-download t)))
 
 (use-package popwin
   :ensure t
