@@ -229,14 +229,19 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 (defmacro os-cond (&rest forms)
   `(cond
     ,@(loop for f in forms
-            collect `((eq system-type ',(car f))
-                      ,(cdr f)))))
+            if (eq (car f) t)
+             collect `(,(car f)
+                       ,(cdr f))
+             else
+             collect `((eq system-type ',(car f))
+                       ,(cdr f)))))
 
 (when-on bsd berkeley-unix)
 (when-on linux gnu/linux)
 (when-on unix gnu/linux berkeley-unix)
 (when-on windows windows-nt)
 (unless-on bsd berkeley-unix)
+(unless-on windows windows-nt)
 
 ;;;
 ;;  END CUSTOM MACROS
