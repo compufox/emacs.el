@@ -345,12 +345,12 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 (use-package parinfer-rust-mode
   :ensure t
   :hook ((emacs-lisp-mode . parinfer-rust-mode)
-         (common-lisp-mode . parinfer-rust-mode))
+         (lisp-mode . parinfer-rust-mode))
   :init
   (setq parinfer-rust-library
         (os-cond
-         (windows-nt "~/.emacs.d/parinfer-rust/parinfer_rust.dll")
-         (t "~/.emacs.d/parinfer-rust/libparinfer_rust.so")))
+         (windows-nt . "~/.emacs.d/parinfer-rust/parinfer_rust.dll")
+         (t . "~/.emacs.d/parinfer-rust/libparinfer_rust.so")))
   (unless-on-windows
    (setq parinfer-rust-auto-download t)))
 
