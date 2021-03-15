@@ -231,10 +231,10 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
     ,@(loop for f in forms
             if (eq (car f) t)
              collect `(,(car f)
-                       ,(cdr f))
+                       ,@(cdr f))
              else
              collect `((eq system-type ',(car f))
-                       ,(cdr f)))))
+                       ,@(cdr f)))))
 
 (when-on bsd berkeley-unix)
 (when-on linux gnu/linux)
@@ -349,8 +349,8 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
   :init
   (setq parinfer-rust-library
         (os-cond
-         (windows-nt . "~/.emacs.d/parinfer-rust/parinfer_rust.dll")
-         (t . "~/.emacs.d/parinfer-rust/libparinfer_rust.so")))
+         (windows-nt "~/.emacs.d/parinfer-rust/parinfer_rust.dll")
+         (t "~/.emacs.d/parinfer-rust/libparinfer_rust.so")))
   (unless-on-windows
    (setq parinfer-rust-auto-download t)))
 
@@ -638,9 +638,9 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
   :config
   (setq emojify-display-style
         (os-cond
-         (windows-nt . 'image)
-         (gnu/linux . 'unicode)
-         (t . 'image))))
+         (windows-nt 'image)
+         (gnu/linux 'unicode)
+         (t 'image))))
   
 ;;;
 ;; END PACKAGE LOADING
