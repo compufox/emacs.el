@@ -11,7 +11,7 @@
  '(inhibit-startup-screen t)
  '(make-backup-files nil)
  '(package-selected-packages
-   '(parinfer-rust-mode emojify frog-jump-buffer workgroups2 auto-package-update popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
+   '(subatomic-theme parinfer-rust-mode emojify frog-jump-buffer workgroups2 auto-package-update popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
@@ -22,7 +22,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 113 :width normal :foundry "unknown" :family "Hack")))))
+ '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 113 :width normal :foundry "unknown" :family "Cartograph CF"))))
+ '(font-lock-comment-face ((t (:slant italic :family "Cartograph CF")))))
 
 ;; when we have ros installed go and include the path in the exec-path list
 (when (executable-find "ros")
@@ -481,18 +482,39 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 	 (ruby-mode . prism-mode)
 	 (emacs-lisp-mode . prism-mode)))
 
-(use-package doom-themes
+;; (use-package doom-themes
+;;   :ensure t
+;;   :config
+;;   (setq doom-themes-enable-bold t
+;; 	doom-themes-enable-italic t
+;; 	doom-outrun-electric-brighter-modeline t
+;; 	doom-outrun-electric-comment-bg t
+;; 	doom-outrun-electric-brighter-comments t)
+;;   (if enable-dark-theme
+;;       (load-theme 'doom-outrun-electric t)
+;;     (load-theme 'doom-acario-light t))
+;;   (doom-themes-org-config))
+
+(use-package subatomic-theme
   :ensure t
-  :config
-  (setq doom-themes-enable-bold t
-	doom-themes-enable-italic t
-	doom-outrun-electric-brighter-modeline t
-	doom-outrun-electric-comment-bg t
-	doom-outrun-electric-brighter-comments t)
-  (if enable-dark-theme
-      (load-theme 'doom-outrun-electric t)
-    (load-theme 'doom-acario-light t))
-  (doom-themes-org-config))
+  :init
+  (setq subatomic-more-visible-comment-delimiters t)
+  (load-theme 'subatomic t))
+
+;; (use-package modus-themes
+;;   :ensure t
+;;   :init
+;;   (setq modus-themes-slanted-constructs t
+;;         modus-themes-bold-constructs nil
+;;         modus-themes-region 'no-extend
+;;         modus-themes-mode-line 'accented
+;;         modus-themes-syntax 'alt-syntax
+;;         modus-themes-paren-match 'intense)
+;;   (modus-themes-load-themes)
+;;   :config
+;;   (if enable-dark-theme
+;;       (modus-themes-load-vivendi)
+;;     (modus-themes-load-operandi)))
 
 ;  ;; kaolin themes has a better light theme than the doom theme-set
 ;  (use-package kaolin-themes
