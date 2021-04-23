@@ -5,18 +5,25 @@
  ;; If there is more than one, they won't work right.
  '(backup-directory-alist '((".*" concat (getenv "HOME") "/.emacs.d/backups")))
  '(column-number-mode t)
+ '(company-quickhelp-use-propertized-text t)
+ '(custom-safe-themes
+   '("1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" default))
  '(dired-use-ls-dired nil)
- '(fci-rule-character-color "#192028")
+ '(flycheck-color-mode-line-face-to-color 'mode-line-buffer-id)
+ '(frame-background-mode 'dark)
  '(global-emojify-mode t)
  '(inhibit-startup-screen t)
  '(make-backup-files nil)
  '(package-selected-packages
-   '(subatomic-theme parinfer-rust-mode emojify frog-jump-buffer workgroups2 auto-package-update popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
+   '(company-quickhelp company-box nova-theme color-theme-sanityinc-tomorrow subatomic-theme parinfer-rust-mode emojify frog-jump-buffer workgroups2 auto-package-update popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
  '(tool-bar-mode nil)
- '(tool-bar-position 'left))
+ '(tool-bar-position 'left)
+ '(vc-annotate-background nil)
+ '(vc-annotate-very-old-color nil)
+ '(window-divider-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -436,6 +443,14 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
   :ensure t
   :init (global-company-mode))
 
+(use-package company-quickhelp
+  :ensure t
+  :hook (company-mode . company-quickhelp-mode))
+
+(use-package company-box
+  :ensure t
+  :hook (company-mode . company-box-mode))
+
 (use-package fish-mode
   :ensure t)
 
@@ -482,6 +497,21 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 	 (ruby-mode . prism-mode)
 	 (emacs-lisp-mode . prism-mode)))
 
+(use-package challenger-deep-theme
+  :ensure t
+  :init
+  (load-theme 'challenger-deep t))
+
+;; (use-package nova-theme
+;;   :ensure t
+;;   :init
+;;   (load-theme 'nova t))
+
+ ;; (use-package color-theme-sanityinc-tomorrow
+ ;;   :ensure t
+ ;;   :init
+ ;;   (color-theme-sanityinc-tomorrow-blue))
+
 ;; (use-package doom-themes
 ;;   :ensure t
 ;;   :config
@@ -495,11 +525,11 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 ;;     (load-theme 'doom-acario-light t))
 ;;   (doom-themes-org-config))
 
-(use-package subatomic-theme
-  :ensure t
-  :init
-  (setq subatomic-more-visible-comment-delimiters t)
-  (load-theme 'subatomic t))
+;; (use-package subatomic-theme
+;;   :ensure t
+;;   :init
+;;   (setq subatomic-more-visible-comment-delimiters t)
+;;   (load-theme 'subatomic t))
 
 ;; (use-package modus-themes
 ;;   :ensure t
