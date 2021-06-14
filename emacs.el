@@ -15,7 +15,7 @@
  '(inhibit-startup-screen t)
  '(make-backup-files nil)
  '(package-selected-packages
-   '(company-quickhelp company-box nova-theme color-theme-sanityinc-tomorrow subatomic-theme parinfer-rust-mode emojify frog-jump-buffer workgroups2 auto-package-update popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
+   '(swift-mode company-quickhelp company-box nova-theme color-theme-sanityinc-tomorrow subatomic-theme parinfer-rust-mode emojify frog-jump-buffer workgroups2 auto-package-update popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
@@ -31,6 +31,9 @@
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 113 :width normal :foundry "unknown" :family "Cartograph CF"))))
  '(font-lock-comment-face ((t (:slant italic :family "Cartograph CF")))))
+
+(when (eq system-type 'darwin)
+  (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin")))
 
 ;; when we have ros installed go and include the path in the exec-path list
 (when (executable-find "ros")
@@ -244,12 +247,15 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
              collect `((eq system-type ',(car f))
                        ,@(cdr f)))))
 
+(when-on osx darwin)
 (when-on bsd berkeley-unix)
 (when-on linux gnu/linux)
 (when-on unix gnu/linux berkeley-unix)
 (when-on windows windows-nt)
 (unless-on bsd berkeley-unix)
 (unless-on windows windows-nt)
+(unless-on bsdish darwin berkeley-unix) ;; you know, bsd enough to count lmao
+
 
 ;;;
 ;;  END CUSTOM MACROS
@@ -294,6 +300,12 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 (when-on-unix
  (display-battery-mode)
  (setq ispell-local-dictionary "en_US"))
+
+;; mac specific loading
+(when-on-osx
+ ;; because the damn mac screen is good,
+ ;;  we need to bump the font size up a lil lmao
+ (set-face-attribute 'default nil :height 170))
 
 ;; loading a theme
 (setq enable-dark-theme t)
@@ -390,7 +402,8 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 (use-package request
   :ensure t)
 
-(unless-on-bsd
+;; this doesnt seem to work on Max Big Sur or BSD
+(unless-on-bsdish
  (use-package symon
    :ensure t
    :config
@@ -669,7 +682,9 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
   :config
   (setq slime-contribs '(sly-fancy sly-macrostep sly-quicklisp
                                    sly-asdf sly-reply-ansi-color sly-named-readtables)
-	inferior-lisp-program "ros run -Q"))
+	inferior-lisp-program (os-cond
+                               (darwin "/usr/local/bin/ros run -Q")
+                               (t "ros run -Q"))))
 
 (use-package elpy
   :disabled
@@ -692,6 +707,7 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
         (os-cond
          (windows-nt 'image)
          (gnu/linux 'unicode)
+         (darwin 'unicode)
          (t 'image))))
   
 ;;;

@@ -1,3 +1,4 @@
 /emacs.d/
 *.elc
 /local.el
+.DS_Store
