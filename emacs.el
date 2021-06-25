@@ -209,6 +209,26 @@ INCLUDES is a space seperated list of headers to include"
              :name 'qlot
              :env (list (concat "PATH=" (mapconcat 'identity exec-path ":")))))
 
+(defun blankp (string)
+  "returns t if STRING is an empty string"
+  (string= string ""))
+
+(defun make-buffer (name)
+  "creates and switches to a new buffer with name NAME"
+  (interactive "Bname: ")
+  (let ((buff (generate-new-buffer name)))
+    (switch-to-buffer buff)))
+
+(defun scratch ()
+  "switches to the scratch buffer, creating it if needed"
+  (interactive)
+  (switch-to-buffer (get-buffer-create "*scratch*"))
+  (when (blankp (buffer-string))
+    (insert ";; This buffer is for text that is not saved, and for Lisp evaluation.\n")
+    (insert ";; To create a file, visit it with C-x C-f and enter text in its buffer.\n\n")
+    (goto-char (point-max)))
+  (lisp-interaction-mode))
+
 ;;;
 ;;  END CUSTOM FUNCTIONS
 ;;;
