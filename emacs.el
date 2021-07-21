@@ -209,6 +209,15 @@ INCLUDES is a space seperated list of headers to include"
              :name 'qlot
              :env (list (concat "PATH=" (mapconcat 'identity exec-path ":")))))
 
+(defun load-emacs-theme ()
+  "loads custom themes based on enable-dark-theme
+
+ensures disabling all prior loaded themes before changing"
+  (mapcar #'disable-theme custom-enabled-themes)
+  (if enable-dark-theme
+      (load-theme 'challenger-deep t)
+    (modus-themes-load-operandi)))
+
 ;;;
 ;;  END CUSTOM FUNCTIONS
 ;;;
@@ -303,12 +312,35 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 
 ;; mac specific loading
 (when-on-osx
- ;; because the damn mac screen is good,
- ;;  we need to bump the font size up a lil lmao
- (set-face-attribute 'default nil :height 170))
+ (defun macos-theme ()
+   "gets the current macOS window theme
+
+returns either :dark or :light"
+   (let ((theme (shell-command-to-string "defaults read -g AppleInterfaceStyle")))
+     (if (string= theme "Dark
+")
+         :dark
+       :light)))
+
+ (defun match-theme-to-system ()
+   "checks the system theme and changes the emacs theme to match"
+   (unless (eq enable-dark-theme (eq (macos-theme) :dark))
+     (setq enable-dark-theme (eq (macos-theme) :dark))
+     (load-emacs-theme)
+     (set-face-attribute 'default nil :height 170)))
+
+ (add-hook 'window-setup-hook
+           (lambda ()
+             ;; because the damn mac screen is good,
+             ;;  we need to bump the font size up a lil lmao
+             ;; note: needs to be in window-setup-hook otherwise
+             ;;       it doesnt get run for the initial frame
+             (set-face-attribute 'default nil :height 170)
+             (run-with-timer 0 1 'match-theme-to-system))))
 
 ;; loading a theme
 (setq enable-dark-theme t)
+(add-hook 'window-setup-hook 'load-emacs-theme)
 
 ;; sets shortcut for c++ mode
 (require 'cc-mode)
@@ -550,20 +582,16 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 ;;   (setq subatomic-more-visible-comment-delimiters t)
 ;;   (load-theme 'subatomic t))
 
-;; (use-package modus-themes
-;;   :ensure t
-;;   :init
-;;   (setq modus-themes-slanted-constructs t
-;;         modus-themes-bold-constructs nil
-;;         modus-themes-region 'no-extend
-;;         modus-themes-mode-line 'accented
-;;         modus-themes-syntax 'alt-syntax
-;;         modus-themes-paren-match 'intense)
-;;   (modus-themes-load-themes)
-;;   :config
-;;   (if enable-dark-theme
-;;       (modus-themes-load-vivendi)
-;;     (modus-themes-load-operandi)))
+ (use-package modus-themes
+   :ensure t
+   :init
+   (setq modus-themes-slanted-constructs t
+         modus-themes-bold-constructs nil
+         modus-themes-region 'no-extend
+         modus-themes-mode-line 'accented
+         modus-themes-syntax 'alt-syntax
+         modus-themes-paren-match 'intense)
+   (modus-themes-load-themes))
 
 ;  ;; kaolin themes has a better light theme than the doom theme-set
 ;  (use-package kaolin-themes
@@ -723,3 +751,6 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 ;; check and recompile the init file
 (cl-eval-when (load)
   (byte-compile-file (file-truename "~/.emacs")))
+
+;; enable 'list-timers function
+(put 'list-timers 'disabled nil)
