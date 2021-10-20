@@ -414,6 +414,14 @@ returns either :dark or :light"
   (auto-package-update-at-time "18:30")
   (auto-package-update-maybe))
 
+;; show function docstrings in the minibuffer
+(use-package marginalia
+  :ensure t
+  :bind (("M-A" . marginalia-cycle)
+         :map minibuffer-local-map
+         ("M-A" . marginalia-cycle))
+  :init (marginalia-mode))
+
 (use-package parinfer-rust-mode
   :ensure t
   :hook ((emacs-lisp-mode . parinfer-rust-mode)
