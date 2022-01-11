@@ -15,7 +15,7 @@
  '(inhibit-startup-screen t)
  '(make-backup-files nil)
  '(package-selected-packages
-   '(lua-mode fennel-mode modus-themes swift-mode company-quickhelp company-box nova-theme color-theme-sanityinc-tomorrow subatomic-theme parinfer-rust-mode emojify frog-jump-buffer workgroups2 auto-package-update popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
+   '(lua-mode fennel-mode modus-themes swift-mode company-quickhelp company-box nova-theme color-theme-sanityinc-tomorrow subatomic-theme parinfer-rust-mode emojify frog-jump-buffer workgroups2 popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
@@ -403,16 +403,9 @@ returns either :dark or :light"
   (setq lisp-mode-hook
 	(remove 'slime-lisp-mode-hook lisp-mode-hook)))
 
+;;;;
 ;; package loading and configuration
-(use-package auto-package-update
-  :ensure t
-  :hook (auto-package-update-before . (lambda ()
-					(message "updating packages")))
-  :config
-  (setq auto-package-update-interval 7
-	auto-package-update-prompt-before-update t)
-  (auto-package-update-at-time "18:30")
-  (auto-package-update-maybe))
+;;;;
 
 ;; show function docstrings in the minibuffer
 (use-package marginalia
