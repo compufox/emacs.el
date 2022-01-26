@@ -36,33 +36,31 @@
 ;;  BEGIN CUSTOM MACROS
 ;;;
 
-(flet ((mkstr (&rest args) (mapconcat (lambda (x) (format "%s" x))  args "")))
-  (defmacro when-on (os &rest type-names)
-    "define a macro (named when-on-OS) to run code when SYSTEM-TYPE matches any symbol in TYPE-NAMES
+(defmacro when-on (os &rest type-names)
+  "define a macro (named when-on-OS) to run code when SYSTEM-TYPE matches any symbol in TYPE-NAMES
 
 OS is a symbol (or string) to be placed in the macro name
 TYPE-NAMES is a list of symbols that correspond to values returned by system-type"
-    `(defmacro ,(intern (mkstr "when-on-" os)) (&rest body)
-       `(when (or ,@(mapcar (lambda (name) `(eq system-type ',name))
-			    ',type-names))
-	  ,@body)))
-  
-  (defmacro unless-on (os &rest type-names)
-    "define a macro (named unless-on-OS) to run code when SYSTEM-TYPE matches any symbol in TYPE-NAMES
+  `(defmacro ,(intern (mapconcat (lambda (x) (format "%s" x)) (list "when-on-" os) "")) (&rest body)
+     `(when (or ,@(mapcar (lambda (name) `(eq system-type ',name))
+			  ',type-names))
+	,@body)))
+
+(defmacro unless-on (os &rest type-names)
+  "define a macro (named unless-on-OS) to run code when SYSTEM-TYPE matches any symbol in TYPE-NAMES
 
 OS is a symbol (or string) to be placed in the macro name
 TYPE-NAMES is a list of symbols that correspond to values returned by system-type"
-    `(defmacro ,(intern (mkstr "unless-on-" os)) (&rest body)
-       `(unless (or ,@(mapcar (lambda (name) `(eq system-type ',name))
-                              ',type-names))
-	  ,@body))))
+  `(defmacro ,(intern (mapconcat (lambda (x) (format "%s" x)) (list "unless-on-" os) "")) (&rest body)
+     `(unless (or ,@(mapcar (lambda (name) `(eq system-type ',name))
+                            ',type-names))
+	,@body)))
 
 (defmacro os-cond (&rest forms)
   `(cond
     ,@(loop for f in forms
             if (eq (car f) t)
-             collect `(,(car f)
-                       ,@(cdr f))
+             collect `(t ,@(cdr f))
              else
              collect `((eq system-type ',(car f))
                        ,@(cdr f)))))
@@ -359,7 +357,7 @@ returns either :dark or :light"
              (run-with-timer 0 1 'match-theme-to-system))))
 
 ;; loading a theme
-(setq enable-dark-theme t)
+(defvar enable-dark-theme t)
 (add-hook 'window-setup-hook 'load-emacs-theme)
 
 ;; sets shortcut for c++ mode
