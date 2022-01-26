@@ -7,4 +7,5 @@ if test -d ~/.emacs.d
   mv ~/.emacs.d ~/.emacs.d.bak
 end
 
-ln -s (pwd)/emacs.el ~/.emacs
+ln -sf (pwd)/emacs.el ~/.emacs
+ln -sf (pwd)/hooks/* .git/hooks/ 
