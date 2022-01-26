@@ -213,10 +213,9 @@ INCLUDES is a space seperated list of headers to include"
     
     (goto-char point)))
 
-(defun mkstr (&rest args)
-  "Make a string out of arbitrary list of objects"
-  (with-output-to-string
-    (dolist (a args) (princ a))))
+(defun stringify (&rest args)
+  "converts every value in ARGS into a string and merges them together"
+  (mapconcat (lambda (x) (format "%s" x))  args ""))
 
 (defun fox-me-up ()
   "FOX ME UP INSIDE"
@@ -380,14 +379,14 @@ returns either :dark or :light"
 (add-to-list 'package-archives
 	     '("melpa" . "http://melpa.org/packages/"))
 (eval-when-compile
-  (add-to-list 'load-path (mkstr (file-name-directory
-				  (file-truename "~/.emacs"))
-				 "use-package"))
+  (add-to-list 'load-path (stringify (file-name-directory
+				      (file-truename "~/.emacs"))
+				     "use-package"))
   (require 'use-package))
 
 ;; allow for local, git-ignored configurations
-(let ((local-filename (mkstr (file-name-directory (file-truename "~/.emacs"))
-                             "local.el")))
+(let ((local-filename (stringify (file-name-directory (file-truename "~/.emacs"))
+                                 "local.el")))
   (unless (file-exists-p local-filename)
     ;; if the local file doesn't exist we create it
     (with-temp-file local-filename))
@@ -746,7 +745,7 @@ returns either :dark or :light"
   :disabled
   :hook python-mode
   :config
-  (setq venv-location (mkstr (getenv "HOME") "/programming/python/")))
+  (setq venv-location (stringify (getenv "HOME") "/programming/python/")))
 
 ;; (use-package workgroups2
 ;;   :ensure t
