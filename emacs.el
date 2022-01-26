@@ -32,16 +32,54 @@
  '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 113 :width normal :foundry "unknown" :family "Cartograph CF"))))
  '(font-lock-comment-face ((t (:slant italic :family "Cartograph CF")))))
 
-(when (eq system-type 'darwin)
-  (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin")))
+;;;
+;;  BEGIN CUSTOM MACROS
+;;;
 
-;; when we have ros installed go and include the path in the exec-path list
-(when (executable-find "ros")
-  (let* ((homedir (car (last (split-string (shell-command-to-string "ros version")
-                                           "\n" t))))
-         (path (concat (substring homedir 11 (1- (length homedir)))
-                       "bin")))
-    (setq exec-path (append exec-path (list path)))))
+(flet ((mkstr (&rest args) (mapconcat (lambda (x) (format "%s" x))  args "")))
+  (defmacro when-on (os &rest type-names)
+    "define a macro (named when-on-OS) to run code when SYSTEM-TYPE matches any symbol in TYPE-NAMES
+
+OS is a symbol (or string) to be placed in the macro name
+TYPE-NAMES is a list of symbols that correspond to values returned by system-type"
+    `(defmacro ,(intern (mkstr "when-on-" os)) (&rest body)
+       `(when (or ,@(mapcar (lambda (name) `(eq system-type ',name))
+			    ',type-names))
+	  ,@body)))
+  
+  (defmacro unless-on (os &rest type-names)
+    "define a macro (named unless-on-OS) to run code when SYSTEM-TYPE matches any symbol in TYPE-NAMES
+
+OS is a symbol (or string) to be placed in the macro name
+TYPE-NAMES is a list of symbols that correspond to values returned by system-type"
+    `(defmacro ,(intern (mkstr "unless-on-" os)) (&rest body)
+       `(unless (or ,@(mapcar (lambda (name) `(eq system-type ',name))
+                              ',type-names))
+	  ,@body))))
+
+(defmacro os-cond (&rest forms)
+  `(cond
+    ,@(loop for f in forms
+            if (eq (car f) t)
+             collect `(,(car f)
+                       ,@(cdr f))
+             else
+             collect `((eq system-type ',(car f))
+                       ,@(cdr f)))))
+
+(when-on osx darwin)
+(when-on bsd berkeley-unix)
+(when-on linux gnu/linux)
+(when-on unix gnu/linux berkeley-unix)
+(when-on windows windows-nt)
+(unless-on bsd berkeley-unix)
+(unless-on windows windows-nt)
+(unless-on bsdish darwin berkeley-unix) ;; you know, bsd enough to count lmao
+
+
+;;;
+;;  END CUSTOM MACROS
+;;;
 
 ;;;
 ;; BEGIN CUSTOM FUNCTIONS
@@ -242,53 +280,16 @@ ensures disabling all prior loaded themes before changing"
 ;;  END CUSTOM FUNCTIONS
 ;;;
 
-;;;
-;;  BEGIN CUSTOM MACROS
-;;;
+(when-on-osx
+  (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin")))
 
-(defmacro when-on (os &rest type-names)
-  "define a macro (named when-on-OS) to run code when SYSTEM-TYPE matches any symbol in TYPE-NAMES
-
-OS is a symbol (or string) to be placed in the macro name
-TYPE-NAMES is a list of symbols that correspond to values returned by system-type"
-  `(defmacro ,(intern (mkstr "when-on-" os)) (&rest body)
-     `(when (or ,@(mapcar (lambda (name) `(eq system-type ',name))
-			  ',type-names))
-	,@body)))
-
-(defmacro unless-on (os &rest type-names)
-  "define a macro (named unless-on-OS) to run code when SYSTEM-TYPE matches any symbol in TYPE-NAMES
-
-OS is a symbol (or string) to be placed in the macro name
-TYPE-NAMES is a list of symbols that correspond to values returned by system-type"
-  `(defmacro ,(intern (mkstr "unless-on-" os)) (&rest body)
-     `(unless (or ,@(mapcar (lambda (name) `(eq system-type ',name))
-                            ',type-names))
-	,@body)))
-
-(defmacro os-cond (&rest forms)
-  `(cond
-    ,@(loop for f in forms
-            if (eq (car f) t)
-             collect `(,(car f)
-                       ,@(cdr f))
-             else
-             collect `((eq system-type ',(car f))
-                       ,@(cdr f)))))
-
-(when-on osx darwin)
-(when-on bsd berkeley-unix)
-(when-on linux gnu/linux)
-(when-on unix gnu/linux berkeley-unix)
-(when-on windows windows-nt)
-(unless-on bsd berkeley-unix)
-(unless-on windows windows-nt)
-(unless-on bsdish darwin berkeley-unix) ;; you know, bsd enough to count lmao
-
-
-;;;
-;;  END CUSTOM MACROS
-;;;
+;; when we have ros installed go and include the path in the exec-path list
+(when (executable-find "ros")
+  (let* ((homedir (car (last (split-string (shell-command-to-string "ros version")
+                                           "\n" t))))
+         (path (concat (substring homedir 11 (1- (length homedir)))
+                       "bin")))
+    (setq exec-path (append exec-path (list path)))))
 
 ;; run these options only when we're running in daemon mode
 (when (daemonp)
