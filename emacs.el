@@ -337,13 +337,13 @@ returns either :dark or :light"
    (let ((theme (shell-command-to-string "defaults read -g AppleInterfaceStyle")))
      (if (string= theme "Dark
 ")
-         :dark
-       :light)))
+         'dark
+       'light)))
 
  (defun match-theme-to-system ()
    "checks the system theme and changes the emacs theme to match"
-   (unless (eq enable-dark-theme (eq (macos-theme) :dark))
-     (setq enable-dark-theme (eq (macos-theme) :dark))
+   (unless (eq enable-dark-theme (eq (macos-theme) 'dark))
+     (setq enable-dark-theme (eq (macos-theme) 'dark))
      (load-emacs-theme)
      (set-face-attribute 'default nil :height 170)))
 
@@ -370,6 +370,20 @@ returns either :dark or :light"
 ;;;
 ;; PACKAGE LOADING
 ;;;
+
+;; ensure we have straight.el loaded
+;(defvar bootstrap-version)
+;(let ((bootstrap-file
+;       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+;      (bootstrap-version 5))
+;  (unless (file-exists-p bootstrap-file)
+;    (with-current-buffer
+;        (url-retrieve-synchronously
+;         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+;         'silent 'inhibit-cookies)
+;      (goto-char (point-max))
+;      (eval-print-last-sexp)))
+;  (load bootstrap-file nil 'nomessage))
 
 ;; adds the MELPA repo to my package archive list
 (require 'package)
