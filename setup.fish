@@ -8,4 +8,4 @@ if test -d ~/.emacs.d
 end
 
 ln -sf (pwd)/emacs.el ~/.emacs
-ln -sf (pwd)/hooks/* .git/hooks/ 
+cp hooks/* .git/hooks/ 

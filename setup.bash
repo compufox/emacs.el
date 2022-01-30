@@ -3,4 +3,4 @@
 [[ -d ~/.emacs.d ]] ; mv ~/.emacs.d ~/.emacs.d.bak
 
 ln -sf $(pwd)/emacs.el ~/.emacs
-ln -sf (pwd)/hooks/* .git/hooks/ 
+cp hooks/* .git/hooks/
