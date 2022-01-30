@@ -9,3 +9,5 @@ end
 
 ln -sf (pwd)/emacs.el ~/.emacs
 cp hooks/* .git/hooks/ 
+chmod +x .git/hooks/*
+
