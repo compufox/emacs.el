@@ -330,6 +330,9 @@ ensures disabling all prior loaded themes before changing"
 
 ;; mac specific loading
 (when-on-osx
+ ;; this disables special character input in emacs when using the option key
+ (setq mac-option-modifier 'meta)
+ 
  (defun macos-theme ()
    "gets the current macOS window theme
 
@@ -353,7 +356,7 @@ returns either :dark or :light"
              ;;  we need to bump the font size up a lil lmao
              ;; note: needs to be in window-setup-hook otherwise
              ;;       it doesnt get run for the initial frame
-             (set-face-attribute 'default nil :height 170)
+             (set-face-attribute 'default nil :height 120)
              (run-with-timer 0 1 'match-theme-to-system))))
 
 ;; loading a theme
