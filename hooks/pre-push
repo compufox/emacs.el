@@ -1,0 +1,3 @@
+#!/bin/sh
+
+emacs --no-init-file --batch --eval "(byte-force-recompile \".\")"
