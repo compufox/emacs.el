@@ -76,7 +76,7 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
     ,@(loop for f in forms
             if (eq (car f) t)
              collect `(t ,@(cdr f))
-             else
+            else
              collect `((eq system-type ',(car f))
                        ,@(cdr f)))))
 
@@ -167,17 +167,9 @@ RESULT: :wide_t::wide_e::wide_s::wide_t:"
   (interactive)
   (let* ((prefix (read-string "prefix: "))
 	 (word (read-string "word: "))
-	 (result (cl-loop with string = ""
-		       for letter across word
-		       do (setf string
-				(concat string
-					":"
-					prefix
-					"_"
-					(string letter)
-					":\u200d"))
-		       finally
-		       (return string))))
+         (result (mapconcat (lambda (letter)
+                              (format ":%s_%c:" prefix letter))
+                            word "\u200d")))
     (kill-new result)
     (message result)))
 
@@ -193,7 +185,7 @@ RESULT: :wide_t::wide_e::wide_s::wide_t:"
 
 (defun buffer-existsp (buf-name)
   "checks if buffer with BUF-NAME exists in (buffer-list)"
-  (member buf-name (cl-loop for i in (buffer-list) collect (buffer-name i))))
+  (member buf-name (mapcar #'buffer-name (buffer-list))))
 
 (defun get-file-info ()
   "returns an alist with path and extension under :PATH and :EXTENSION"
