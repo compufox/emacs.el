@@ -15,7 +15,7 @@
  '(inhibit-startup-screen t)
  '(make-backup-files nil)
  '(package-selected-packages
-   '(lua-mode fennel-mode modus-themes swift-mode company-quickhelp company-box nova-theme color-theme-sanityinc-tomorrow subatomic-theme parinfer-rust-mode emojify frog-jump-buffer workgroups2 popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
+   '(marginalia lua-mode fennel-mode modus-themes swift-mode company-quickhelp company-box nova-theme color-theme-sanityinc-tomorrow subatomic-theme parinfer-rust-mode emojify frog-jump-buffer workgroups2 popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
@@ -31,6 +31,21 @@
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 113 :width normal :foundry "unknown" :family "Cartograph CF"))))
  '(font-lock-comment-face ((t (:slant italic :family "Cartograph CF")))))
+
+;;;
+;; BEGIN CUSTOM VARIABLES
+;;;
+
+(defvar enable-dark-theme t)
+(defvar face-height 120)
+
+;; got this disabled for now because (macos-theme) always returns dark if
+;;  the system theme is set to auto :rolling-eyes:
+(defvar auto-update-macos-theme nil)
+
+;;;
+;; END CUSTOM VARIABLES
+;;;
 
 ;;;
 ;;  BEGIN CUSTOM MACROS
@@ -83,11 +98,12 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 ;; BEGIN CUSTOM FUNCTIONS
 ;;;
 
-;; the built-in battery-bsd-apm function doesnt seem to work on freebsd
-;;  it has an extra command line argument, and doesnt properly parse the
-;;  command output. here's my updated version
-(defun battery-freebsd-apm ()
-  "Get APM status information from BSD apm binary.
+(when-on-bsd 
+ ;; the built-in battery-bsd-apm function doesnt seem to work on freebsd
+ ;;  it has an extra command line argument, and doesnt properly parse the
+ ;;  command output. here's my updated version
+ (defun battery-freebsd-apm ()
+   "Get APM status information from BSD apm binary.
 The following %-sequences are provided:
 %L AC line status (verbose)
 %B Battery status (verbose)
@@ -98,43 +114,43 @@ The following %-sequences are provided:
 %m Remaining battery charge time in minutes
 %h Remaining battery charge time in hours
 %t Remaining battery charge time in the form `h:min'"
-  (let* ((apm-cmd "/usr/sbin/apm -blta")
-	 (apm-output (split-string (shell-command-to-string apm-cmd)))
-	 ;; Battery status
-	 (battery-status
-	  (let ((stat (string-to-number (nth 1 apm-output))))
-	    (cond ((eq stat 0) '("high" . ""))
-		  ((eq stat 1) '("low" . "-"))
-		  ((eq stat 2) '("critical" . "!"))
-		  ((eq stat 3) '("charging" . "+"))
-		  ((eq stat 4) '("absent" . nil)))))
-	 ;; Battery percentage
-	 (battery-percentage (nth 2 apm-output))
-	 ;; Battery life
-	 (battery-life (nth 3 apm-output))
-	 ;; AC status
-	 (line-status
-	  (let ((ac (string-to-number (nth 0 apm-output))))
-	    (cond ((eq ac 0) "disconnected")
-		  ((eq ac 1) "connected")
-		  ((eq ac 2) "backup power"))))
-	 seconds minutes hours remaining-time)
-    (unless (member battery-life '("unknown" "-1"))
-      (setq seconds (string-to-number battery-life)
-            minutes (truncate (/ seconds 60)))
-      (setq hours (truncate (/ minutes 60))
-	    remaining-time (format "%d:%02d" hours
-				   (- minutes (* 60 hours)))))
-    (list (cons ?L (or line-status "N/A"))
-	  (cons ?B (or (car battery-status) "N/A"))
-	  (cons ?b (or (cdr battery-status) "N/A"))
-	  (cons ?p (if (string= battery-percentage "255")
-		       "N/A"
-		     battery-percentage))
-	  (cons ?s (or (and seconds (number-to-string seconds)) "N/A"))
-	  (cons ?m (or (and minutes (number-to-string minutes)) "N/A"))
-	  (cons ?h (or (and hours (number-to-string hours)) "N/A"))
-	  (cons ?t (or remaining-time "N/A")))))
+   (let* ((apm-cmd "/usr/sbin/apm -blta")
+	  (apm-output (split-string (shell-command-to-string apm-cmd)))
+	  ;; Battery status
+	  (battery-status
+	   (let ((stat (string-to-number (nth 1 apm-output))))
+	     (cond ((eq stat 0) '("high" . ""))
+		   ((eq stat 1) '("low" . "-"))
+		   ((eq stat 2) '("critical" . "!"))
+		   ((eq stat 3) '("charging" . "+"))
+		   ((eq stat 4) '("absent" . nil)))))
+	  ;; Battery percentage
+	  (battery-percentage (nth 2 apm-output))
+	  ;; Battery life
+	  (battery-life (nth 3 apm-output))
+	  ;; AC status
+	  (line-status
+	   (let ((ac (string-to-number (nth 0 apm-output))))
+	     (cond ((eq ac 0) "disconnected")
+		   ((eq ac 1) "connected")
+		   ((eq ac 2) "backup power"))))
+	  seconds minutes hours remaining-time)
+     (unless (member battery-life '("unknown" "-1"))
+       (setq seconds (string-to-number battery-life)
+             minutes (truncate (/ seconds 60)))
+       (setq hours (truncate (/ minutes 60))
+	     remaining-time (format "%d:%02d" hours
+				    (- minutes (* 60 hours)))))
+     (list (cons ?L (or line-status "N/A"))
+	   (cons ?B (or (car battery-status) "N/A"))
+	   (cons ?b (or (cdr battery-status) "N/A"))
+	   (cons ?p (if (string= battery-percentage "255")
+		        "N/A"
+		      battery-percentage))
+	   (cons ?s (or (and seconds (number-to-string seconds)) "N/A"))
+	   (cons ?m (or (and minutes (number-to-string minutes)) "N/A"))
+	   (cons ?h (or (and hours (number-to-string hours)) "N/A"))
+	   (cons ?t (or remaining-time "N/A"))))))
 
 (defun emojofy ()
   "turns a string into a formatted string for shitposting
@@ -219,7 +235,7 @@ INCLUDES is a space seperated list of headers to include"
   "FOX ME UP INSIDE"
   (interactive)
   (message 
-   "  _,-=._              /|_/|
+"  _,-=._              /|_/|
   `-.}   `=._,.-=-._.,  @ @._,   <(reet)
      `._ _,-.   )      _,.-'
         `    G.m-\"^m`m'"))
@@ -277,8 +293,10 @@ ensures disabling all prior loaded themes before changing"
 ;;  END CUSTOM FUNCTIONS
 ;;;
 
-(when-on-osx
-  (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin")))
+;; this doesnt seem to be needed anymore? maybe its because of the
+;;  build of emacs im using? going to leave it in just in case
+;(when-on-osx
+;  (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin")))
 
 ;; when we have ros installed go and include the path in the exec-path list
 (when (executable-find "ros")
@@ -336,7 +354,7 @@ ensures disabling all prior loaded themes before changing"
  (defun macos-theme ()
    "gets the current macOS window theme
 
-returns either :dark or :light"
+returns either 'dark or 'light"
    (let ((theme (shell-command-to-string "defaults read -g AppleInterfaceStyle")))
      (if (string= theme "Dark
 ")
@@ -348,7 +366,7 @@ returns either :dark or :light"
    (unless (eq enable-dark-theme (eq (macos-theme) 'dark))
      (setq enable-dark-theme (eq (macos-theme) 'dark))
      (load-emacs-theme)
-     (set-face-attribute 'default nil :height 170)))
+     (set-face-attribute 'default nil :height face-height)))
 
  (add-hook 'window-setup-hook
            (lambda ()
@@ -356,11 +374,11 @@ returns either :dark or :light"
              ;;  we need to bump the font size up a lil lmao
              ;; note: needs to be in window-setup-hook otherwise
              ;;       it doesnt get run for the initial frame
-             (set-face-attribute 'default nil :height 120)
-             (run-with-timer 0 1 'match-theme-to-system))))
+             (set-face-attribute 'default nil :height face-height)
+             (when auto-update-macos-theme
+               (run-with-timer 0 1 'match-theme-to-system)))))
 
 ;; loading a theme
-(defvar enable-dark-theme t)
 (add-hook 'window-setup-hook 'load-emacs-theme)
 
 ;; sets shortcut for c++ mode
@@ -373,20 +391,6 @@ returns either :dark or :light"
 ;;;
 ;; PACKAGE LOADING
 ;;;
-
-;; ensure we have straight.el loaded
-;(defvar bootstrap-version)
-;(let ((bootstrap-file
-;       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-;      (bootstrap-version 5))
-;  (unless (file-exists-p bootstrap-file)
-;    (with-current-buffer
-;        (url-retrieve-synchronously
-;         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-;         'silent 'inhibit-cookies)
-;      (goto-char (point-max))
-;      (eval-print-last-sexp)))
-;  (load bootstrap-file nil 'nomessage))
 
 ;; adds the MELPA repo to my package archive list
 (require 'package)
@@ -583,59 +587,6 @@ returns either :dark or :light"
 	 (common-lisp-mode . prism-mode)
 	 (ruby-mode . prism-mode)
 	 (emacs-lisp-mode . prism-mode)))
-
-(use-package challenger-deep-theme
-  :ensure t
-  :init
-  (load-theme 'challenger-deep t))
-
-;; (use-package nova-theme
-;;   :ensure t
-;;   :init
-;;   (load-theme 'nova t))
-
- ;; (use-package color-theme-sanityinc-tomorrow
- ;;   :ensure t
- ;;   :init
- ;;   (color-theme-sanityinc-tomorrow-blue))
-
-;; (use-package doom-themes
-;;   :ensure t
-;;   :config
-;;   (setq doom-themes-enable-bold t
-;; 	doom-themes-enable-italic t
-;; 	doom-outrun-electric-brighter-modeline t
-;; 	doom-outrun-electric-comment-bg t
-;; 	doom-outrun-electric-brighter-comments t)
-;;   (if enable-dark-theme
-;;       (load-theme 'doom-outrun-electric t)
-;;     (load-theme 'doom-acario-light t))
-;;   (doom-themes-org-config))
-
-;; (use-package subatomic-theme
-;;   :ensure t
-;;   :init
-;;   (setq subatomic-more-visible-comment-delimiters t)
-;;   (load-theme 'subatomic t))
-
- (use-package modus-themes
-   :ensure t
-   :init
-   (setq modus-themes-slanted-constructs t
-         modus-themes-bold-constructs nil
-         modus-themes-region 'no-extend
-         modus-themes-mode-line 'accented
-         modus-themes-syntax 'alt-syntax
-         modus-themes-paren-match 'intense)
-   (modus-themes-load-themes))
-
-;  ;; kaolin themes has a better light theme than the doom theme-set
-;  (use-package kaolin-themes
-;    :ensure t
-;    :config
-;    (setq kaolin-themes-italic-comments t
-;	  kaolin-themes-distinct-fringe t)
-;    (load-theme 'kaolin-light t))
   
 (use-package emr
   :ensure t
@@ -652,12 +603,6 @@ returns either :dark or :light"
   :hook ((lisp-mode . rainbow-delimiters-mode)
 	 (emacs-lisp-mode . rainbow-delimiters-mode)
 	 (sly-mode . rainbow-delimiters-mode)))
-
-;(use-package ido
-;  :ensure t
-;  :init
-;  (ido-mode)
-;  (ido-everywhere))
 
 (use-package ido-completing-read+
   :ensure t
@@ -762,13 +707,6 @@ returns either :dark or :light"
   :config
   (setq venv-location (stringify (getenv "HOME") "/programming/python/")))
 
-;; (use-package workgroups2
-;;   :ensure t
-;;   :config
-;;   (setq wg-prefix-key (kbd "C-c w")
-;; 	wg-session-file (file-truename "~/.emacs.d/workgroups"))
-;;   (workgroups-mode 1))
-
 (use-package emojify
   :ensure t
   :hook (after-init . global-emojify-mode)
@@ -782,6 +720,70 @@ returns either :dark or :light"
   
 ;;;
 ;; END PACKAGE LOADING
+;;;
+
+;;;
+;; BEGIN THEME LOADING
+;;;
+
+;; dark theme 
+(use-package challenger-deep-theme
+  :ensure t
+  :init
+  (when enable-dark-theme (load-theme 'challenger-deep t)))
+
+;; light theme
+(use-package modus-themes
+   :ensure t
+   :init
+   (setq modus-themes-slanted-constructs t
+         modus-themes-bold-constructs nil
+         modus-themes-region 'no-extend
+         modus-themes-mode-line 'accented
+         modus-themes-syntax 'alt-syntax
+         modus-themes-paren-match 'intense)
+   (unless enable-dark-theme (modus-themes-load-themes)))
+
+;; (use-package nova-theme
+;;   :ensure t
+;;   :init
+;;   (load-theme 'nova t))
+
+ ;; (use-package color-theme-sanityinc-tomorrow
+ ;;   :ensure t
+ ;;   :init
+ ;;   (color-theme-sanityinc-tomorrow-blue))
+
+;; (use-package doom-themes
+;;   :ensure t
+;;   :config
+;;   (setq doom-themes-enable-bold t
+;; 	doom-themes-enable-italic t
+;; 	doom-outrun-electric-brighter-modeline t
+;; 	doom-outrun-electric-comment-bg t
+;; 	doom-outrun-electric-brighter-comments t)
+;;   (if enable-dark-theme
+;;       (load-theme 'doom-outrun-electric t)
+;;     (load-theme 'doom-acario-light t))
+;;   (doom-themes-org-config))
+
+;; (use-package subatomic-theme
+;;   :ensure t
+;;   :init
+;;   (setq subatomic-more-visible-comment-delimiters t)
+;;   (load-theme 'subatomic t))
+
+
+;; kaolin themes has a better light theme than the doom theme-set
+;;  (use-package kaolin-themes
+;;    :ensure t
+;;    :config
+;;    (setq kaolin-themes-italic-comments t
+;;	  kaolin-themes-distinct-fringe t)
+;;    (load-theme 'kaolin-light t))
+
+;;;
+;; END THEME LOADING
 ;;;
 
 ;; check and recompile the init file
