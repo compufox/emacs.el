@@ -728,12 +728,12 @@ returns either 'dark or 'light"
 (use-package modus-themes
    :ensure t
    :init
-   (setq modus-themes-slanted-constructs t
+   (setq modus-themes-italic-constructs t
          modus-themes-bold-constructs nil
-         modus-themes-region 'no-extend
-         modus-themes-mode-line 'accented
-         modus-themes-syntax 'alt-syntax
-         modus-themes-paren-match 'intense)
+         modus-themes-region '(no-extend)
+         modus-themes-mode-line '(accented)
+         modus-themes-syntax '(alt-syntax)
+         modus-themes-paren-match '(intense))
    (unless enable-dark-theme (modus-themes-load-themes)))
 
 ;; (use-package nova-theme
