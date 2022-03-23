@@ -51,6 +51,10 @@
 ;;  BEGIN CUSTOM MACROS
 ;;;
 
+(defun get-system-arch ()
+  "gets the system architecture based off of the results of uname -a"
+  (car (last (split-string (shell-command-to-string "uname -a") nil t))))
+
 (defmacro when-on (os &rest type-names)
   "define a macro (named when-on-OS) to run code when SYSTEM-TYPE matches any symbol in TYPE-NAMES
 
@@ -426,17 +430,18 @@ returns either 'dark or 'light"
          ("M-A" . marginalia-cycle))
   :init (marginalia-mode))
 
-(use-package parinfer-rust-mode
-  :ensure t
-  :hook ((emacs-lisp-mode . parinfer-rust-mode)
-         (lisp-mode . parinfer-rust-mode))
-  :init
-  (setq parinfer-rust-library
-        (os-cond
-         (windows-nt "~/.emacs.d/parinfer-rust/parinfer_rust.dll")
-         (t "~/.emacs.d/parinfer-rust/libparinfer_rust.so")))
-  (unless-on-windows
-   (setq parinfer-rust-auto-download t)))
+(unless (string= "arm64" (get-system-arch))
+  (use-package parinfer-rust-mode
+    :ensure t
+    :hook ((emacs-lisp-mode . parinfer-rust-mode)
+           (lisp-mode . parinfer-rust-mode))
+    :init
+    (setq parinfer-rust-library
+          (os-cond
+           (windows-nt "~/.emacs.d/parinfer-rust/parinfer_rust.dll")
+           (t "~/.emacs.d/parinfer-rust/libparinfer_rust.so")))
+    (unless-on-windows
+     (setq parinfer-rust-auto-download t))))
 
 (use-package lua-mode
   :ensure t)
