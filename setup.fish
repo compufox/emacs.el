@@ -5,6 +5,10 @@ if string match -q "Darwin" (uname)
     set font_dir "~/Library/Fonts"
 end
 
+if not test -d $font_dir
+    mkdir $font_dir
+end
+
 if test -f ~/.emacs
   mv ~/.emacs ~/.emacs.bak
 end
