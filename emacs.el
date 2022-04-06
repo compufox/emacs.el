@@ -400,12 +400,7 @@ returns either 'dark or 'light"
   (require 'use-package))
 
 ;; allow for local, git-ignored configurations
-(let ((local-filename (stringify (file-name-directory (file-truename "~/.emacs"))
-                                 "local.el")))
-  (unless (file-exists-p local-filename)
-    ;; if the local file doesn't exist we create it
-    (with-temp-file local-filename))
-  (load local-filename))
+(defvar local-file (stringify (file-name-directory (file-truename "~/.emacs")) "local.el"))
 
 ;; remove slime stuff
 (when (package-installed-p 'slime-company)
@@ -782,6 +777,11 @@ returns either 'dark or 'light"
 ;;;
 ;; END THEME LOADING
 ;;;
+
+(unless (file-exists-p local-file)
+  ;; if the local file doesn't exist we create it
+  (with-temp-file local-file))
+(load local-file)
 
 ;; check and recompile the init file
 (cl-eval-when (load)
