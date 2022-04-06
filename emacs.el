@@ -472,13 +472,13 @@ returns either 'dark or 'light"
 (use-package request
   :ensure t)
 
-;; this doesnt seem to work on Max Big Sur or BSD
-(unless-on-bsdish
- (use-package symon
-   :ensure t
-   :config
-   (setq symon-delay 20)
-   (symon-mode)))
+;; this doesnt seem to work on Mac Big Sur or BSD
+;(unless-on-bsdish
+; (use-package symon
+;   :ensure t
+;   :config
+;   (setq symon-delay 20)
+;   (symon-mode 1)))
 
 (use-package markdown-mode
   :ensure t)
