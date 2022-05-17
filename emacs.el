@@ -51,6 +51,10 @@
 ;;  BEGIN CUSTOM MACROS
 ;;;
 
+(defun get-system-arch ()
+  "gets the system architecture based off of the results of uname -a"
+  (car (last (split-string (shell-command-to-string "uname -a") nil t))))
+
 (defmacro when-on (os &rest type-names)
   "define a macro (named when-on-OS) to run code when SYSTEM-TYPE matches any symbol in TYPE-NAMES
 
@@ -396,12 +400,7 @@ returns either 'dark or 'light"
   (require 'use-package))
 
 ;; allow for local, git-ignored configurations
-(let ((local-filename (stringify (file-name-directory (file-truename "~/.emacs"))
-                                 "local.el")))
-  (unless (file-exists-p local-filename)
-    ;; if the local file doesn't exist we create it
-    (with-temp-file local-filename))
-  (load local-filename))
+(defvar local-file (stringify (file-name-directory (file-truename "~/.emacs")) "local.el"))
 
 ;; remove slime stuff
 (when (package-installed-p 'slime-company)
@@ -426,17 +425,18 @@ returns either 'dark or 'light"
          ("M-A" . marginalia-cycle))
   :init (marginalia-mode))
 
-(use-package parinfer-rust-mode
-  :ensure t
-  :hook ((emacs-lisp-mode . parinfer-rust-mode)
-         (lisp-mode . parinfer-rust-mode))
-  :init
-  (setq parinfer-rust-library
-        (os-cond
-         (windows-nt "~/.emacs.d/parinfer-rust/parinfer_rust.dll")
-         (t "~/.emacs.d/parinfer-rust/libparinfer_rust.so")))
-  (unless-on-windows
-   (setq parinfer-rust-auto-download t)))
+(unless (string= "arm64" (get-system-arch))
+  (use-package parinfer-rust-mode
+    :ensure t
+    :hook ((emacs-lisp-mode . parinfer-rust-mode)
+           (lisp-mode . parinfer-rust-mode))
+    :init
+    (setq parinfer-rust-library
+          (os-cond
+           (windows-nt "~/.emacs.d/parinfer-rust/parinfer_rust.dll")
+           (t "~/.emacs.d/parinfer-rust/libparinfer_rust.so")))
+    (unless-on-windows
+     (setq parinfer-rust-auto-download t))))
 
 (use-package lua-mode
   :ensure t)
@@ -472,13 +472,13 @@ returns either 'dark or 'light"
 (use-package request
   :ensure t)
 
-;; this doesnt seem to work on Max Big Sur or BSD
-(unless-on-bsdish
- (use-package symon
-   :ensure t
-   :config
-   (setq symon-delay 20)
-   (symon-mode)))
+;; this doesnt seem to work on Mac Big Sur or BSD
+;(unless-on-bsdish
+; (use-package symon
+;   :ensure t
+;   :config
+;   (setq symon-delay 20)
+;   (symon-mode 1)))
 
 (use-package markdown-mode
   :ensure t)
@@ -777,6 +777,11 @@ returns either 'dark or 'light"
 ;;;
 ;; END THEME LOADING
 ;;;
+
+(unless (file-exists-p local-file)
+  ;; if the local file doesn't exist we create it
+  (with-temp-file local-file))
+(load local-file)
 
 ;; check and recompile the init file
 (cl-eval-when (load)
