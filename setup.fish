@@ -17,9 +17,13 @@ if test -d ~/.emacs.d
   mv ~/.emacs.d ~/.emacs.d.bak
 end
 
+echo "Making link..."
 ln -sf (pwd)/emacs.el ~/.emacs
-cp hooks/* .git/hooks/ 
+
+echo "Installing git hooks..."
+cp hooks/* .git/hooks/
 chmod +x .git/hooks/*
 
+echo "Installing fonts..."
 cp fonts/* $font_dir
 fc-cache -v
