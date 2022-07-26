@@ -12,9 +12,13 @@ fi
 [[ -f ~/.emacs ]] ; mv ~/.emacs ~/.emacs.bak
 [[ -d ~/.emacs.d ]] ; mv ~/.emacs.d ~/.emacs.d.bak
 
+echo "Making link..."
 ln -sf $(pwd)/emacs.el ~/.emacs
+
+echo "Installing git hooks..."
 cp hooks/* .git/hooks/
 chmod +x .git/hooks/*
 
+echo "Installing fonts..."
 cp fonts/* $font_dir
 fc-cache -v 

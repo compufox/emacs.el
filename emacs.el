@@ -417,6 +417,9 @@ returns either 'dark or 'light"
 ;; package loading and configuration
 ;;;;
 
+(use-package swift-mode
+  :ensure t)
+
 ;; show function docstrings in the minibuffer
 (use-package marginalia
   :ensure t
