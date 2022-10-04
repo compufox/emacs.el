@@ -276,7 +276,8 @@ ensures disabling all prior loaded themes before changing"
   "creates and switches to a new buffer with name NAME"
   (interactive "Bname: ")
   (let ((buff (generate-new-buffer name)))
-    (switch-to-buffer buff)))
+    (switch-to-buffer buff)
+    (text-mode)))
 
 (defun scratch ()
   "switches to the scratch buffer, creating it if needed"
