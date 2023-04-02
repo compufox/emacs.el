@@ -697,9 +697,7 @@ returns either 'dark or 'light"
   :config
   (setq slime-contribs '(sly-fancy sly-macrostep sly-quicklisp
                                    sly-asdf sly-reply-ansi-color sly-named-readtables)
-	inferior-lisp-program (os-cond
-                               (darwin "/usr/local/bin/ros run -Q")
-                               (t "ros run -Q"))))
+	inferior-lisp-program "ros run -Q"))
 
 (use-package elpy
   :disabled
