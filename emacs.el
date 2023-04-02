@@ -15,7 +15,7 @@
  '(inhibit-startup-screen t)
  '(make-backup-files nil)
  '(package-selected-packages
-   '(marginalia lua-mode fennel-mode modus-themes swift-mode company-quickhelp company-box nova-theme color-theme-sanityinc-tomorrow subatomic-theme parinfer-rust-mode emojify frog-jump-buffer workgroups2 popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
+   '(twilight-bright-theme twilight-bright marginalia lua-mode fennel-mode modus-themes swift-mode company-quickhelp company-box nova-theme color-theme-sanityinc-tomorrow subatomic-theme parinfer-rust-mode emojify frog-jump-buffer workgroups2 popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
@@ -41,7 +41,7 @@
 
 ;; got this disabled for now because (macos-theme) always returns dark if
 ;;  the system theme is set to auto :rolling-eyes:
-(defvar auto-update-macos-theme nil)
+(defvar auto-update-macos-theme t)
 
 ;;;
 ;; END CUSTOM VARIABLES
@@ -266,7 +266,7 @@ ensures disabling all prior loaded themes before changing"
   (mapcar #'disable-theme custom-enabled-themes)
   (if enable-dark-theme
       (load-theme 'challenger-deep t)
-    (modus-themes-load-operandi)))
+    (load-theme 'twilight-bright t)))
 
 (defun blankp (string)
   "returns t if STRING is an empty string"
@@ -350,21 +350,22 @@ ensures disabling all prior loaded themes before changing"
 (when-on-osx
  ;; this disables special character input in emacs when using the option key
  (setq mac-option-modifier 'meta)
+ (defvar *current-theme* nil)
  
  (defun macos-theme ()
    "gets the current macOS window theme
 
 returns either 'dark or 'light"
-   (let ((theme (shell-command-to-string "defaults read -g AppleInterfaceStyle")))
-     (if (string= theme "Dark
-")
+   (let ((theme (shell-command-to-string (concat "osascript " (getenv "HOME") "/Library/Mobile\\ Documents/com~apple~ScriptEditor2/Documents/CheckSystemTheme.scpt"))))
+     (if (string= theme (concat "true" (char-to-string ?\n)))
          'dark
        'light)))
 
  (defun match-theme-to-system ()
    "checks the system theme and changes the emacs theme to match"
-   (unless (eq enable-dark-theme (eq (macos-theme) 'dark))
-     (setq enable-dark-theme (eq (macos-theme) 'dark))
+   (unless (equal *current-theme* (macos-theme))
+     (setq *current-theme* (macos-theme))
+     (setq enable-dark-theme (eq *current-theme* 'dark))
      (load-emacs-theme)
      (set-face-attribute 'default nil :height face-height)))
 
@@ -376,7 +377,7 @@ returns either 'dark or 'light"
              ;;       it doesnt get run for the initial frame
              (set-face-attribute 'default nil :height face-height)
              (when auto-update-macos-theme
-               (run-with-timer 0 1 'match-theme-to-system)))))
+               (run-with-timer 0 5 'match-theme-to-system)))))
 
 ;; loading a theme
 (add-hook 'window-setup-hook 'load-emacs-theme)
@@ -732,16 +733,10 @@ returns either 'dark or 'light"
   (when enable-dark-theme (load-theme 'challenger-deep t)))
 
 ;; light theme
-(use-package modus-themes
+(use-package twilight-bright-theme
    :ensure t
    :init
-   (setq modus-themes-italic-constructs t
-         modus-themes-bold-constructs nil
-         modus-themes-region '(no-extend)
-         modus-themes-mode-line '(accented)
-         modus-themes-syntax '(alt-syntax)
-         modus-themes-paren-match '(intense))
-   (unless enable-dark-theme (modus-themes-load-themes)))
+   (unless enable-dark-theme (load-theme 'twilight-bright t nil)))
 
 ;; (use-package nova-theme
 ;;   :ensure t
