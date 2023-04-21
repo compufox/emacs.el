@@ -36,9 +36,15 @@
 ;; BEGIN CUSTOM VARIABLES
 ;;;
 
+;; cache the path to our configuration root
+(defvar *config-root* (file-name-directory (file-truename "~/.emacs")))
+
+;; theme selection
+(defvar *light-mode-theme* 'twilight-bright)
+(defvar *dark-mode-theme* 'challenger-deep)
+
 (defvar enable-dark-theme t)
 (defvar face-height 120)
-(defvar config-root (file-name-directory (file-truename "~/.emacs")))
 (defvar auto-update-macos-theme t)
 
 ;;;
@@ -263,8 +269,8 @@ INCLUDES is a space seperated list of headers to include"
 ensures disabling all prior loaded themes before changing"
   (mapcar #'disable-theme custom-enabled-themes)
   (if enable-dark-theme
-      (load-theme 'challenger-deep t)
-    (load-theme 'twilight-bright t)))
+      (load-theme *dark-mode-theme* t)
+    (load-theme *light-mode-theme* t)))
 
 (defun blankp (string)
   "returns t if STRING is an empty string"
@@ -354,7 +360,7 @@ ensures disabling all prior loaded themes before changing"
    "gets the current macOS window theme
 
 returns either 'dark or 'light"
-   (let ((theme (shell-command-to-string (concat "osascript " config-root "CheckSystemTheme.scpt"))))
+   (let ((theme (shell-command-to-string (concat "osascript " *config-root* "CheckSystemTheme.scpt"))))
      (if (string= theme (concat "true" (char-to-string ?\n)))
          'dark
        'light)))
@@ -397,11 +403,11 @@ returns either 'dark or 'light"
 (add-to-list 'package-archives
 	     '("melpa" . "http://melpa.org/packages/"))
 (eval-when-compile
-  (add-to-list 'load-path (concat config-root"use-package"))
+  (add-to-list 'load-path (concat *config-root* "use-package"))
   (require 'use-package))
 
 ;; allow for local, git-ignored configurations
-(defvar local-file (stringify config-root "local.el"))
+(defvar local-file (stringify *config-root* "local.el"))
 
 ;; remove slime stuff
 (when (package-installed-p 'slime-company)
@@ -475,14 +481,6 @@ returns either 'dark or 'light"
 
 (use-package request
   :ensure t)
-
-;; this doesnt seem to work on Mac Big Sur or BSD
-;(unless-on-bsdish
-; (use-package symon
-;   :ensure t
-;   :config
-;   (setq symon-delay 20)
-;   (symon-mode 1)))
 
 (use-package markdown-mode
   :ensure t)
@@ -608,7 +606,7 @@ returns either 'dark or 'light"
   :ensure t
   :init (amx-mode))
 
-;; make sure we only use magit WHEN WE HAVE GIT
+;; make sure we only use magit WHEN WE HAVE GIT :facepalm:
 (when (executable-find "git")
   (use-package magit
     :ensure t
@@ -722,53 +720,11 @@ returns either 'dark or 'light"
 
 ;; dark theme 
 (use-package challenger-deep-theme
-  :ensure t
-  :init
-  (when enable-dark-theme (load-theme 'challenger-deep t)))
+  :ensure t)
 
 ;; light theme
 (use-package twilight-bright-theme
-   :ensure t
-   :init
-   (unless enable-dark-theme (load-theme 'twilight-bright t nil)))
-
-;; (use-package nova-theme
-;;   :ensure t
-;;   :init
-;;   (load-theme 'nova t))
-
- ;; (use-package color-theme-sanityinc-tomorrow
- ;;   :ensure t
- ;;   :init
- ;;   (color-theme-sanityinc-tomorrow-blue))
-
-;; (use-package doom-themes
-;;   :ensure t
-;;   :config
-;;   (setq doom-themes-enable-bold t
-;; 	doom-themes-enable-italic t
-;; 	doom-outrun-electric-brighter-modeline t
-;; 	doom-outrun-electric-comment-bg t
-;; 	doom-outrun-electric-brighter-comments t)
-;;   (if enable-dark-theme
-;;       (load-theme 'doom-outrun-electric t)
-;;     (load-theme 'doom-acario-light t))
-;;   (doom-themes-org-config))
-
-;; (use-package subatomic-theme
-;;   :ensure t
-;;   :init
-;;   (setq subatomic-more-visible-comment-delimiters t)
-;;   (load-theme 'subatomic t))
-
-
-;; kaolin themes has a better light theme than the doom theme-set
-;;  (use-package kaolin-themes
-;;    :ensure t
-;;    :config
-;;    (setq kaolin-themes-italic-comments t
-;;	  kaolin-themes-distinct-fringe t)
-;;    (load-theme 'kaolin-light t))
+   :ensure t)
 
 ;;;
 ;; END THEME LOADING
