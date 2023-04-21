@@ -38,9 +38,7 @@
 
 (defvar enable-dark-theme t)
 (defvar face-height 120)
-
-;; got this disabled for now because (macos-theme) always returns dark if
-;;  the system theme is set to auto :rolling-eyes:
+(defvar config-root (file-name-directory (file-truename "~/.emacs")))
 (defvar auto-update-macos-theme t)
 
 ;;;
@@ -356,7 +354,7 @@ ensures disabling all prior loaded themes before changing"
    "gets the current macOS window theme
 
 returns either 'dark or 'light"
-   (let ((theme (shell-command-to-string (concat "osascript " (getenv "HOME") "/Library/Mobile\\ Documents/com~apple~ScriptEditor2/Documents/CheckSystemTheme.scpt"))))
+   (let ((theme (shell-command-to-string (concat "osascript " config-root "CheckSystemTheme.scpt"))))
      (if (string= theme (concat "true" (char-to-string ?\n)))
          'dark
        'light)))
@@ -399,13 +397,11 @@ returns either 'dark or 'light"
 (add-to-list 'package-archives
 	     '("melpa" . "http://melpa.org/packages/"))
 (eval-when-compile
-  (add-to-list 'load-path (stringify (file-name-directory
-				      (file-truename "~/.emacs"))
-				     "use-package"))
+  (add-to-list 'load-path (concat config-root"use-package"))
   (require 'use-package))
 
 ;; allow for local, git-ignored configurations
-(defvar local-file (stringify (file-name-directory (file-truename "~/.emacs")) "local.el"))
+(defvar local-file (stringify config-root "local.el"))
 
 ;; remove slime stuff
 (when (package-installed-p 'slime-company)
