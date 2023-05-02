@@ -77,7 +77,7 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 
 (defmacro os-cond (&rest forms)
   `(cond
-    ,@(loop for f in forms
+    ,@(cl-loop for f in forms
             if (eq (car f) t)
              collect `(t ,@(cdr f))
             else
