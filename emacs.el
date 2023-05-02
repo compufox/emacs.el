@@ -15,7 +15,7 @@
  '(inhibit-startup-screen t)
  '(make-backup-files nil)
  '(package-selected-packages
-   '(twilight-bright-theme twilight-bright marginalia lua-mode fennel-mode modus-themes swift-mode company-quickhelp company-box nova-theme color-theme-sanityinc-tomorrow subatomic-theme parinfer-rust-mode emojify frog-jump-buffer workgroups2 popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
+   '(solo-jazz-theme twilight-bright-theme twilight-bright marginalia lua-mode fennel-mode modus-themes swift-mode company-quickhelp company-box nova-theme color-theme-sanityinc-tomorrow subatomic-theme parinfer-rust-mode emojify frog-jump-buffer workgroups2 popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
@@ -40,7 +40,7 @@
 (defvar *config-root* (file-name-directory (file-truename "~/.emacs")))
 
 ;; theme selection
-(defvar *light-mode-theme* 'twilight-bright)
+(defvar *light-mode-theme* 'solo-jazz)
 (defvar *dark-mode-theme* 'challenger-deep)
 
 (defvar enable-dark-theme t)
@@ -724,6 +724,9 @@ returns either 'dark or 'light"
 
 ;; light theme
 (use-package twilight-bright-theme
+   :ensure t)
+
+(use-package solo-jazz-theme
    :ensure t)
 
 ;;;
