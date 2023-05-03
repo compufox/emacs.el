@@ -354,38 +354,59 @@ ensures disabling all prior loaded themes before changing"
 ;; mac specific loading
 (when-on-macos
  ;; this disables special character input in emacs when using the option key
- (setq mac-option-modifier 'meta)
- (defvar *current-theme* nil)
- 
- (defun macos-theme ()
-   "gets the current macOS window theme
+ ;; and ensures that the command key sends meta keypresses
+ (setq mac-option-modifier 'meta
+       mac-command-modifier 'meta)
+
+ ;; if we're using a version of emacs with a certain patch
+ ;; we dont need to do all the homegrown stuff, and can just
+ ;; hook into ns-system-appearance-change-functions
+ (if (boundp 'ns-system-appearance)
+     (add-hook 'ns-system-appearance-change-functions
+               (lambda (style)
+                 (mapc #'disable-theme custom-enabled-themes)
+                 (if (eq style 'light)
+                     (load-theme *light-mode-theme* t)
+                   (load-theme *dark-mode-theme* t))))
+   (progn
+     (defvar *current-theme* nil)
+
+     ;; define a function that runs a custom applescript script that
+     ;; checks our theme and returns 'dark or 'light
+     (defun macos-theme ()
+       "gets the current macOS window theme
 
 returns either 'dark or 'light"
-   (let ((theme (shell-command-to-string (concat "osascript " *config-root* "CheckSystemTheme.scpt"))))
-     (if (string= theme (concat "true" (char-to-string ?\n)))
-         'dark
-       'light)))
+       (let ((theme (shell-command-to-string (concat "osascript " *config-root* "CheckSystemTheme.scpt"))))
+         (if (string= theme (concat "true" (char-to-string ?\n)))
+             'dark
+           'light)))
 
- (defun match-theme-to-system ()
-   "checks the system theme and changes the emacs theme to match"
-   (unless (equal *current-theme* (macos-theme))
-     (setq *current-theme* (macos-theme))
-     (setq enable-dark-theme (eq *current-theme* 'dark))
-     (load-emacs-theme)
-     (set-face-attribute 'default nil :height face-height)))
+     ;; defines a function that checks the system theme
+     ;; and changes our emacs theme to match it
+     (defun match-theme-to-system ()
+       "checks the system theme and changes the emacs theme to match"
+       (unless (equal *current-theme* (macos-theme))
+         (setq *current-theme* (macos-theme))
+         (setq enable-dark-theme (eq *current-theme* 'dark))
+         (load-emacs-theme)
+         (set-face-attribute 'default nil :height face-height)))
 
- (add-hook 'window-setup-hook
-           (lambda ()
-             ;; because the damn mac screen is good,
-             ;;  we need to bump the font size up a lil lmao
-             ;; note: needs to be in window-setup-hook otherwise
-             ;;       it doesnt get run for the initial frame
-             (set-face-attribute 'default nil :height face-height)
-             (when auto-update-macos-theme
-               (run-with-timer 0 5 'match-theme-to-system)))))
+     ;; sets up a hook that will run every 5 seconds to
+     ;; match the themes
+     (add-hook 'window-setup-hook
+               (lambda ()
+                 ;; because the damn mac screen is good,
+                 ;;  we need to bump the font size up a lil lmao
+                 ;; note: needs to be in window-setup-hook otherwise
+                 ;;       it doesnt get run for the initial frame
+                 (set-face-attribute 'default nil :height face-height)
+                 (when auto-update-macos-theme
+                   (run-with-timer 0 5 'match-theme-to-system)))))))
 
 ;; loading a theme
-(add-hook 'window-setup-hook 'load-emacs-theme)
+(unless-on-macos
+ (add-hook 'window-setup-hook 'load-emacs-theme))
 
 ;; sets shortcut for c++ mode
 (require 'cc-mode)
