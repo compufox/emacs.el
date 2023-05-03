@@ -88,11 +88,12 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
              collect `((eq system-type ',(car f))
                        ,@(cdr f)))))
 
-(when-on osx darwin)
+(when-on macos darwin)
 (when-on bsd berkeley-unix)
 (when-on linux gnu/linux)
 (when-on unix gnu/linux berkeley-unix)
 (when-on windows windows-nt)
+(unless-on macos darwin)
 (unless-on bsd berkeley-unix)
 (unless-on windows windows-nt)
 (unless-on bsdish darwin berkeley-unix) ;; you know, bsd enough to count lmao
@@ -299,7 +300,7 @@ ensures disabling all prior loaded themes before changing"
 
 ;; this doesnt seem to be needed anymore? maybe its because of the
 ;;  build of emacs im using? going to leave it in just in case
-;(when-on-osx
+;(when-on-macos
 ;  (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin")))
 
 ;; when we have ros installed go and include the path in the exec-path list
@@ -351,7 +352,7 @@ ensures disabling all prior loaded themes before changing"
  (setq ispell-local-dictionary "en_US"))
 
 ;; mac specific loading
-(when-on-osx
+(when-on-macos
  ;; this disables special character input in emacs when using the option key
  (setq mac-option-modifier 'meta)
  (defvar *current-theme* nil)
