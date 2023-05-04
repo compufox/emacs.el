@@ -313,7 +313,6 @@ ensures disabling all prior loaded themes before changing"
 
 ;; run these options only when we're running in daemon mode
 (when (daemonp)
-  (setq doom-modeline-icon t)
   (global-set-key (kbd "C-x M-C-c") 'kill-emacs))
 
 ;; sets up my custom key bindings
@@ -525,6 +524,10 @@ returns either 'dark or 'light"
 	doom-modeline-minor-modes t
 	doom-modeline-gnus-timer nil
 	doom-modeline-bar-width 3)
+  
+  (unless (daemonp)
+    (setq doom-modeline-icon t))
+  
   (when-on-windows
    (setq inihibit-compacting-font-caches t)))
 
@@ -651,7 +654,7 @@ returns either 'dark or 'light"
 ;;   (go-eldoc-setup))
 
 (use-package org
-  :mode "\\.notes?"
+  :mode ("\\.notes?$" . org-mode)
   :hook (org-mode . (lambda ()
 		      (when (or (executable-find "ispell")
 				(executable-find "aspell"))
