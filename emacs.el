@@ -37,7 +37,8 @@
 ;;;
 
 ;; cache the path to our configuration root
-(defvar *config-root* (file-name-directory (file-truename "~/.emacs")))
+(eval-and-compile
+  (defvar *config-root* (file-name-directory (file-truename "~/.emacs"))))
 
 ;; theme selection
 (defvar *light-mode-theme* 'solo-jazz)
@@ -82,11 +83,11 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 (defmacro os-cond (&rest forms)
   `(cond
     ,@(cl-loop for f in forms
-            if (eq (car f) t)
-             collect `(t ,@(cdr f))
-            else
-             collect `((eq system-type ',(car f))
-                       ,@(cdr f)))))
+               if (eq (car f) t)
+                 collect `(t ,@(cdr f))
+               else
+                 collect `((eq system-type ',(car f))
+                           ,@(cdr f)))))
 
 (when-on macos darwin)
 (when-on bsd berkeley-unix)
@@ -268,7 +269,7 @@ INCLUDES is a space seperated list of headers to include"
   "loads custom themes based on enable-dark-theme
 
 ensures disabling all prior loaded themes before changing"
-  (mapcar #'disable-theme custom-enabled-themes)
+  (mapc #'disable-theme custom-enabled-themes)
   (if enable-dark-theme
       (load-theme *dark-mode-theme* t)
     (load-theme *light-mode-theme* t)))
@@ -423,7 +424,7 @@ returns either 'dark or 'light"
 (package-initialize)
 (add-to-list 'package-archives
 	     '("melpa" . "http://melpa.org/packages/"))
-(eval-when-compile
+(eval-and-compile
   (add-to-list 'load-path (concat *config-root* "use-package"))
   (require 'use-package))
 
@@ -685,7 +686,7 @@ returns either 'dark or 'light"
 (use-package macrostep
   :ensure t
   :bind (:map emacs-lisp-mode-map
-	      ("C-c e" . macrostep-expand)))
+	 ("C-c e" . macrostep-expand)))
 
 (use-package text-mode
   :config
