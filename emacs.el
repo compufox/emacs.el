@@ -486,7 +486,7 @@ returns either 'dark or 'light"
   :config
   (setq org-roam-directory
         (os-cond
-         (windows-nt (concat (getenv "USERPROFILE") "Syncthing/Notes"))
+         (windows-nt (concat (getenv "USERPROFILE") "\\Syncthing\\Notes"))
          (t "~/Syncthing/Notes")))
   (org-roam-setup))
 
