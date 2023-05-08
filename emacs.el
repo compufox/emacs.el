@@ -15,7 +15,7 @@
  '(inhibit-startup-screen t)
  '(make-backup-files nil)
  '(package-selected-packages
-   '(solo-jazz-theme twilight-bright-theme twilight-bright marginalia lua-mode fennel-mode modus-themes swift-mode company-quickhelp company-box nova-theme color-theme-sanityinc-tomorrow subatomic-theme parinfer-rust-mode emojify frog-jump-buffer workgroups2 popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
+   '(org-roam-ui org-roam solo-jazz-theme twilight-bright-theme twilight-bright marginalia lua-mode fennel-mode modus-themes swift-mode company-quickhelp company-box nova-theme color-theme-sanityinc-tomorrow subatomic-theme parinfer-rust-mode emojify frog-jump-buffer workgroups2 popwin request css-eldoc eros symon sly-asdf sly-quicklisp sly-named-readtables sly-macrostep counsel-projectile ivy-hydra counsel swiper fish-mode markdown-mode treemacs-magit treemacs-projectile macrostep macrostep-expand elcord company magit sly win-switch multiple-cursors poly-erb amx ido-completing-read+ rainbow-delimiters dimmer emr doom-themes prism projectile treemacs doom-modeline minions))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(size-indication-mode t)
@@ -40,9 +40,15 @@
 (eval-and-compile
   (defvar *config-root* (file-name-directory (file-truename "~/.emacs"))))
 
+;; allow for local, git-ignored configurations
+(defvar local-file (concat *config-root* "local.el"))
+
 ;; theme selection
 (defvar *light-mode-theme* 'solo-jazz)
 (defvar *dark-mode-theme* 'challenger-deep)
+
+(defvar *use-package-url*
+  "https://github.com/jwiegley/use-package/archive/refs/heads/master.zip")
 
 (defvar enable-dark-theme t)
 (defvar face-height 120)
@@ -435,23 +441,34 @@ returns either 'dark or 'light"
 (package-initialize)
 (add-to-list 'package-archives
 	     '("melpa" . "http://melpa.org/packages/"))
-(eval-and-compile
-  (add-to-list 'load-path (concat *config-root* "use-package"))
-  (require 'use-package))
 
-;; allow for local, git-ignored configurations
-(defvar local-file (stringify *config-root* "local.el"))
+;; download and setup use-package 
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-;; remove slime stuff
-(when (package-installed-p 'slime-company)
-  (package-delete (cadr (assoc 'slime-company package-alist))))
-(when (package-installed-p 'slime)
-  (package-delete (cadr (assoc 'slime package-alist)))
-  
-  ;; this is needed because slime-lisp-mode-hook gets like auto
-  ;; added into lisp-mode-hook when emacs loads
-  (setq lisp-mode-hook
-	(remove 'slime-lisp-mode-hook lisp-mode-hook)))
+(straight-use-package 'use-package)
+
+;; commented out the following lines since
+;; its been years since my migration to SLY over SLIME
+;;; remove slime stuff
+;(when (package-installed-p 'slime-company)
+;  (package-delete (cadr (assoc 'slime-company package-alist))))
+;(when (package-installed-p 'slime)
+;  (package-delete (cadr (assoc 'slime package-alist)))
+;  
+;  ;; this is needed because slime-lisp-mode-hook gets like auto
+;  ;; added into lisp-mode-hook when emacs loads
+;  (setq lisp-mode-hook
+;	(remove 'slime-lisp-mode-hook lisp-mode-hook)))
 
 ;;;;
 ;; package loading and configuration
@@ -459,6 +476,29 @@ returns either 'dark or 'light"
 
 (use-package swift-mode
   :ensure t)
+
+(use-package org-roam
+  :ensure t
+  :init (setq org-roam-v2-ack t)
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n i" . org-roam-node-insert))
+  :config
+  (setq org-roam-directory
+        (os-cond
+         (windows-nt (concat (getenv "USERPROFILE") "Syncthing/Notes"))
+         (t "~/Syncthing/Notes")))
+  (org-roam-setup))
+
+(use-package org-roam-ui
+  :straight
+    (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
+    :after org-roam
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
 
 ;; show function docstrings in the minibuffer
 (use-package marginalia
