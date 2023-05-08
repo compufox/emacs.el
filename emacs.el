@@ -485,6 +485,10 @@ returns either 'dark or 'light"
          ("C-c n i" . org-roam-node-insert)
          ("C-c n c" . org-roam-capture))
   :config
+  (when-on-windows
+    (unless (version<= "29.0.0" emacs-version)
+      (message "SQLite support is built into Emacs v29+ and is recommended for org-roam...")
+      (sleep-for 0.75)))
   (setq org-roam-directory
         (os-cond
          (windows-nt (concat (getenv "USERPROFILE") "\\Syncthing\\Notes"))
