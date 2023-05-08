@@ -482,7 +482,8 @@ returns either 'dark or 'light"
   :init (setq org-roam-v2-ack t)
   :bind (("C-c n l" . org-roam-buffer-toggle)
          ("C-c n f" . org-roam-node-find)
-         ("C-c n i" . org-roam-node-insert))
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture))
   :config
   (setq org-roam-directory
         (os-cond
