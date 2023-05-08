@@ -251,6 +251,12 @@ INCLUDES is a space seperated list of headers to include"
   (interactive)
   (message (apply #'concat (file-dependents (feature-file 'cl)))))
 
+(defun ensure-list (lst)
+  "ensures that LST is a list"
+  (cl-typecase lst
+    (list lst)
+    (t (list lst))))
+
 (defun posframe-fallback (buffer-or-name arg-name value)
   (let ((info (list :internal-border-width 3
                     :background-color "dark violet")))
@@ -269,10 +275,12 @@ INCLUDES is a space seperated list of headers to include"
   "loads custom themes based on enable-dark-theme
 
 ensures disabling all prior loaded themes before changing"
-  (mapc #'disable-theme custom-enabled-themes)
-  (if enable-dark-theme
-      (load-theme *dark-mode-theme* t)
-    (load-theme *light-mode-theme* t)))
+  (cl-flet ((load-themes (x)
+              (load-theme x t)))
+    (mapc #'disable-theme custom-enabled-themes)
+    (if enable-dark-theme
+        (mapc #'load-themes (ensure-list *dark-mode-theme*))
+      (mapc #'load-themes (ensure-list *light-mode-theme*)))))
 
 (defun blankp (string)
   "returns t if STRING is an empty string"
@@ -356,7 +364,10 @@ ensures disabling all prior loaded themes before changing"
  ;; this disables special character input in emacs when using the option key
  ;; and ensures that the command key sends meta keypresses
  (setq mac-option-modifier 'meta
-       mac-command-modifier 'meta)
+       mac-command-modifier 'meta
+
+       ;; turns off dark mode as default
+       enable-dark-theme nil)
 
  ;; if we're using a version of emacs with a certain patch
  ;; we dont need to do all the homegrown stuff, and can just
