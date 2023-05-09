@@ -10,7 +10,6 @@
    '("1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" default))
  '(dired-use-ls-dired nil)
  '(flycheck-color-mode-line-face-to-color 'mode-line-buffer-id)
- '(frame-background-mode 'dark)
  '(global-emojify-mode t)
  '(inhibit-startup-screen t)
  '(make-backup-files nil)
@@ -46,9 +45,6 @@
 ;; theme selection
 (defvar *light-mode-theme* 'solo-jazz)
 (defvar *dark-mode-theme* 'challenger-deep)
-
-(defvar *use-package-url*
-  "https://github.com/jwiegley/use-package/archive/refs/heads/master.zip")
 
 (defvar enable-dark-theme t)
 (defvar face-height 120)
@@ -442,7 +438,7 @@ returns either 'dark or 'light"
 (add-to-list 'package-archives
 	     '("melpa" . "http://melpa.org/packages/"))
 
-;; download and setup use-package 
+;; download and setup straight.el...
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
       (bootstrap-version 6))
@@ -455,6 +451,7 @@ returns either 'dark or 'light"
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+;; ...and then use that to download use-package 
 (straight-use-package 'use-package)
 
 ;; commented out the following lines since
@@ -484,26 +481,28 @@ returns either 'dark or 'light"
          ("C-c n f" . org-roam-node-find)
          ("C-c n i" . org-roam-node-insert)
          ("C-c n c" . org-roam-capture))
+  :custom
+  (org-roam-directory
+   (os-cond
+         (windows-nt (concat (getenv "USERPROFILE") "\\Syncthing\\Notes"))
+         (t "~/Syncthing/Notes")))
   :config
   (when-on-windows
     (unless (version<= "29.0.0" emacs-version)
       (message "SQLite support is built into Emacs v29+ and is recommended for org-roam...")
-      (sleep-for 0.75)))
-  (setq org-roam-directory
-        (os-cond
-         (windows-nt (concat (getenv "USERPROFILE") "\\Syncthing\\Notes"))
-         (t "~/Syncthing/Notes")))
+      (sleep-for 2.5)))
+  
   (org-roam-setup))
 
 (use-package org-roam-ui
   :straight
     (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
-    :after org-roam
-    :config
-    (setq org-roam-ui-sync-theme t
-          org-roam-ui-follow t
-          org-roam-ui-update-on-save t
-          org-roam-ui-open-on-start t))
+  :after org-roam
+  :custom
+  ((org-roam-ui-sync-theme t)
+   (org-roam-ui-follow t)   
+   (org-roam-ui-update-on-save t)
+   (org-roam-ui-open-on-start t)))
 
 ;; show function docstrings in the minibuffer
 (use-package marginalia
@@ -516,13 +515,16 @@ returns either 'dark or 'light"
 (unless (string= "arm64" (get-system-arch))
   (use-package parinfer-rust-mode
     :ensure t
-    :hook ((emacs-lisp-mode . parinfer-rust-mode)
-           (lisp-mode . parinfer-rust-mode))
+    :hook
+    ((emacs-lisp-mode lisp-mode) . parinfer-rust-mode)
+    
+    :custom
+    (parinfer-rust-library
+     (os-cond
+      (windows-nt "~/.emacs.d/parinfer-rust/parinfer_rust.dll")
+      (t "~/.emacs.d/parinfer-rust/libparinfer_rust.so")))
+    
     :init
-    (setq parinfer-rust-library
-          (os-cond
-           (windows-nt "~/.emacs.d/parinfer-rust/parinfer_rust.dll")
-           (t "~/.emacs.d/parinfer-rust/libparinfer_rust.so")))
     (unless-on-windows
      (setq parinfer-rust-auto-download t))))
 
@@ -538,8 +540,8 @@ returns either 'dark or 'light"
 
 (use-package posframe
   :ensure t
-  :config
-  (setq posframe-arghandler #'posframe-fallback))
+  :custom
+  (posframe-arghandler #'posframe-fallback))
 
 (use-package frog-jump-buffer
   :ensure t
@@ -576,17 +578,13 @@ returns either 'dark or 'light"
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1)
-  :config
-  (setq doom-modeline-buffer-encoding nil
-	doom-modeline-minor-modes t
-	doom-modeline-gnus-timer nil
-	doom-modeline-bar-width 3)
-  
-  (unless (daemonp)
-    (setq doom-modeline-icon t))
-  
-  (when-on-windows
-   (setq inihibit-compacting-font-caches t)))
+  :custom
+  ((doom-modeline-buffer-encoding nil)
+   (doom-modeline-minor-modes t)
+   (doom-modeline-gnus-timer nil)
+   (doom-modeline-bar-width 3)
+   (doom-modeline-icon (unless (daemonp) t))
+   (inhibit-compacting-font-caches (when-on-windows t))))
 
 (use-package projectile
   :ensure t
@@ -629,8 +627,8 @@ returns either 'dark or 'light"
   :init (ivy-mode 1)
   :bind (:map ivy-minibuffer-map
 	      ("RET" . ivy-alt-done))
-  :config
-  (setq ivy-use-virtual-buffers 'recentf))
+  :custom
+  (ivy-use-virtual-buffers 'recentf))
 
 (use-package ivy-hydra
   :ensure t
@@ -670,8 +668,10 @@ returns either 'dark or 'light"
 
 (use-package dimmer
   :ensure t
+  :custom
+  (dimmer-fraction 0.4)
+  
   :config
-  (setq dimmer-fraction 0.4)
   (dimmer-mode 1))
 
 (use-package rainbow-delimiters
@@ -736,8 +736,8 @@ returns either 'dark or 'light"
 	 ("C-c o" . win-switch-dispatch-once)))
 
 (use-package eldoc
-  :config
-  (add-hook 'emacs-lisp-mode #'eldoc-mode))
+  :ensure t
+  :hook (emacs-lisp-mode . eldoc-mode))
 
 (use-package macrostep
   :ensure t
@@ -745,8 +745,8 @@ returns either 'dark or 'light"
 	 ("C-c e" . macrostep-expand)))
 
 (use-package text-mode
-  :config
-  (add-hook 'text-mode-hook #'visual-line-mode))
+  :hook ((text-mode . visual-line-mode)
+         (text-mode . turn-on-orgtbl)))
 
 (use-package sly-macrostep
   :after sly
@@ -769,28 +769,30 @@ returns either 'dark or 'light"
   :bind (("s-l" . sly)
 	 :map lisp-mode-map
 	 ("C-c e" . macrostep-expand))
+  
   :hook ((lisp-mode . sly-editing-mode))
-  :config
-  (setq slime-contribs '(sly-fancy sly-macrostep sly-quicklisp
-                                   sly-asdf sly-reply-ansi-color sly-named-readtables)
-	inferior-lisp-program "ros run -Q"))
+  
+  :custom
+  ((slime-contribs '(sly-fancy sly-macrostep sly-quicklisp sly-asdf
+                     sly-reply-ansi-color sly-named-readtables))
+   (inferior-lisp-program "ros run -Q")))
 
 (use-package elpy
   :disabled
   :hook python-mode
-  :config
-  (setq venv-location (stringify (getenv "HOME") "/programming/python/")))
+  :custom
+  (venv-location (stringify (getenv "HOME") "/programming/python/")))
 
 (use-package emojify
   :ensure t
   :hook (after-init . global-emojify-mode)
-  :config
-  (setq emojify-display-style
-        (os-cond
-         (windows-nt 'image)
-         (gnu/linux 'unicode)
-         (darwin 'unicode)
-         (t 'image))))
+  :custom
+  (emojify-display-style
+   (os-cond
+    (windows-nt 'image)
+    (gnu/linux 'unicode)
+    (darwin 'unicode)
+    (t 'image))))
   
 ;;;
 ;; END PACKAGE LOADING
