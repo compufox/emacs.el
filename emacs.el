@@ -165,6 +165,42 @@ The following %-sequences are provided:
 	   (cons ?t (or remaining-time "N/A"))))))
 
 (defun emojofy ()
+;; custom projectile lisp project detection/compile command
+(defun focks/parse-asdf-system-name (asd-file)
+  (let ((regxp (rx "defsystem" (? eol) (*? space)
+                   (*? punct) (group (+ (any "-" letter))))))
+    (with-temp-buffer
+      (insert-file-contents asd-file)
+      (string-match regxp (buffer-string))
+      (string-trim
+       (substring (buffer-string) (match-beginning 1) (match-end 1))))))
+
+(defun focks/asdf-project-dir-p (&optional path)
+  (directory-files (or path (file-name-directory (buffer-file-name (current-buffer)))) 'full "?*.asd"))
+
+(defun focks/has-makefile-p (path)
+  (directory-files path 'full "Make*"))
+
+(defun focks/asdf-compile-cmd ()
+  ;; get project root (asd file)
+  ;; parse it for system name (immediately after defsystem)
+  ;; build quicklisp/asdf build command
+  (let* ((project-dir (projectile-project-root (file-name-directory (buffer-file-name (current-buffer)))))
+         (asd-file (car (focks/ensure-list (focks/asdf-project-dir-p project-dir))))
+         (asdf-system (focks/parse-asdf-system-name asd-file)))
+    (if (focks/has-makefile-p project-dir)
+        (concat "make -f " (car (focks/has-makefile-p project-dir)))
+      (concat "ros run --eval \""
+              "(handler-case "
+              "  (progn "
+              "    (ql:quickload :" asdf-system ") "
+              "    (asdf:make :" asdf-system ") "
+              "    (uiop:quit 0))"
+              "  (error (e) "
+              "    (format t \\\"~A~%%\\\" e) "
+              "    (uiop:quit 1)))"
+              "\""))))
+
   "turns a string into a formatted string for shitposting
 
 prompts for PREFIX and WORD
@@ -609,7 +645,11 @@ returns either 'dark or 'light"
   :ensure t
   :init (projectile-mode +1)
   :bind (:map projectile-mode-map
-	      ("C-c p" . projectile-command-map)))
+	 ("C-c p" . projectile-command-map))
+  :config
+  (projectile-register-project-type 'asdf 'focks/asdf-project-dir-p
+                                    :project-file "?*.asd"
+                                    :compile 'focks/asdf-compile-cmd))
 
 (use-package treemacs
   :ensure t
