@@ -471,6 +471,21 @@ returns either 'dark or 'light"
 ;; package loading and configuration
 ;;;;
 
+;; always set electric-pair-mode to load for elisp mode
+(use-package electric-pair-mode
+  :hook (emacs-lisp-mode . electric-pair-mode))
+
+;; but only load it into lisp mode if we dont have
+;; parinfer mode enabled (not on arm64 arch)
+(use-package electric-pair-mode
+  :when (string= "arm64" (get-system-arch))
+  :hook (lisp-mode . electric-pair-mode))
+
+(use-package siege-mode
+  :ensure straight
+  :straight (:host github :repo "tslilc/siege-mode" :branch "master")
+  :hook ((programming-mode . siege-mode)))
+
 (use-package swift-mode
   :ensure t)
 
@@ -515,8 +530,7 @@ returns either 'dark or 'light"
 (use-package parinfer-rust-mode
   :ensure t
   :unless (string= "arm64" (get-system-arch))
-  :hook
-  (lisp-mode . parinfer-rust-mode)
+  :hook (lisp-mode . parinfer-rust-mode)
     
   :custom
   (parinfer-rust-library
@@ -737,7 +751,7 @@ returns either 'dark or 'light"
 
 (use-package eldoc
   :ensure t
-  :hook (emacs-lisp-mode . eldoc-mode))
+  :hook ((emacs-lisp-mode lisp-interaction-mode ielm-mode org-mode) . eldoc-mode))
 
 (use-package macrostep
   :ensure t
