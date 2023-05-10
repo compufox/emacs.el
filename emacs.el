@@ -37,18 +37,18 @@
 
 ;; cache the path to our configuration root
 (eval-and-compile
-  (defvar *config-root* (file-name-directory (file-truename "~/.emacs"))))
+  (defvar focks/*config-root* (file-name-directory (file-truename "~/.emacs"))))
 
 ;; allow for local, git-ignored configurations
-(defvar local-file (concat *config-root* "local.el"))
+(defvar focks/local-file (concat focks/*config-root* "local.el"))
 
 ;; theme selection
-(defvar *light-mode-theme* 'solo-jazz)
-(defvar *dark-mode-theme* 'challenger-deep)
+(defvar focks/*light-mode-theme* 'solo-jazz)
+(defvar focks/*dark-mode-theme* 'challenger-deep)
 
-(defvar enable-dark-theme t)
-(defvar face-height 120)
-(defvar auto-update-macos-theme t)
+(defvar focks/enable-dark-theme t)
+(defvar focks/face-height 120)
+(defvar focks/auto-update-macos-theme t)
 
 ;;;
 ;; END CUSTOM VARIABLES
@@ -58,31 +58,27 @@
 ;;  BEGIN CUSTOM MACROS
 ;;;
 
-(defun get-system-arch ()
-  "gets the system architecture based off of the results of uname -a"
-  (car (last (split-string (shell-command-to-string "uname -a") nil t))))
-
-(defmacro when-on (os &rest type-names)
+(defmacro focks/when-on (os &rest type-names)
   "define a macro (named when-on-OS) to run code when SYSTEM-TYPE matches any symbol in TYPE-NAMES
 
 OS is a symbol (or string) to be placed in the macro name
 TYPE-NAMES is a list of symbols that correspond to values returned by system-type"
-  `(defmacro ,(intern (mapconcat (lambda (x) (format "%s" x)) (list "when-on-" os) "")) (&rest body)
+  `(defmacro ,(intern (mapconcat (lambda (x) (format "%s" x)) (list "focks/when-on-" os) "")) (&rest body)
      `(when (or ,@(mapcar (lambda (name) `(eq system-type ',name))
 			  ',type-names))
 	,@body)))
 
-(defmacro unless-on (os &rest type-names)
+(defmacro focks/unless-on (os &rest type-names)
   "define a macro (named unless-on-OS) to run code when SYSTEM-TYPE matches any symbol in TYPE-NAMES
 
 OS is a symbol (or string) to be placed in the macro name
 TYPE-NAMES is a list of symbols that correspond to values returned by system-type"
-  `(defmacro ,(intern (mapconcat (lambda (x) (format "%s" x)) (list "unless-on-" os) "")) (&rest body)
+  `(defmacro ,(intern (mapconcat (lambda (x) (format "%s" x)) (list "focks/unless-on-" os) "")) (&rest body)
      `(unless (or ,@(mapcar (lambda (name) `(eq system-type ',name))
                             ',type-names))
 	,@body)))
 
-(defmacro os-cond (&rest forms)
+(defmacro focks/os-cond (&rest forms)
   `(cond
     ,@(cl-loop for f in forms
                if (eq (car f) t)
@@ -91,15 +87,15 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
                  collect `((eq system-type ',(car f))
                            ,@(cdr f)))))
 
-(when-on macos darwin)
-(when-on bsd berkeley-unix)
-(when-on linux gnu/linux)
-(when-on unix gnu/linux berkeley-unix)
-(when-on windows windows-nt)
-(unless-on macos darwin)
-(unless-on bsd berkeley-unix)
-(unless-on windows windows-nt)
-(unless-on bsdish darwin berkeley-unix) ;; you know, bsd enough to count lmao
+(focks/when-on macos darwin)
+(focks/when-on bsd berkeley-unix)
+(focks/when-on linux gnu/linux)
+(focks/when-on unix gnu/linux berkeley-unix)
+(focks/when-on windows windows-nt)
+(focks/unless-on macos darwin)
+(focks/unless-on bsd berkeley-unix)
+(focks/unless-on windows windows-nt)
+(focks/unless-on bsdish darwin berkeley-unix) ;; you know, bsd enough to count lmao
 
 
 ;;;
@@ -110,7 +106,7 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
 ;; BEGIN CUSTOM FUNCTIONS
 ;;;
 
-(when-on-bsd 
+(focks/when-on-bsd 
  ;; the built-in battery-bsd-apm function doesnt seem to work on freebsd
  ;;  it has an extra command line argument, and doesnt properly parse the
  ;;  command output. here's my updated version
@@ -164,7 +160,6 @@ The following %-sequences are provided:
 	   (cons ?h (or (and hours (number-to-string hours)) "N/A"))
 	   (cons ?t (or remaining-time "N/A"))))))
 
-(defun emojofy ()
 ;; custom projectile lisp project detection/compile command
 (defun focks/parse-asdf-system-name (asd-file)
   (let ((regxp (rx "defsystem" (? eol) (*? space)
@@ -201,6 +196,11 @@ The following %-sequences are provided:
               "    (uiop:quit 1)))"
               "\""))))
 
+(defun focks/get-system-arch ()
+  "gets the system architecture based off of the results of uname -a"
+  (car (last (split-string (shell-command-to-string "uname -a") nil t))))
+
+(defun focks/emojofy ()
   "turns a string into a formatted string for shitposting
 
 prompts for PREFIX and WORD
@@ -224,7 +224,7 @@ RESULT: :wide_t::wide_e::wide_s::wide_t:"
     (kill-new result)
     (message result)))
 
-(defun horz-flip-buffers ()
+(defun focks/horz-flip-buffers ()
   "Flips the open buffers between two windows"
   (interactive)
   (let ((c-buf (buffer-name))
@@ -234,11 +234,11 @@ RESULT: :wide_t::wide_e::wide_s::wide_t:"
     (switch-to-buffer c-buf)
     (other-window (- (length (window-list)) 1))))
 
-(defun buffer-existsp (buf-name)
+(defun focks/buffer-existsp (buf-name)
   "checks if buffer with BUF-NAME exists in (buffer-list)"
   (member buf-name (mapcar #'buffer-name (buffer-list))))
 
-(defun get-file-info ()
+(defun focks/get-file-info ()
   "returns an alist with path and extension under :PATH and :EXTENSION"
   (let* ((split (split-string buffer-file-name "\\/" t))
 	 (path (remove (1- (length split)) split))
@@ -246,13 +246,13 @@ RESULT: :wide_t::wide_e::wide_s::wide_t:"
     `((:path . ,path)
       (:extension . ,ext))))
 
-(defun init-cpp-file (includes)
+(defun focks/init-cpp-file (includes)
   "Quickly and easily initializes a c++ file with main
 INCLUDES is a space seperated list of headers to include"
   (interactive "Mincludes: ")
   (let ((path (concat "/" (string-join
 			   (butlast
-			    (cdr (assoc :path (get-file-info)))) "/")
+			    (cdr (assoc :path (focks/get-file-info)))) "/")
 		      "/"))
 	(inc-list (split-string includes " "))
 	point)
@@ -270,11 +270,11 @@ INCLUDES is a space seperated list of headers to include"
     
     (goto-char point)))
 
-(defun stringify (&rest args)
+(defun focks/stringify (&rest args)
   "converts every value in ARGS into a string and merges them together"
   (mapconcat (lambda (x) (format "%s" x))  args ""))
 
-(defun fox-me-up ()
+(defun focks/fox-me-up ()
   "FOX ME UP INSIDE"
   (interactive)
   (message 
@@ -283,24 +283,27 @@ INCLUDES is a space seperated list of headers to include"
      `._ _,-.   )      _,.-'
         `    G.m-\"^m`m'"))
 
-(defun list-cl-sources ()
-  "list files that depend on CL package
-(these need to be changed to use cl-lib)"
-  (interactive)
-  (message (apply #'concat (file-dependents (feature-file 'cl)))))
+;; only create this func when we have CL loaded.
+;; otherwise its pointless
+(when (package-installed-p 'cl)
+  (defun focks/list-cl-sources ()
+    "list files that depend on CL package
+  (these need to be changed to use cl-lib)"
+    (interactive)
+    (message (apply #'concat (file-dependents (feature-file 'cl))))))
 
-(defun ensure-list (lst)
+(defun focks/ensure-list (lst)
   "ensures that LST is a list"
   (cl-typecase lst
     (list lst)
     (t (list lst))))
 
-(defun posframe-fallback (buffer-or-name arg-name value)
+(defun focks/posframe-fallback (buffer-or-name arg-name value)
   (let ((info (list :internal-border-width 3
                     :background-color "dark violet")))
     (or (plist-get info arg-name) value)))
 
-(defun sly-qlot (directory)
+(defun focks/sly-qlot (directory)
   (interactive (list (read-directory-name "Project directory: ")))
   (require 'sly)
   (sly-start :program "qlot"
@@ -309,33 +312,33 @@ INCLUDES is a space seperated list of headers to include"
              :name 'qlot
              :env (list (concat "PATH=" (mapconcat 'identity exec-path ":")))))
 
-(defun load-emacs-theme ()
-  "loads custom themes based on enable-dark-theme
+(defun focks/load-emacs-theme ()
+  "loads custom themes based on focks/enable-dark-theme
 
 ensures disabling all prior loaded themes before changing"
   (cl-flet ((load-themes (x)
               (load-theme x t)))
     (mapc #'disable-theme custom-enabled-themes)
-    (if enable-dark-theme
-        (mapc #'load-themes (ensure-list *dark-mode-theme*))
-      (mapc #'load-themes (ensure-list *light-mode-theme*)))))
+    (if focks/enable-dark-theme
+        (mapc #'load-themes (focks/ensure-list focks/*dark-mode-theme*))
+      (mapc #'load-themes (focks/ensure-list focks/*light-mode-theme*)))))
 
-(defun blankp (string)
+(defun focks/blankp (string)
   "returns t if STRING is an empty string"
   (string= string ""))
 
-(defun make-buffer (name)
+(defun focks/make-buffer (name)
   "creates and switches to a new buffer with name NAME"
   (interactive "Bname: ")
   (let ((buff (generate-new-buffer name)))
     (switch-to-buffer buff)
     (text-mode)))
 
-(defun scratch ()
+(defun focks/scratch ()
   "switches to the scratch buffer, creating it if needed"
   (interactive)
   (switch-to-buffer (get-buffer-create "*scratch*"))
-  (when (blankp (buffer-string))
+  (when (focks/blankp (buffer-string))
     (insert ";; This buffer is for text that is not saved, and for Lisp evaluation.\n")
     (insert ";; To create a file, visit it with C-x C-f and enter text in its buffer.\n\n")
     (goto-char (point-max)))
@@ -347,10 +350,11 @@ ensures disabling all prior loaded themes before changing"
 
 ;; this doesnt seem to be needed anymore? maybe its because of the
 ;;  build of emacs im using? going to leave it in just in case
-;(when-on-macos
+;(focks/when-on-macos
 ;  (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin")))
 
 ;; when we have ros installed go and include the path in the exec-path list
+;; TODO: see if we need this?
 (when (executable-find "ros")
   (let* ((homedir (car (last (split-string (shell-command-to-string "ros version")
                                            "\n" t))))
@@ -363,7 +367,7 @@ ensures disabling all prior loaded themes before changing"
   (global-set-key (kbd "C-x M-C-c") 'kill-emacs))
 
 ;; sets up my custom key bindings
-(global-set-key (kbd "C-x M-f") 'horz-flip-buffers)
+(global-set-key (kbd "C-x M-f") 'focks/horz-flip-buffers)
 
 ;; puts the line number in the left fringe
 (when (version<= "26.0.50" emacs-version)
@@ -380,7 +384,7 @@ ensures disabling all prior loaded themes before changing"
 (display-time-mode)
 
 ;; bsd specific loading
-(when-on-bsd
+(focks/when-on-bsd
  (setq ispell-dictionary "en_US")
  (setq ispell-program-name "aspell")
  (setq ispell-aspell-dict-dir "/usr/local/share/aspell/")
@@ -389,23 +393,23 @@ ensures disabling all prior loaded themes before changing"
  (setq battery-status-function #'battery-freebsd-apm))
 
 ;; linux specific loading
-(when-on-linux
+(focks/when-on-linux
  (setq ispell-program-name "hunspell"))
 
 ;; *nix specific loading
-(when-on-unix
+(focks/when-on-unix
  (display-battery-mode)
  (setq ispell-local-dictionary "en_US"))
 
 ;; mac specific loading
-(when-on-macos
+(focks/when-on-macos
  ;; this disables special character input in emacs when using the option key
  ;; and ensures that the command key sends meta keypresses
  (setq mac-option-modifier 'meta
        mac-command-modifier 'meta
 
        ;; turns off dark mode as default
-       enable-dark-theme nil)
+       focks/enable-dark-theme nil)
 
  ;; if we're using a version of emacs with a certain patch
  ;; we dont need to do all the homegrown stuff, and can just
@@ -415,31 +419,31 @@ ensures disabling all prior loaded themes before changing"
                (lambda (style)
                  (mapc #'disable-theme custom-enabled-themes)
                  (if (eq style 'light)
-                     (load-theme *light-mode-theme* t)
-                   (load-theme *dark-mode-theme* t))))
+                     (load-theme focks/*light-mode-theme* t)
+                   (load-theme focks/*dark-mode-theme* t))))
    (progn
-     (defvar *current-theme* nil)
+     (defvar focks/*current-theme* nil)
 
      ;; define a function that runs a custom applescript script that
      ;; checks our theme and returns 'dark or 'light
-     (defun macos-theme ()
+     (defun focks/macos-theme ()
        "gets the current macOS window theme
 
 returns either 'dark or 'light"
-       (let ((theme (shell-command-to-string (concat "osascript " *config-root* "CheckSystemTheme.scpt"))))
+       (let ((theme (shell-command-to-string (concat "osascript " focks/*config-root* "CheckSystemTheme.scpt"))))
          (if (string= theme (concat "true" (char-to-string ?\n)))
              'dark
            'light)))
 
      ;; defines a function that checks the system theme
      ;; and changes our emacs theme to match it
-     (defun match-theme-to-system ()
+     (defun focks/match-theme-to-system ()
        "checks the system theme and changes the emacs theme to match"
-       (unless (equal *current-theme* (macos-theme))
-         (setq *current-theme* (macos-theme))
-         (setq enable-dark-theme (eq *current-theme* 'dark))
-         (load-emacs-theme)
-         (set-face-attribute 'default nil :height face-height)))
+       (unless (equal focks/*current-theme* (macos-theme))
+         (setq focks/*current-theme* (macos-theme))
+         (setq focks/enable-dark-theme (eq focks/*current-theme* 'dark))
+         (focks/load-emacs-theme)
+         (set-face-attribute 'default nil :height focks/face-height)))
 
      ;; sets up a hook that will run every 5 seconds to
      ;; match the themes
@@ -449,17 +453,17 @@ returns either 'dark or 'light"
                  ;;  we need to bump the font size up a lil lmao
                  ;; note: needs to be in window-setup-hook otherwise
                  ;;       it doesnt get run for the initial frame
-                 (set-face-attribute 'default nil :height face-height)
-                 (when auto-update-macos-theme
-                   (run-with-timer 0 5 'match-theme-to-system)))))))
+                 (set-face-attribute 'default nil :height focks/face-height)
+                 (when focks/auto-update-macos-theme
+                   (run-with-timer 0 5 'focks/match-theme-to-system)))))))
 
 ;; loading a theme
-(unless-on-macos
- (add-hook 'window-setup-hook 'load-emacs-theme))
+(focks/unless-on-macos
+ (add-hook 'window-setup-hook 'focks/load-emacs-theme))
 
 ;; sets shortcut for c++ mode
 (require 'cc-mode)
-(define-key c++-mode-map (kbd "C-c i") 'init-cpp-file)
+(define-key c++-mode-map (kbd "C-c i") 'focks/init-cpp-file)
 
 ;; loading loadhist package (required for cl-sources function)
 (require 'loadhist)
@@ -514,7 +518,7 @@ returns either 'dark or 'light"
 ;; but only load it into lisp mode if we dont have
 ;; parinfer mode enabled (not on arm64 arch)
 (use-package electric-pair-mode
-  :when (string= "arm64" (get-system-arch))
+  :when (string= "arm64" (focks/get-system-arch))
   :hook (lisp-mode . electric-pair-mode))
 
 (use-package siege-mode
@@ -538,12 +542,12 @@ returns either 'dark or 'light"
   
   :custom
   (org-roam-directory
-   (os-cond
+   (focks/os-cond
      (windows-nt (concat (getenv "USERPROFILE") "\\Syncthing\\Notes"))
      (t "~/Syncthing/Notes")))
   
   :config
-  (when-on-windows
+  (focks/when-on-windows
     (unless (version<= "29.0.0" emacs-version)
       (message "SQLite support is built into Emacs v29+ and is recommended for org-roam...")
       (sleep-for 2.5)))
@@ -570,17 +574,17 @@ returns either 'dark or 'light"
 
 (use-package parinfer-rust-mode
   :ensure t
-  :unless (string= "arm64" (get-system-arch))
+  :unless (string= "arm64" (focks/get-system-arch))
   :hook (lisp-mode . parinfer-rust-mode)
     
   :custom
   (parinfer-rust-library
-   (os-cond
+   (focks/os-cond
     (windows-nt "~/.emacs.d/parinfer-rust/parinfer_rust.dll")
     (t "~/.emacs.d/parinfer-rust/libparinfer_rust.so")))
     
   :init
-  (unless-on-windows
+  (focks/unless-on-windows
    (setq parinfer-rust-auto-download t)))
 
 (use-package lua-mode
@@ -596,7 +600,7 @@ returns either 'dark or 'light"
 (use-package posframe
   :ensure t
   :custom
-  (posframe-arghandler #'posframe-fallback))
+  (posframe-arghandler #'focks/posframe-fallback))
 
 (use-package frog-jump-buffer
   :ensure t
@@ -639,7 +643,7 @@ returns either 'dark or 'light"
    (doom-modeline-gnus-timer nil)
    (doom-modeline-bar-width 3)
    (doom-modeline-icon (unless (daemonp) t))
-   (inhibit-compacting-font-caches (when-on-windows t))))
+   (inhibit-compacting-font-caches (focks/when-on-windows t))))
 
 (use-package projectile
   :ensure t
@@ -763,7 +767,7 @@ returns either 'dark or 'light"
 ;; (use-package go-mode
 ;;   :disabled
 ;;   :init
-;;   (when-on-unix (setq shell-file-name (executable-find "fish")))
+;;   (focks/when-on-unix (setq shell-file-name (executable-find "fish")))
 ;;   (when (memq window-system '(mac ns x))
 ;;     (exec-path-from-shell-initialize)
 ;;     (exec-path-from-shell-copy-env "GOPATH"))
@@ -840,14 +844,14 @@ returns either 'dark or 'light"
   :disabled
   :hook python-mode
   :custom
-  (venv-location (stringify (getenv "HOME") "/programming/python/")))
+  (venv-location (focks/stringify (getenv "HOME") "/programming/python/")))
 
 (use-package emojify
   :ensure t
   :hook (after-init . global-emojify-mode)
   :custom
   (emojify-display-style
-   (os-cond
+   (focks/os-cond
     (windows-nt 'image)
     (gnu/linux 'unicode)
     (darwin 'unicode)
@@ -876,10 +880,10 @@ returns either 'dark or 'light"
 ;; END THEME LOADING
 ;;;
 
-(unless (file-exists-p local-file)
+(unless (file-exists-p focks/local-file)
   ;; if the local file doesn't exist we create it
-  (with-temp-file local-file))
-(load local-file)
+  (with-temp-file focks/local-file))
+(load focks/local-file)
 
 ;; check and recompile the init file
 (cl-eval-when (load)
