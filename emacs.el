@@ -484,8 +484,8 @@ returns either 'dark or 'light"
   :custom
   (org-roam-directory
    (os-cond
-         (windows-nt (concat (getenv "USERPROFILE") "\\Syncthing\\Notes"))
-         (t "~/Syncthing/Notes")))
+     (windows-nt (concat (getenv "USERPROFILE") "\\Syncthing\\Notes"))
+     (t "~/Syncthing/Notes")))
   :config
   (when-on-windows
     (unless (version<= "29.0.0" emacs-version)
@@ -512,21 +512,21 @@ returns either 'dark or 'light"
          ("M-A" . marginalia-cycle))
   :init (marginalia-mode))
 
-(unless (string= "arm64" (get-system-arch))
-  (use-package parinfer-rust-mode
-    :ensure t
-    :hook
-    ((emacs-lisp-mode lisp-mode) . parinfer-rust-mode)
+(use-package parinfer-rust-mode
+  :ensure t
+  :unless (string= "arm64" (get-system-arch))
+  :hook
+  (lisp-mode . parinfer-rust-mode)
     
-    :custom
-    (parinfer-rust-library
-     (os-cond
-      (windows-nt "~/.emacs.d/parinfer-rust/parinfer_rust.dll")
-      (t "~/.emacs.d/parinfer-rust/libparinfer_rust.so")))
+  :custom
+  (parinfer-rust-library
+   (os-cond
+    (windows-nt "~/.emacs.d/parinfer-rust/parinfer_rust.dll")
+    (t "~/.emacs.d/parinfer-rust/libparinfer_rust.so")))
     
-    :init
-    (unless-on-windows
-     (setq parinfer-rust-auto-download t))))
+  :init
+  (unless-on-windows
+   (setq parinfer-rust-auto-download t)))
 
 (use-package lua-mode
   :ensure t)
@@ -650,10 +650,10 @@ returns either 'dark or 'light"
   ("C-r" . swiper))
 
 ;; only install elcord when discord is installed
-(when (executable-find "discord")
-  (use-package elcord
-    :ensure t
-    :hook ((lisp-mode . elcord-mode))))
+(use-package elcord
+  :ensure t
+  :when (executable-find "discord")
+  :hook ((lisp-mode . elcord-mode)))
 
 (use-package prism
   :ensure t
@@ -689,10 +689,10 @@ returns either 'dark or 'light"
   :init (amx-mode))
 
 ;; make sure we only use magit WHEN WE HAVE GIT :facepalm:
-(when (executable-find "git")
-  (use-package magit
-    :ensure t
-    :bind ("C-x a" . magit-status)))
+(use-package magit
+  :ensure t
+  :when (executable-find "git")
+  :bind ("C-x a" . magit-status))
 
 ;; (use-package go-autocomplete
 ;;   :disabled
