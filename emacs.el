@@ -492,15 +492,20 @@ returns either 'dark or 'light"
 (use-package org-roam
   :ensure t
   :init (setq org-roam-v2-ack t)
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-         ("C-c n f" . org-roam-node-find)
-         ("C-c n i" . org-roam-node-insert)
-         ("C-c n c" . org-roam-capture))
+  :bind
+  (("C-c n l" . org-roam-buffer-toggle)
+   ("C-c n f" . org-roam-node-find)
+   ("C-c n i" . org-roam-node-insert)
+   ("C-c n c" . org-roam-capture)
+   ("C-c n d" . org-roam-dailies-goto-today)
+   ("C-c n t" . org-roam-dailies-goto-tomorrow))
+  
   :custom
   (org-roam-directory
    (os-cond
      (windows-nt (concat (getenv "USERPROFILE") "\\Syncthing\\Notes"))
      (t "~/Syncthing/Notes")))
+  
   :config
   (when-on-windows
     (unless (version<= "29.0.0" emacs-version)
