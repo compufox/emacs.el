@@ -285,6 +285,7 @@ INCLUDES is a space seperated list of headers to include"
 
 ;; only create this func when we have CL loaded.
 ;; otherwise its pointless
+(require 'package)
 (when (package-installed-p 'cl)
   (defun focks/list-cl-sources ()
     "list files that depend on CL package
@@ -473,7 +474,6 @@ returns either 'dark or 'light"
 ;;;
 
 ;; adds the MELPA repo to my package archive list
-(require 'package)
 (package-initialize)
 (add-to-list 'package-archives
 	     '("melpa" . "http://melpa.org/packages/"))
