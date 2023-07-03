@@ -2,3 +2,5 @@
 *.elc
 /local.el
 .DS_Store
+*.otf
+*.ttf
