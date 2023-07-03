@@ -381,8 +381,10 @@ ensures disabling all prior loaded themes before changing"
 (scroll-bar-mode 0)
 
 ;; set the time format to 24hr and enable time display
-(setq display-time-24hr-format t)
-(display-time-mode)
+;; only if we're running from a console
+(unless window-system
+  (setq display-time-24hr-format t)
+  (display-time-mode))
 
 ;; bsd specific loading
 (focks/when-on-bsd
@@ -528,6 +530,13 @@ returns either 'dark or 'light"
 
 (use-package swift-mode
   :ensure t)
+
+(use-package json-reformat
+  :ensure t)
+
+(use-package json-mode
+  :ensure t
+  :pin melpa)
 
 (use-package org-roam
   :ensure t
