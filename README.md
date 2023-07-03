@@ -1,11 +1,11 @@
 # Foxie Emacs config
-## ava fox 
+## a. fox
 
-clone the repo using `git clone --recurse-submodules` and source the appropriate file for your shell
+clone the repo and source the appropriate file for your shell
 
 running the setup scripts will backup your current .emacs file and .emacs.d folder and symlink emacs.el into it's place.
-it will also install any/all git hooks from the `hooks` subfolder into place as well as installing any fonts inside of the `fonts` subfolder
+it will also install any/all git hooks from the `hooks` directory into place as well as installing any fonts inside of the `fonts` directory
 
-the fonts directory is empty (on purpose), and the config specifies certain fonts that are proprietary. Whoopsies.
+the fonts directory is empty, and the config specifies non-free fonts. Oopsy-doodle.
 
-we include use-package as a submodule because the entire config depends on it, and this prevents any issues that may arise from trying to install it during an initial load situation 
+the config is setup so as to bootstrap itself, so starting up emacs after a fresh clone should download and install everything as sepcified.
