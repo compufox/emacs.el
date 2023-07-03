@@ -20,5 +20,6 @@ cp hooks/* .git/hooks/
 chmod +x .git/hooks/*
 
 echo "Installing fonts..."
-cp fonts/* $font_dir
+cp fonts/*.ttf $font_dir/
+cp fonts/*.otf $font_dir/
 fc-cache -v 

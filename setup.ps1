@@ -21,7 +21,7 @@ New-Item -ItemType SymbolicLink -Path $env:appdata\.emacs -Target $PSScriptRoot\
 
 echo "Installing fonts..."
 $fonts = (New-Object -ComObject Shell.Application).Namespace(0x14)
-foreach ($file in gci $PSScriptRoot\Fonts\*.otf)
+foreach ($file in gci $PSScriptRoot\fonts\*.otf)
 {
     $fileName = $file.Name
     if (-not(Test-Path -Path "C:\Windows\fonts\$fileName" )) {
@@ -29,4 +29,3 @@ foreach ($file in gci $PSScriptRoot\Fonts\*.otf)
         dir $file | %{ $fonts.CopyHere($_.fullname) }
     }
 }
-cp *.otf c:\windows\fonts\
