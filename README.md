@@ -1,10 +1,16 @@
-# :writing_hand: 🦊 focksy emacs
+# :writing_hand:​🦊 focksy emacs
 
-clone the repo and source the appropriate file for your shell
+## Installing 
 
-running the setup scripts will backup your current .emacs file and .emacs.d folder and symlink emacs.el into it's place.
-it will also install any/all git hooks from the `hooks` directory into place as well as installing any fonts inside of the `fonts` directory
+1. clone the repo
+2. run the setup script for your shell
+3. start emacs
 
-the fonts directory is empty, and the config specifies non-free fonts. Oopsy-doodle.
+The setup scripts will backup your current emacs config and emacs.d directory (to `~/.emacs.bak` and `~/.emacs.d.bak`) before symlinking emacs.el to `~/.emacs`. It will then attempt to install any fonts inside the `fonts/` directory and refresh the font cache.
 
-the config is setup so as to bootstrap itself, so starting up emacs after a fresh clone should download and install everything as sepcified.
+### NOTES
+- If you are running on macOS, the editor will respond to system theme changes.
+This transition between light/dark mode themes is made smoother by using [emacs-plus](https://github.com/d12frosted/homebrew-emacs-plus).
+If you are using a different version of emacs that does not have the appropriate patches applied, it will default to using a method involving making shell calls to the included applescript "CheckSystemTheme.scpt" file.
+This will cause a "System Events" dialog popup asking for permission to continue.
+- The fonts directory as provided is empty and the config itself specifies non-free fonts, so please make changes as-needed for your setup.
