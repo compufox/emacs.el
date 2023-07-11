@@ -1,5 +1,4 @@
-# Foxie Emacs config
-## a. fox
+# :writing_hand: 🦊 focksy emacs
 
 clone the repo and source the appropriate file for your shell
 
