@@ -87,6 +87,16 @@ TYPE-NAMES is a list of symbols that correspond to values returned by system-typ
                  collect `((eq system-type ',(car f))
                            ,@(cdr f)))))
 
+(defmacro focks/when-machine (hostname &rest body)
+  "a macro to only execute BODY when HOSTNAME matches the value returned by SYSTEM-NAME
+
+applies UPCASE to HOSTNAME parameter, and to the value returned by SYSTEM-NAME
+if using a system that returns SYSTEM-NAME as System.local, we drop the .local"
+  `(when (string-equal (upcase ,hostname)
+                       (upcase (car (split-string (system-name) "\\."))))
+     ,@body))
+
+
 (focks/when-on macos darwin)
 (focks/when-on bsd berkeley-unix)
 (focks/when-on linux gnu/linux)
