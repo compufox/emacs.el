@@ -345,6 +345,15 @@ ensures disabling all prior loaded themes before changing"
     (goto-char (point-max)))
   (lisp-interaction-mode))
 
+(focks/when-on-windows
+ (defun focks/log-jira-changes (change)
+   (interactive "Mchange: ")
+   (let ((path (concat (getenv "HOME") "\\..\\..\\JiraBackendChanges.notes"))
+         (timestamp (current-time-string)))
+     (with-temp-buffer
+       (insert (concat "\n\n** " timestamp "\n" change))
+       (append-to-file (point-min) (point-max) path)))))
+
 ;;;
 ;;  END CUSTOM FUNCTIONS
 ;;;
