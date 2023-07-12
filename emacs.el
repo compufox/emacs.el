@@ -210,7 +210,67 @@ The following %-sequences are provided:
   "gets the system architecture based off of the results of uname -a"
   (car (last (split-string (shell-command-to-string "uname -a") nil t))))
 
-(defun focks/emojofy ()
+(defun focks/buffer-existsp (buf-name)
+  "checks if buffer with BUF-NAME exists in (buffer-list)"
+  (member buf-name (mapcar #'buffer-name (buffer-list))))
+
+(defun focks/get-file-info ()
+  "returns an alist with path and extension under :PATH and :EXTENSION"
+  (let* ((split (split-string buffer-file-name "\\/" t))
+	 (path (remove (1- (length split)) split))
+	 (ext (car (last (split-string (car (last split)) "\\.")))))
+    `((:path . ,path)
+      (:extension . ,ext))))
+
+(defun focks/stringify (&rest args)
+  "converts every value in ARGS into a string and merges them together"
+  (mapconcat (lambda (x) (format "%s" x))  args ""))
+
+;; only create this func when we have CL loaded.
+;; otherwise its pointless
+(require 'package)
+(when (package-installed-p 'cl)
+  (defun focks/list-cl-sources ()
+    "list files that depend on CL package
+  (these need to be changed to use cl-lib)"
+    (interactive)
+    (message (apply #'concat (file-dependents (feature-file 'cl))))))
+
+(defun focks/ensure-list (lst)
+  "ensures that LST is a list"
+  (cl-typecase lst
+    (list lst)
+    (t (list lst))))
+
+(defun focks/posframe-fallback (buffer-or-name arg-name value)
+  (let ((info (list :internal-border-width 3
+                    :background-color "dark violet")))
+    (or (plist-get info arg-name) value)))
+
+(defun focks/load-emacs-theme ()
+  "loads custom themes based on focks/enable-dark-theme
+
+ensures disabling all prior loaded themes before changing"
+  (cl-flet ((load-themes (x)
+              (load-theme x t)))
+    (mapc #'disable-theme custom-enabled-themes)
+    (if focks/enable-dark-theme
+        (mapc #'load-themes (focks/ensure-list focks/*dark-mode-theme*))
+      (mapc #'load-themes (focks/ensure-list focks/*light-mode-theme*)))))
+
+(defun focks/blankp (string)
+  "returns t if STRING is an empty string"
+  (string= string ""))
+
+;;;
+;; END CUSTOM FUNCTIONS
+;;;
+
+;;;
+;; CUSTOM INTERACTIVE FUNCTIONS
+;;;
+
+(defun emojofy ()
   "turns a string into a formatted string for shitposting
 
 prompts for PREFIX and WORD
@@ -234,7 +294,7 @@ RESULT: :wide_t::wide_e::wide_s::wide_t:"
     (kill-new result)
     (message result)))
 
-(defun focks/horz-flip-buffers ()
+(defun horz-flip-buffers ()
   "Flips the open buffers between two windows"
   (interactive)
   (let ((c-buf (buffer-name))
@@ -244,19 +304,7 @@ RESULT: :wide_t::wide_e::wide_s::wide_t:"
     (switch-to-buffer c-buf)
     (other-window (- (length (window-list)) 1))))
 
-(defun focks/buffer-existsp (buf-name)
-  "checks if buffer with BUF-NAME exists in (buffer-list)"
-  (member buf-name (mapcar #'buffer-name (buffer-list))))
-
-(defun focks/get-file-info ()
-  "returns an alist with path and extension under :PATH and :EXTENSION"
-  (let* ((split (split-string buffer-file-name "\\/" t))
-	 (path (remove (1- (length split)) split))
-	 (ext (car (last (split-string (car (last split)) "\\.")))))
-    `((:path . ,path)
-      (:extension . ,ext))))
-
-(defun focks/init-cpp-file (includes)
+(defun init-cpp-file (includes)
   "Quickly and easily initializes a c++ file with main
 INCLUDES is a space seperated list of headers to include"
   (interactive "Mincludes: ")
@@ -280,11 +328,7 @@ INCLUDES is a space seperated list of headers to include"
     
     (goto-char point)))
 
-(defun focks/stringify (&rest args)
-  "converts every value in ARGS into a string and merges them together"
-  (mapconcat (lambda (x) (format "%s" x))  args ""))
-
-(defun focks/fox-me-up ()
+(defun fox-me-up ()
   "FOX ME UP INSIDE"
   (interactive)
   (message 
@@ -293,28 +337,7 @@ INCLUDES is a space seperated list of headers to include"
      `._ _,-.   )      _,.-'
         `    G.m-\"^m`m'"))
 
-;; only create this func when we have CL loaded.
-;; otherwise its pointless
-(require 'package)
-(when (package-installed-p 'cl)
-  (defun focks/list-cl-sources ()
-    "list files that depend on CL package
-  (these need to be changed to use cl-lib)"
-    (interactive)
-    (message (apply #'concat (file-dependents (feature-file 'cl))))))
-
-(defun focks/ensure-list (lst)
-  "ensures that LST is a list"
-  (cl-typecase lst
-    (list lst)
-    (t (list lst))))
-
-(defun focks/posframe-fallback (buffer-or-name arg-name value)
-  (let ((info (list :internal-border-width 3
-                    :background-color "dark violet")))
-    (or (plist-get info arg-name) value)))
-
-(defun focks/sly-qlot (directory)
+(defun sly-qlot (directory)
   (interactive (list (read-directory-name "Project directory: ")))
   (require 'sly)
   (sly-start :program "qlot"
@@ -323,29 +346,14 @@ INCLUDES is a space seperated list of headers to include"
              :name 'qlot
              :env (list (concat "PATH=" (mapconcat 'identity exec-path ":")))))
 
-(defun focks/load-emacs-theme ()
-  "loads custom themes based on focks/enable-dark-theme
-
-ensures disabling all prior loaded themes before changing"
-  (cl-flet ((load-themes (x)
-              (load-theme x t)))
-    (mapc #'disable-theme custom-enabled-themes)
-    (if focks/enable-dark-theme
-        (mapc #'load-themes (focks/ensure-list focks/*dark-mode-theme*))
-      (mapc #'load-themes (focks/ensure-list focks/*light-mode-theme*)))))
-
-(defun focks/blankp (string)
-  "returns t if STRING is an empty string"
-  (string= string ""))
-
-(defun focks/make-buffer (name)
+(defun make-buffer (name)
   "creates and switches to a new buffer with name NAME"
   (interactive "Bname: ")
   (let ((buff (generate-new-buffer name)))
     (switch-to-buffer buff)
     (text-mode)))
 
-(defun focks/scratch ()
+(defun scratch ()
   "switches to the scratch buffer, creating it if needed"
   (interactive)
   (switch-to-buffer (get-buffer-create "*scratch*"))
@@ -356,7 +364,7 @@ ensures disabling all prior loaded themes before changing"
   (lisp-interaction-mode))
 
 (focks/when-on-windows
- (defun focks/log-jira-changes (change)
+ (defun log-jira-changes (change)
    (interactive "Mchange: ")
    (let ((path (concat (getenv "HOME") "\\..\\..\\JiraBackendChanges.notes"))
          (timestamp (current-time-string)))
@@ -365,7 +373,7 @@ ensures disabling all prior loaded themes before changing"
        (append-to-file (point-min) (point-max) path)))))
 
 ;;;
-;;  END CUSTOM FUNCTIONS
+;;  END INTERACTIVE FUNCTIONS
 ;;;
 
 ;; this doesnt seem to be needed anymore? maybe its because of the
@@ -387,7 +395,7 @@ ensures disabling all prior loaded themes before changing"
   (global-set-key (kbd "C-x M-C-c") 'kill-emacs))
 
 ;; sets up my custom key bindings
-(global-set-key (kbd "C-x M-f") 'focks/horz-flip-buffers)
+(global-set-key (kbd "C-x M-f") 'horz-flip-buffers)
 
 ;; puts the line number in the left fringe
 (when (version<= "26.0.50" emacs-version)
@@ -485,7 +493,7 @@ returns either 'dark or 'light"
 
 ;; sets shortcut for c++ mode
 (require 'cc-mode)
-(define-key c++-mode-map (kbd "C-c i") 'focks/init-cpp-file)
+(define-key c++-mode-map (kbd "C-c i") 'init-cpp-file)
 
 ;; loading loadhist package (required for cl-sources function)
 (require 'loadhist)
