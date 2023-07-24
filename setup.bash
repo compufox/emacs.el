@@ -20,6 +20,8 @@ cp hooks/* .git/hooks/
 chmod +x .git/hooks/*
 
 echo "Installing fonts..."
-cp fonts/*.ttf $font_dir/
-cp fonts/*.otf $font_dir/
+find -E fonts -type f -regex ".*\.(otf|ttf)" -exec cp \{\} $font_dir \;
 fc-cache -v 
+
+echo "Touching local.el file"
+touch local.el

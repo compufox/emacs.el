@@ -29,3 +29,5 @@ foreach ($file in gci $PSScriptRoot\fonts\*.otf)
         dir $file | %{ $fonts.CopyHere($_.fullname) }
     }
 }
+
+New-Item -ItemType File -Path $PSScriptRoot\local.el 

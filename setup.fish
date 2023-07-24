@@ -2,7 +2,7 @@
 set -l font_dir "~/.fonts"
 
 if string match -q "Darwin" (uname)
-    set font_dir "~/Library/Fonts"
+    set font_dir "~/Library/Fonts/"
 end
 
 if not test -d $font_dir
@@ -25,6 +25,11 @@ cp hooks/* .git/hooks/
 chmod +x .git/hooks/*
 
 echo "Installing fonts..."
-cp fonts/*.ttf $font_dir/
-cp fonts/*.otf $font_dir/
-fc-cache -v
+find -E fonts -type f -regex ".*\.(otf|ttf)" -exec cp \{\} $font_dir \;
+
+if not string match -q (which fc-cache)
+  fc-cache -v
+end
+
+echo "Touching local.el file"
+touch local.el
