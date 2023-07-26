@@ -1,0 +1,105 @@
+#+PROPERTY: header-args:emacs-lisp :tangle ./interactive-functions.el
+
+#+begin_src emacs-lisp
+  (defun emojofy ()
+  "turns a string into a formatted string for shitposting
+
+prompts for PREFIX and WORD
+copies the resulting formatted string into the kill-ring and displays a message
+ showing what was put there
+
+ex: 
+PREFIX=wide
+WORD=test
+
+RESULT: :wide_t::wide_e::wide_s::wide_t:"
+  (interactive)
+  (let* ((prefix (read-string "prefix: "))
+	 (word (read-string "word: "))
+         (result (mapconcat (lambda (letter)
+                              (if (memq (get-char-code-property letter 'general-category)
+                                        '(Ll Lu))
+                                  (format ":%s_%c:" prefix letter)
+                                (format "%c" letter)))
+                            word "\u200d")))
+    (kill-new result)
+    (message result)))
+
+(defun horz-flip-buffers ()
+  "Flips the open buffers between two windows"
+  (interactive)
+  (let ((c-buf (buffer-name))
+	(o-buf (buffer-name (window-buffer (next-window)))))
+    (switch-to-buffer o-buf nil t)
+    (other-window 1)
+    (switch-to-buffer c-buf)
+    (other-window (- (length (window-list)) 1))))
+
+(defun init-cpp-file (includes)
+  "Quickly and easily initializes a c++ file with main
+INCLUDES is a space seperated list of headers to include"
+  (interactive "Mincludes: ")
+  (let ((path (concat "/" (string-join
+			   (butlast
+			    (cdr (assoc :path (focks/get-file-info)))) "/")
+		      "/"))
+	(inc-list (split-string includes " "))
+	point)
+    (dolist (inc inc-list)
+      (insert "#include ")
+      (if (file-exists-p (concat path inc ".h"))
+	  (insert (concat "\"" inc ".h\"\n"))
+	(insert (concat "<" inc ">\n"))))
+    (insert "using namespace std;\n\n")
+    (insert "int main(int argc, char *argv[]) {\n")
+    (insert "  ")
+    (setq point (point))
+    (insert "\n  return 0;\n")
+    (insert "}\n")
+    
+    (goto-char point)))
+
+(defun fox-me-up ()
+  "FOX ME UP INSIDE"
+  (interactive)
+  (message 
+"  _,-=._              /|_/|
+  `-.}   `=._,.-=-._.,  @ @._,   <(reet)
+     `._ _,-.   )      _,.-'
+        `    G.m-\"^m`m'"))
+
+(defun sly-qlot (directory)
+  (interactive (list (read-directory-name "Project directory: ")))
+  (require 'sly)
+  (sly-start :program "qlot"
+             :program-args '("exec" "ros" "-S" "." "run")
+             :directory directory
+             :name 'qlot
+             :env (list (concat "PATH=" (mapconcat 'identity exec-path ":")))))
+
+(defun make-buffer (name)
+  "creates and switches to a new buffer with name NAME"
+  (interactive "Bname: ")
+  (let ((buff (generate-new-buffer name)))
+    (switch-to-buffer buff)
+    (text-mode)))
+
+(defun scratch ()
+  "switches to the scratch buffer, creating it if needed"
+  (interactive)
+  (switch-to-buffer (get-buffer-create "*scratch*"))
+  (when (focks/blankp (buffer-string))
+    (insert ";; This buffer is for text that is not saved, and for Lisp evaluation.\n")
+    (insert ";; To create a file, visit it with C-x C-f and enter text in its buffer.\n\n")
+    (goto-char (point-max)))
+  (lisp-interaction-mode))
+
+(focks/when-on-windows
+ (defun log-jira-changes (change)
+   (interactive "Mchange: ")
+   (let ((path (concat (getenv "HOME") "\\..\\..\\JiraBackendChanges.notes"))
+         (timestamp (current-time-string)))
+     (with-temp-buffer
+       (insert (concat "\n\n** " timestamp "\n" change))
+       (append-to-file (point-min) (point-max) path)))))
+#+end_src

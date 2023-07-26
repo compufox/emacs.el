@@ -1,0 +1,18 @@
+#+PROPERTY: header-args:emacs-lisp :tangle ./variables.el
+
+#+begin_src emacs-lisp
+  ;; cache the path to our configuration root
+  (eval-and-compile
+    (defvar focks/*config-root* (file-name-directory (file-truename "~/.emacs"))))
+
+  ;; allow for local, git-ignored configurations
+  (defvar focks/local-file (concat focks/*config-root* "local.el"))
+
+  ;; theme selection
+  (defvar focks/*light-mode-theme* 'solo-jazz)
+  (defvar focks/*dark-mode-theme* 'challenger-deep)
+
+  (defvar focks/enable-dark-theme t)
+  (defvar focks/face-height 120)
+  (defvar focks/auto-update-macos-theme t)
+#+end_src

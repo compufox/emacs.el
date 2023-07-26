@@ -13,7 +13,7 @@ fi
 [[ -d ~/.emacs.d ]] ; mv ~/.emacs.d ~/.emacs.d.bak
 
 echo "Making link..."
-ln -sf $(pwd)/emacs.el ~/.emacs
+ln -sf $(pwd)/bootstrap.el ~/.emacs
 
 echo "Installing git hooks..."
 cp hooks/* .git/hooks/

@@ -1,0 +1,14 @@
+#+PROPERTY: header-args:emacs-lisp :tangle ./theme.el
+
+#+begin_src emacs-lisp
+;; dark theme 
+(use-package challenger-deep-theme
+  :ensure t)
+
+;; light theme
+(use-package twilight-bright-theme
+   :ensure t)
+
+(use-package solo-jazz-theme
+   :ensure t)  
+#+end_src

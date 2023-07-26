@@ -1,0 +1,377 @@
+#+PROPERTY: header-args:emacs-lisp :tangle ./packages.el
+
+#+begin_src emacs-lisp
+  ;; adds the MELPA repo to my package archive list
+  (package-initialize)
+  (add-to-list 'package-archives
+  	     '("melpa" . "http://melpa.org/packages/"))
+
+  (straight-use-package 'use-package)
+
+    ;; always set electric-pair-mode to load for elisp mode
+  (use-package electric-pair-mode
+      :hook (emacs-lisp-mode . electric-pair-mode))
+
+  ;; but only load it into lisp mode if we dont have
+  ;; parinfer mode enabled (not on arm64 arch)
+  (use-package electric-pair-mode
+    :when (string= "arm64" (focks/get-system-arch))
+    :hook (lisp-mode . electric-pair-mode))
+
+  (use-package siege-mode
+    :ensure straight
+    :straight (:host github :repo "tslilc/siege-mode" :branch "master")
+    :hook ((programming-mode . siege-mode)))
+
+  (use-package swift-mode
+    :ensure t)
+
+  (use-package json-reformat
+    :ensure t)
+
+  (use-package json-mode
+    :ensure t
+    :pin melpa)
+
+  (use-package org-roam
+    :ensure t
+    :init (setq org-roam-v2-ack t)
+    :bind
+    (("C-c n l" . org-roam-buffer-toggle)
+     ("C-c n f" . org-roam-node-find)
+     ("C-c n i" . org-roam-node-insert)
+     ("C-c n c" . org-roam-capture)
+     ("C-c n d" . org-roam-dailies-goto-today)
+     ("C-c n t" . org-roam-dailies-goto-tomorrow))
+    
+    :custom
+    (org-roam-directory
+     (focks/os-cond
+       (windows-nt (concat (getenv "USERPROFILE") "\\Syncthing\\Notes"))
+       (t "~/Syncthing/Notes")))
+    
+    :config
+    (focks/when-on-windows
+      (unless (version<= "29.0.0" emacs-version)
+        (message "SQLite support is built into Emacs v29+ and is recommended for org-roam...")
+        (sleep-for 2.5)))
+    
+    (org-roam-setup))
+
+  (use-package org-roam-ui
+    :straight
+      (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
+    :after org-roam
+    :custom
+    ((org-roam-ui-sync-theme t)
+     (org-roam-ui-follow t)   
+     (org-roam-ui-update-on-save t)
+     (org-roam-ui-open-on-start t)))
+
+  ;; show function docstrings in the minibuffer
+  (use-package marginalia
+    :ensure t
+    :bind (("M-A" . marginalia-cycle)
+           :map minibuffer-local-map
+           ("M-A" . marginalia-cycle))
+    :init (marginalia-mode))
+
+  (use-package parinfer-rust-mode
+    :ensure t
+    :unless (string= "arm64" (focks/get-system-arch))
+    :hook (lisp-mode . parinfer-rust-mode)
+      
+    :custom
+    (parinfer-rust-library
+     (focks/os-cond
+      (windows-nt "~/.emacs.d/parinfer-rust/parinfer_rust.dll")
+      (t "~/.emacs.d/parinfer-rust/libparinfer_rust.so")))
+      
+    :init
+    (focks/unless-on-windows
+     (setq parinfer-rust-auto-download t)))
+
+  (use-package lua-mode
+    :ensure t)
+
+  (use-package fennel-mode
+    :ensure t)
+
+  (use-package popwin
+    :ensure t
+    :init (popwin-mode t))
+
+  (use-package posframe
+    :ensure t
+    :custom
+    (posframe-arghandler #'focks/posframe-fallback))
+
+  (use-package frog-jump-buffer
+    :ensure t
+    :bind ("C-;" . frog-jump-buffer)
+    :config
+    (dolist (regexp '("TAGS" "^\\*Compile-log" "-debug\\*$" "^\\:" "errors\\*$" "^\\*Backtrace" "-ls\\*$"
+                      "stderr\\*$" "^\\*Flymake" "^\\*vc" "^\\*Warnings" "^\\*eldoc" "\\^*Shell Command"))
+      (push regexp frog-jump-buffer-ignore-buffers)))
+
+  (use-package eros
+    :ensure t
+    :init (eros-mode t))
+
+  (use-package css-eldoc
+    :ensure t
+    :hook ((css-mode . turn-on-css-eldoc)))
+
+  (use-package request
+    :ensure t)
+
+  (use-package markdown-mode
+    :ensure t)
+
+  (use-package eshell
+    :bind ("C-x M-e" . eshell))
+
+  (use-package info-look
+    :ensure t)
+
+  (use-package minions
+    :ensure t
+    :config (minions-mode 1))
+
+  (use-package doom-modeline
+    :ensure t
+    :init (doom-modeline-mode 1)
+    :custom
+    ((doom-modeline-buffer-encoding nil)
+     (doom-modeline-minor-modes t)
+     (doom-modeline-gnus-timer nil)
+     (doom-modeline-bar-width 3)
+     (doom-modeline-icon (unless (daemonp) t))
+     (inhibit-compacting-font-caches (focks/when-on-windows t))))
+
+  (use-package projectile
+    :ensure t
+    :init (projectile-mode +1)
+    :bind (:map projectile-mode-map
+  	 ("C-c p" . projectile-command-map))
+    :config
+    (projectile-register-project-type 'asdf 'focks/asdf-project-dir-p
+                                      :project-file "?*.asd"
+                                      :compile 'focks/asdf-compile-cmd))
+
+  (use-package treemacs
+    :ensure t
+    :bind ([f8] . treemacs))
+
+  (use-package treemacs-projectile
+    :after treemacs projectile
+    :ensure t)
+
+  (use-package treemacs-magit
+    :after treemacs magit
+    :ensure t)
+
+  (use-package company
+    :ensure t
+    :init (global-company-mode))
+
+  (use-package company-quickhelp
+    :ensure t
+    :hook (company-mode . company-quickhelp-mode))
+
+  (use-package company-box
+    :ensure t
+    :hook (company-mode . company-box-mode))
+
+  (use-package fish-mode
+    :ensure t)
+
+  (use-package hydra
+    :ensure t)
+
+  (use-package ivy
+    :ensure t
+    :init (ivy-mode 1)
+    :bind (:map ivy-minibuffer-map
+  	      ("RET" . ivy-alt-done))
+    :custom
+    (ivy-use-virtual-buffers 'recentf))
+
+  (use-package ivy-hydra
+    :ensure t
+    :after ivy hydra)
+
+  (use-package counsel
+    :ensure t
+    :init (counsel-mode 1))
+
+  (use-package counsel-projectile
+    :ensure t
+    :after counsel projectile
+    :init (counsel-projectile-mode))
+
+  (use-package swiper
+    :ensure t
+    :bind
+    ("C-s" . swiper)
+    ("C-r" . swiper))
+
+  ;; only install elcord when discord is installed
+  (use-package elcord
+    :ensure t
+    :when (executable-find "discord")
+    :hook ((lisp-mode . elcord-mode)))
+
+  (use-package prism
+    :ensure t
+    :hook ((lisp-mode . prism-mode)
+  	 (common-lisp-mode . prism-mode)
+  	 (ruby-mode . prism-mode)
+  	 (emacs-lisp-mode . prism-mode)))
+    
+  (use-package emr
+    :ensure t
+    :bind (("M-RET" . emr-show-refactor-menu)))
+
+  (use-package dimmer
+    :ensure t
+    :custom
+    (dimmer-fraction 0.4)
+    
+    :config
+    (dimmer-mode 1))
+
+  (use-package rainbow-delimiters
+    :ensure t
+    :hook ((lisp-mode . rainbow-delimiters-mode)
+  	 (emacs-lisp-mode . rainbow-delimiters-mode)
+  	 (sly-mode . rainbow-delimiters-mode)))
+
+  (use-package ido-completing-read+
+    :ensure t
+    :init (ido-ubiquitous-mode 1))
+
+  (use-package amx
+    :ensure t
+    :init (amx-mode))
+
+  ;; make sure we only use magit WHEN WE HAVE GIT :facepalm:
+  (use-package magit
+    :ensure t
+    :when (executable-find "git")
+    :bind ("C-x a" . magit-status))
+
+  ;; (use-package go-autocomplete
+  ;;   :disabled
+  ;;   :init (ac-config-default))
+
+  ;; (use-package go-complete
+  ;;   :disabled)
+
+  ;; (use-package go-mode
+  ;;   :disabled
+  ;;   :init
+  ;;   (focks/when-on-unix (setq shell-file-name (executable-find "fish")))
+  ;;   (when (memq window-system '(mac ns x))
+  ;;     (exec-path-from-shell-initialize)
+  ;;     (exec-path-from-shell-copy-env "GOPATH"))
+  ;;   (go-eldoc-setup))
+
+  (use-package flyspell
+    :ensure t
+    :bind ("C-'" . flyspell-auto-correct-previous-pos))
+
+  (use-package org
+    :mode ("\\.notes?$" . org-mode)
+    :hook (org-mode . (lambda ()
+  		      (when (or (executable-find "ispell")
+  				(executable-find "aspell"))
+  			(flyspell-mode)))))
+
+  (use-package poly-erb
+    :ensure t
+    :mode "\\.erb")
+
+  (use-package lisp-mode
+    :mode "\\.stumpwmrc$")
+
+  (use-package multiple-cursors
+    :ensure t
+    :bind (("C->" . mc/mark-next-like-this)
+  	 ("C-<" . mc/mark-previous-like-this)
+  	 ("C-c C-<" . mc/mark-all-like-this)))
+
+  (use-package win-switch
+    :ensure t
+    :bind (("C-x o" . win-switch-dispatch)
+  	 ("C-c o" . win-switch-dispatch-once)))
+
+  (use-package eldoc
+    :ensure t
+    :hook ((emacs-lisp-mode lisp-interaction-mode ielm-mode org-mode) . eldoc-mode))
+
+  (use-package macrostep
+    :ensure t
+    :bind (:map emacs-lisp-mode-map
+  	 ("C-c e" . macrostep-expand)))
+
+  (use-package text-mode
+    :hook ((text-mode . visual-line-mode)
+           (text-mode . turn-on-orgtbl)))
+
+  (use-package sly-macrostep
+    :after sly
+    :ensure t)
+
+  (use-package sly-named-readtables
+    :after sly
+    :ensure t)
+
+  (use-package sly-quicklisp
+    :after sly
+    :ensure t)
+
+  (use-package sly-asdf
+    :after sly
+    :ensure t)
+
+  (use-package sly
+    :ensure t
+    :bind (("s-l" . sly)
+  	 :map lisp-mode-map
+  	 ("C-c e" . macrostep-expand))
+    
+    :hook ((lisp-mode . sly-editing-mode))
+    
+    :custom
+    ((slime-contribs '(sly-fancy sly-macrostep sly-quicklisp sly-asdf
+                       sly-reply-ansi-color sly-named-readtables))
+     (inferior-lisp-program "ros run -Q")))
+
+  (use-package elpy
+    :disabled
+    :hook python-mode
+    :custom
+    (venv-location (focks/stringify (getenv "HOME") "/programming/python/")))
+
+  (use-package emojify
+    :ensure t
+    :hook (after-init . global-emojify-mode)
+    :custom
+    (emojify-display-style
+     (focks/os-cond
+      (windows-nt 'image)
+      (gnu/linux 'unicode)
+      (darwin 'unicode)
+      (t 'image))))
+
+  (use-package nerd-icons
+    :ensure t
+    :config
+    (unless (focks/font-available-p "Symbols Nerd Font Mono")
+      (os-cond
+       (windows-nt (messge "Please install nerd fonts manually thx :-*"))
+       (t (nerd-icons-install-fonts))))
+    :custom
+    (nerd-icons-font-family "Symbols Nerd Font Mono"))
+#+end_src

@@ -1,0 +1,16 @@
+#+PROPERTY: header-args:emacs-lisp :tangle ./lastly.el
+
+#+begin_src emacs-lisp
+  (unless (file-exists-p focks/local-file)
+  ;; if the local file doesn't exist we create it
+  (with-temp-file focks/local-file))
+(load focks/local-file)
+
+;; check and recompile the init file
+(cl-eval-when (load)
+  (byte-compile-file (file-truename "~/.emacs")))
+
+;; enable 'list-timers function
+(put 'list-timers 'disabled nil)
+
+#+end_src

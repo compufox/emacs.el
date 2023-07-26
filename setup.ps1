@@ -17,7 +17,7 @@ If (Test-Path -Path $env:appdata\.emacs.d -PathType Container)
 }
 
 echo "Making link..."
-New-Item -ItemType SymbolicLink -Path $env:appdata\.emacs -Target $PSScriptRoot\emacs.el
+New-Item -ItemType SymbolicLink -Path $env:appdata\.emacs -Target $PSScriptRoot\bootstrap.el
 
 echo "Installing fonts..."
 $fonts = (New-Object -ComObject Shell.Application).Namespace(0x14)

@@ -5,3 +5,4 @@
 *.otf
 *.ttf
 fonts/.gitignore
+config/*.el

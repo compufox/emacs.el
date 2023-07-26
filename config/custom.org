@@ -1,0 +1,33 @@
+#+PROPERTY: header-args:emacs-lisp :tangle ./custom.el
+
+#+begin_src emacs-lisp
+  (custom-set-variables
+   ;; custom-set-variables was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(backup-directory-alist '((".*" concat (getenv "HOME") "/.emacs.d/backups")))
+   '(column-number-mode t)
+   '(company-quickhelp-use-propertized-text t)
+   '(dired-use-ls-dired nil)
+   '(flycheck-color-mode-line-face-to-color 'mode-line-buffer-id)
+   '(global-emojify-mode t)
+   '(inhibit-startup-screen t)
+   '(make-backup-files nil)
+   '(save-place t nil (saveplace))
+   '(show-paren-mode t)
+   '(size-indication-mode t)
+   '(tool-bar-mode nil)
+   '(tool-bar-position 'left)
+   '(vc-annotate-background nil)
+   '(vc-annotate-very-old-color nil)
+   '(window-divider-mode nil))
+  
+  (custom-set-faces
+   ;; custom-set-faces was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 113 :width normal :foundry "unknown" :family "Cartograph CF"))))
+   '(font-lock-comment-face ((t (:slant italic :family "Cartograph CF")))))
+#+end_src 
