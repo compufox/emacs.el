@@ -833,6 +833,10 @@ returns either 'dark or 'light"
 ;;     (exec-path-from-shell-copy-env "GOPATH"))
 ;;   (go-eldoc-setup))
 
+(use-package flyspell
+  :ensure t
+  :bind ("C-'" . flyspell-auto-correct-previous-pos))
+
 (use-package org
   :mode ("\\.notes?$" . org-mode)
   :hook (org-mode . (lambda ()
