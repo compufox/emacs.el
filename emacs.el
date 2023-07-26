@@ -103,15 +103,28 @@ if using a system that returns SYSTEM-NAME as System.local, we drop the .local"
                        (upcase (car (split-string (system-name) "\\."))))
      ,@body))
 
+(defmacro focks/create-standard-os-macros ()
+  "runs prior OS detection macros for standard values of SYSTEM-TYPE"
+  `(progn
+     ,@(cl-loop for os in '((gnu . hurd) (gnu/linux . linux)
+                            (darwin . macos) (ms-dos . dos)
+                            (windows-nt . windows) (gnu/kfreebsd . bsd)
+                            haiku cygwin)
+                for os-name = (if (listp os) (cdr os) os)
+                for os-type = (if (listp os) (car os) os)
 
-(focks/when-on macos darwin)
-(focks/when-on bsd berkeley-unix)
-(focks/when-on linux gnu/linux)
-(focks/when-on unix gnu/linux berkeley-unix)
-(focks/when-on windows windows-nt)
-(focks/unless-on macos darwin)
-(focks/unless-on bsd berkeley-unix)
-(focks/unless-on windows windows-nt)
+                collect
+                `(progn
+                   (focks/os-p ,os-name ,os-type)
+                   (focks/when-on ,os-name ,os-type)
+                   (focks/unless-on ,os-name ,os-type)))))
+
+
+;; runs os-p/when-on/unless-on for all system-types
+(focks/create-standard-os-macros)
+
+;; create specialized when/unless-on macros
+(focks/when-on unix gnu/linux aix berkeley-unix hpux usg-unix-v)
 (focks/unless-on bsdish darwin berkeley-unix) ;; you know, bsd enough to count lmao
 
 
