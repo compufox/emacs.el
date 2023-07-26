@@ -920,6 +920,15 @@ returns either 'dark or 'light"
     (gnu/linux 'unicode)
     (darwin 'unicode)
     (t 'image))))
+
+(use-package nerd-icons
+  :ensure t
+  :config
+  (when (and (not (focks/font-available-p "Symbols Nerd Font Mono"))
+             (not (windows-p)))
+    (nerd-icons-install-fonts))
+  :custom
+  (nerd-icons-font-family "Symbols Nerd Font Mono"))
   
 ;;;
 ;; END PACKAGE LOADING
