@@ -58,6 +58,13 @@
 ;;  BEGIN CUSTOM MACROS
 ;;;
 
+(defmacro focks/os-p (os &rest os-name)
+  "a macro to define a predicate that checks the current system's OS"
+  `(defun ,(intern (mapconcat (lambda (x) (format "%s" x))
+                              (list os "-p"))) ()
+     (or ,@(mapcar (lambda (name) `(eq system-type ',name))
+                   os-name))))
+
 (defmacro focks/when-on (os &rest type-names)
   "define a macro (named when-on-OS) to run code when SYSTEM-TYPE matches any symbol in TYPE-NAMES
 
@@ -261,6 +268,10 @@ ensures disabling all prior loaded themes before changing"
 (defun focks/blankp (string)
   "returns t if STRING is an empty string"
   (string= string ""))
+
+(defun focks/font-available-p (font-family)
+  "predicate to check for the existance of the specified font family"
+  (find-font (font-spec :name font-family)))
 
 ;;;
 ;; END CUSTOM FUNCTIONS
