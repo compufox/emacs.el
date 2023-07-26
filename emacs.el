@@ -924,9 +924,10 @@ returns either 'dark or 'light"
 (use-package nerd-icons
   :ensure t
   :config
-  (when (and (not (focks/font-available-p "Symbols Nerd Font Mono"))
-             (not (windows-p)))
-    (nerd-icons-install-fonts))
+  (unless (focks/font-available-p "Symbols Nerd Font Mono")
+    (os-cond
+     (windows-nt (messge "Please install nerd fonts manually thx :-*"))
+     (t (nerd-icons-install-fonts))))
   :custom
   (nerd-icons-font-family "Symbols Nerd Font Mono"))
   
