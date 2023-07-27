@@ -2,9 +2,10 @@
 
 Welcome!
 
-I have sectioned my Emacs configuration into different sections based on when and what is being loaded.
+The configuration is sectioned out into different files based on when and what is being loaded.
 
-To follow along with load order please check out the files in the following order:
+To follow along with load sequence please check out the files in the following order:
+- [[file:0-bootstrap.org][0-bootstrap.org]]
 - [[file:1-custom.org][1-custom.org]]
 - [[file:2-variables.org][2-variables.org]]
 - [[file:3-macros.org][3-macros.org]]
@@ -15,3 +16,4 @@ To follow along with load order please check out the files in the following orde
 - [[file:8-theme.org][8-theme.org]]
 - [[file:99-last.org][99-last.org]]
 
+Each file tries to be fairly documented and any special notes are written alongside the code.

@@ -4,8 +4,14 @@
 
 This file is actually not loaded during setup, instead it is tangled during the setup process before =~/.emacs= is symlinked into place.
 
+** straight.el
+
+To start with, we ensure that we download the =straight.el= installer, if it doesn't already exist on our system.
+Once it's downloaded we load it up and use it to install =org-mode=.
+
+This is necessary since, later on, we load =org-roam= using =straight.el= and that throws errors, as the version of =org-mode= clashes with the one built-in to Emacs.
+
 #+begin_src emacs-lisp
-  ;; download and setup straight.el...
   (let ((bootstrap-file
          (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
         (bootstrap-version 6))
@@ -18,32 +24,55 @@ This file is actually not loaded during setup, instead it is tangled during the 
         (eval-print-last-sexp)))
     (load bootstrap-file nil 'nomessage))
 
-  ;; ...and then use that to download use-package & org-mode
   (straight-use-package 'org)
   (require 'org)
+#+end_Src
+
+** Custom Tangling Logic
+
+This was too much clutter for my liking, so I wrote my own function that ensured that the tangled elisp files were put into a place that was outside of the main git repo.
+In this case it's =*tangled-file-location*=.
+
+#+begin_src emacs-lisp
+  (defvar *tangled-file-location* "~/.emacs.d/init/")
 
   (defun focks/tangle-and-load-file (file)
     "tangles our configs to a specific location and then loads them (keeps config dir clean)"
-    (unless (file-directory-p "~/.emacs.d/init/")
-      (make-directory "~/.emacs.d/init/"))
-    (let ((tangled-file (concat "~/.emacs.d/init/" (file-name-base file) ".el")))
+    (unless (file-directory-p *tangled-file-location*)
+      (make-directory *tangled-file-location*))
+    (let ((tangled-file (concat *tangled-file-location* (file-name-base file) ".el")))
       (org-babel-tangle-file file
                              tangled-file
                              (rx string-start
                                  (or "emacs-lisp" "emacs")
                                  string-end))
+      
       (when (file-exists-p tangled-file)
         (load tangled-file nil 'no-message))))
+#+end_src
 
-  ;; then we iterate thru our list of config files and
-  ;; let org-babel detangle and load them
-  (let ((config-dir (concat (file-name-directory (file-truename "~/.emacs"))
-  			  "config/")))
-    (mapcar #'focks/tangle-and-load-file
-  	  (cl-remove-if #'(lambda (f)
-                              (and (not (file-directory-p f))
-                                   (string-match (rx (or "bootstrap"
-                                                         "README"))
-                                                 f)))
-  		        (directory-files config-dir 'full ".org"))))
+** Tangle and Load
+
+And so finally, we reach the part where we actually begin tangling and loading.
+
+This works by finding the actual directory where the configuration is held using =file-truename= on =~/.emacs=, which if proper setup instructions have been followed, should be a symlink into the git repo.
+Once we have the full path to the git repo we can get a file listing of the =config/= directory that contains our org files.
+Since the files are numbered with the order in which they need to be loaded, =directory-files= works exactly as expected.
+
+However, there are a few files that need to be ignored, including this one.
+So a quick lambda was thrown together to ensure that we filter out the =README=, =0-bootstrap=, and any directories that get added into the listing.
+
+Once we get the directory listing we =mapcar= them across the tangle and load function just defined and proceed with booting.
+
+#+begin_src emacs-lisp
+  (mapcar #'focks/tangle-and-load-file
+  	(cl-remove-if #'(lambda (f)
+                            (and (not (file-directory-p f))
+                                 (string-match (rx (or "bootstrap"
+                                                       "README"))
+                                               f)))
+  		      (directory-files (file-name-concat
+                                          (file-name-directory (file-truename "~/.emacs"))
+    			                "config")
+                                       'full ".org")))
 #+end_src 
