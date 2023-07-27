@@ -1,11 +1,3 @@
-(defvar *tangled-configs*
-  '("custom" "variables" "macros"
-    "functions" "interactive-functions"
-    ;; TODO: replace misc with os-specific files
-    "misc" "packages"
-    "theme" "lastly")
-  "list of all custom configuration filenames, in loading order")
-
 ;; download and setup straight.el...
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -22,11 +14,22 @@
 ;; ...and then use that to download use-package & org-mode
 (straight-use-package 'org)
 
+(defun focks/tangle-and-load-file (file)
+  "tangles our configs to a specific location and then loads them (keeps config dir clean)"
+  (unless (file-directory-p "~/.emacs.d/init/")
+    (make-directory "~/.emacs.d/init/"))
+  (let ((tangled-file (concat "~/.emacs.d/init/" (file-name-base file) ".el")))
+    (org-babel-tangle-file file
+                           tangled-file
+                           (rx string-start
+                               (or "emacs-lisp" "emacs")
+                               string-end))
+    (load tangled-file nil 'no-message)))
+
 ;; then we iterate thru our list of config files and
 ;; let org-babel detangle and load them
 (let ((config-dir (concat (file-name-directory (file-truename "~/.emacs"))
 			  "config/")))
-  (mapcar #'org-babel-load-file
-	  (mapcar #'(lambda (filename)
-		      (concat config-dir filename ".org"))
-		  *tangled-configs*)))
+  (mapcar #'focks/tangle-and-load-file
+	  (cl-remove-if #'file-directory-p
+		        (directory-files config-dir 'full ".org"))))
