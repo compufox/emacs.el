@@ -15,10 +15,12 @@ And since =straight= is a package manager in its own right, I figured it would b
 Here we begin by loading the package library and ensuring we have it configured to check the MELPA elisp repository.
 
 #+begin_src emacs-lisp
-  (require 'package)
-  (package-initialize)
-  (add-to-list 'package-archives
-  	     '("melpa" . "http://melpa.org/packages/"))
+    (require 'package)
+    (add-to-list 'package-archives
+    	     '("melpa" . "http://melpa.org/packages/"))
+    (package-initialize)
+    (unless package-archive-contents
+      (package-refresh-contents))
 #+end_src
 
 ** Use-Package
@@ -35,16 +37,6 @@ It downloads, installs and =require='s  use-package which is the way the rest of
 **** Reorganize this section to have similar packages grouped together
 
 #+begin_src emacs-lisp
-    ;; always set electric-pair-mode to load for elisp mode
-  (use-package electric-pair-mode
-      :hook (emacs-lisp-mode . electric-pair-mode))
-
-  ;; but onnly load it into lisp mode if we dont have
-  ;; parinfer mode enabled (not on arm64 arch)
-  (use-package electric-pair-mode
-    :when (string= "arm64" (focks/get-system-arch))
-    :hook (lisp-mode . electric-pair-mode))
-
   (use-package siege-mode
     :ensure straight
     :straight (:host github :repo "tslilc/siege-mode" :branch "master")
@@ -62,7 +54,14 @@ It downloads, installs and =require='s  use-package which is the way the rest of
 
   (use-package org-roam
     :ensure t
-    :init (setq org-roam-v2-ack t)
+    :init
+    (setq org-roam-v2-ack t)
+    (let ((notes-dir (focks/os-cond
+                      (windows-nt (concat (getenv "USERPROFILE") "\\Syncthing\\Notes"))
+                      (t "~/Syncthing/Notes"))))
+      (unless (file-directory-p notes-dir)
+        (make-directory notes-dir)))
+    
     :bind
     (("C-c n l" . org-roam-buffer-toggle)
      ("C-c n f" . org-roam-node-find)
@@ -127,7 +126,7 @@ It downloads, installs and =require='s  use-package which is the way the rest of
   (use-package cc-mode
     :ensure t
     :bind (("C-c i" . init-cpp-file)))
-  
+
   (use-package popwin
     :ensure t
     :init (popwin-mode t))

@@ -33,7 +33,6 @@ This file is actually not loaded during setup, instead it is tangled during the 
                                  (or "emacs-lisp" "emacs")
                                  string-end))
       (when (file-exists-p tangled-file)
-        (byte-compile-file tangled-file)
         (load tangled-file nil 'no-message))))
 
   ;; then we iterate thru our list of config files and

@@ -9,117 +9,120 @@ Mostly setting various editor values or settings some keys globally.
 *** Reorganize into OS specific chunks
 
 #+begin_src emacs-lisp
-  ;; when we have ros installed go and include the path in the exec-path list
-  ;; TODO: see if we need this?
-  (when (executable-find "ros")
-    (let* ((ros-info (split-string (shell-command-to-string "ros version")
-                                   "\n" t))
-           (info-alist (mapcar #'(lambda (s)
-                                   (split-string s "=" t "'"))
-                               ros-info))
-           (path (concat (cadr (assoc "homedir" info-alist #'string=))
-                         "bin")))
-      (setq exec-path (append exec-path (list path)))))
+    ;; when we have ros installed go and include the path in the exec-path list
+    ;; TODO: see if we need this?
+    (when (executable-find "ros")
+      (let* ((ros-info (split-string (shell-command-to-string "ros version")
+                                     "\n" t))
+             (info-alist (mapcar #'(lambda (s)
+                                     (split-string s "=" t "'"))
+                                 ros-info))
+             (path (concat (cadr (assoc "homedir" info-alist #'string=))
+                           "bin")))
+        (setq exec-path (append exec-path (list path)))))
 
-  ;; run these options only when we're running in daemon mode
-  (when (daemonp)
-    (global-set-key (kbd "C-x M-C-c") 'kill-emacs))
+    ;; run these options only when we're running in daemon mode
+    (when (daemonp)
+      (global-set-key (kbd "C-x M-C-c") 'kill-emacs))
 
-  ;; sets up my custom key bindings
-  (global-set-key (kbd "C-x M-f") 'horz-flip-buffers)
+    (when (string= "arm64" (focks/get-system-arch))
+      (electric-pair-mode 1))
 
-  ;; puts the line number in the left fringe
-  (when (version<= "26.0.50" emacs-version)
-    (global-display-line-numbers-mode))
+    ;; sets up my custom key bindings
+    (global-set-key (kbd "C-x M-f") 'horz-flip-buffers)
 
-  ;; ensures that we NEVER have tabs in our code. ANYWHERE
-  (setq-default indent-tabs-mode nil)
+    ;; puts the line number in the left fringe
+    (when (version<= "26.0.50" emacs-version)
+      (global-display-line-numbers-mode))
 
-  ;; disable the scroll bar
-  (scroll-bar-mode 0)
+    ;; ensures that we NEVER have tabs in our code. ANYWHERE
+    (setq-default indent-tabs-mode nil)
 
-  ;; set the time format to 24hr and enable time display
-  ;; only if we're running from a console
-  (unless window-system
-    (setq display-time-24hr-format t)
-    (display-time-mode))
+    ;; disable the scroll bar
+    (scroll-bar-mode 0)
 
-  (focks/unless-on-windows
-   (setq ispell-program-name "aspell"))
+    ;; set the time format to 24hr and enable time display
+    ;; only if we're running from a console
+    (unless window-system
+      (setq display-time-24hr-format t)
+      (display-time-mode))
 
-  ;; bsd specific loading
-  (focks/when-on-bsd
-   (setq ispell-dictionary "en_US"
-         ispell-aspell-dict-dir "/usr/local/share/aspell/"
-         ispell-aspell-data-dir "/usr/local/lib/aspell-0.60/"
-         ispell-dictionary-keyword "american"
-         battery-status-function #'battery-freebsd-apm))
+    (focks/unless-on-windows
+     (setq ispell-program-name "aspell"))
 
-  ;; *nix specific loading
-  (focks/when-on-unix
-   (display-battery-mode)
-   (setq ispell-local-dictionary "en_US"))
+    ;; bsd specific loading
+    (focks/when-on-bsd
+     (setq ispell-dictionary "en_US"
+           ispell-aspell-dict-dir "/usr/local/share/aspell/"
+           ispell-aspell-data-dir "/usr/local/lib/aspell-0.60/"
+           ispell-dictionary-keyword "american"
+           battery-status-function #'battery-freebsd-apm))
 
-  ;; mac specific loading
-  (focks/when-on-macos
-   ;; this disables special character input in emacs when using the option key
-   ;; and ensures that the command key sends meta keypresses
-   (setq mac-option-modifier 'meta
-         mac-command-modifier 'meta
+    ;; *nix specific loading
+    (focks/when-on-unix
+     (display-battery-mode)
+     (setq ispell-local-dictionary "en_US"))
 
-         ;; turns off dark mode as default
-         focks/enable-dark-theme nil)
+    ;; mac specific loading
+    (focks/when-on-macos
+     ;; this disables special character input in emacs when using the option key
+     ;; and ensures that the command key sends meta keypresses
+     (setq mac-option-modifier 'meta
+           mac-command-modifier 'meta
 
-   ;; if we're using a version of emacs with a certain patch
-   ;; we dont need to do all the homegrown stuff, and can just
-   ;; hook into ns-system-appearance-change-functions
-   (if (boundp 'ns-system-appearance)
-       (add-hook 'ns-system-appearance-change-functions
-                 (lambda (style)
-                   (mapc #'disable-theme custom-enabled-themes)
-                   (if (eq style 'light)
-                       (load-theme focks/*light-mode-theme* t)
-                     (load-theme focks/*dark-mode-theme* t))))
-     (progn
-       (defvar focks/*current-theme* nil)
+           ;; turns off dark mode as default
+           focks/enable-dark-theme nil)
 
-       ;; define a function that runs a custom applescript script that
-       ;; checks our theme and returns 'dark or 'light
-       (defun focks/macos-theme ()
-         "gets the current macOS window theme
+     ;; if we're using a version of emacs with a certain patch
+     ;; we dont need to do all the homegrown stuff, and can just
+     ;; hook into ns-system-appearance-change-functions
+     (if (boundp 'ns-system-appearance)
+         (add-hook 'ns-system-appearance-change-functions
+                   (lambda (style)
+                     (mapc #'disable-theme custom-enabled-themes)
+                     (if (eq style 'light)
+                         (load-theme focks/*light-mode-theme* t)
+                       (load-theme focks/*dark-mode-theme* t))))
+       (progn
+         (defvar focks/*current-theme* nil)
 
-  returns either 'dark or 'light"
-         (let ((theme (shell-command-to-string (concat "osascript " focks/*config-root* "CheckSystemTheme.scpt"))))
-           (if (string= theme (concat "true" (char-to-string ?\n)))
-               'dark
-             'light)))
+         ;; define a function that runs a custom applescript script that
+         ;; checks our theme and returns 'dark or 'light
+         (defun focks/macos-theme ()
+           "gets the current macOS window theme
 
-       ;; defines a function that checks the system theme
-       ;; and changes our emacs theme to match it
-       (defun focks/match-theme-to-system ()
-         "checks the system theme and changes the emacs theme to match"
-         (unless (equal focks/*current-theme* (macos-theme))
-           (setq focks/*current-theme* (macos-theme))
-           (setq focks/enable-dark-theme (eq focks/*current-theme* 'dark))
-           (focks/load-emacs-theme)
-           (set-face-attribute 'default nil :height focks/face-height)))
+    returns either 'dark or 'light"
+           (let ((theme (shell-command-to-string (concat "osascript " focks/*config-root* "CheckSystemTheme.scpt"))))
+             (if (string= theme (concat "true" (char-to-string ?\n)))
+                 'dark
+               'light)))
 
-       ;; sets up a hook that will run every 5 seconds to
-       ;; match the themes
-       (add-hook 'window-setup-hook
-                 (lambda ()
-                   ;; because the damn mac screen is good,
-                   ;;  we need to bump the font size up a lil lmao
-                   ;; note: needs to be in window-setup-hook otherwise
-                   ;;       it doesnt get run for the initial frame
-                   (set-face-attribute 'default nil :height focks/face-height)
-                   (when focks/auto-update-macos-theme
-                     (run-with-timer 0 5 'focks/match-theme-to-system)))))))
+         ;; defines a function that checks the system theme
+         ;; and changes our emacs theme to match it
+         (defun focks/match-theme-to-system ()
+           "checks the system theme and changes the emacs theme to match"
+           (unless (equal focks/*current-theme* (macos-theme))
+             (setq focks/*current-theme* (macos-theme))
+             (setq focks/enable-dark-theme (eq focks/*current-theme* 'dark))
+             (focks/load-emacs-theme)
+             (set-face-attribute 'default nil :height focks/face-height)))
 
-  ;; loading a theme
-  (focks/unless-on-macos
-   (add-hook 'window-setup-hook 'focks/load-emacs-theme))
+         ;; sets up a hook that will run every 5 seconds to
+         ;; match the themes
+         (add-hook 'window-setup-hook
+                   (lambda ()
+                     ;; because the damn mac screen is good,
+                     ;;  we need to bump the font size up a lil lmao
+                     ;; note: needs to be in window-setup-hook otherwise
+                     ;;       it doesnt get run for the initial frame
+                     (set-face-attribute 'default nil :height focks/face-height)
+                     (when focks/auto-update-macos-theme
+                       (run-with-timer 0 5 'focks/match-theme-to-system)))))))
 
-  ;; enable 'list-timers function
-  (put 'list-timers 'disabled nil)
+    ;; loading a theme
+    (focks/unless-on-macos
+     (add-hook 'window-setup-hook 'focks/load-emacs-theme))
+
+    ;; enable 'list-timers function
+    (put 'list-timers 'disabled nil)
 #+end_src 
