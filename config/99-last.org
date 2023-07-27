@@ -1,4 +1,4 @@
-#+PROPERTY: header-args:emacs-lisp :tangle ./lastly.el
+#+PROPERTY: header-args:emacs-lisp 
 
 #+begin_src emacs-lisp
   (unless (file-exists-p focks/local-file)

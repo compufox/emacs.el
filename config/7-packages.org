@@ -1,18 +1,45 @@
-#+PROPERTY: header-args:emacs-lisp :tangle ./packages.el
+#+PROPERTY: header-args:emacs-lisp 
+
+* Package Loading
+
+One of the first fun things I did when refactoring my configuration was ensure that it was totally independent of needing anything installed to get it up and running.
+My initial attempt at this was to package =use-package= as a git submodule in this repo. However, this was a bit tedious and prone to being out of date (it's hard to keep a config, much less a SUBMODULE up to date when you're as lazy as me lmao).
+
+My second attempt involved manually downloading, unzipping, and =require=-ing use-package manually, if its directory didn't already exist. This *worked*, however around the same time I was trying to get into using =org-roam= to write notes and journal. The only way that =org-roam= is offered for installation is through =straight.el=.
+
+And since =straight= is a package manager in its own right, I figured it would be just as simple (if not simpler) to use it to install =use-package=, and so here we are.
+
+
+** Configure package options
+
+Here we begin by loading the package library and ensuring we have it configured to check the MELPA elisp repository.
 
 #+begin_src emacs-lisp
-  ;; adds the MELPA repo to my package archive list
+  (require 'package)
   (package-initialize)
   (add-to-list 'package-archives
   	     '("melpa" . "http://melpa.org/packages/"))
+#+end_src
 
+** Use-Package
+
+This is the most important line in this file, honestly. Without it the rest of the configuration wouldn't function.
+
+It downloads, installs and =require='s  use-package which is the way the rest of the system loads and configures extensions.
+
+#+begin_src emacs-lisp
   (straight-use-package 'use-package)
+#+end_src 
 
+*** TODO
+**** Reorganize this section to have similar packages grouped together
+
+#+begin_src emacs-lisp
     ;; always set electric-pair-mode to load for elisp mode
   (use-package electric-pair-mode
       :hook (emacs-lisp-mode . electric-pair-mode))
 
-  ;; but only load it into lisp mode if we dont have
+  ;; but onnly load it into lisp mode if we dont have
   ;; parinfer mode enabled (not on arm64 arch)
   (use-package electric-pair-mode
     :when (string= "arm64" (focks/get-system-arch))

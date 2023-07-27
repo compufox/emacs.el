@@ -1,4 +1,4 @@
-#+PROPERTY: header-args:emacs-lisp :tangle ./theme.el
+#+PROPERTY: header-args:emacs-lisp
 
 #+begin_src emacs-lisp
 ;; dark theme 

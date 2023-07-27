@@ -1,4 +1,4 @@
-#+PROPERTY: header-args:emacs-lisp :tangle ./misc.el
+#+PROPERTY: header-args:emacs-lisp
 
 #+begin_src emacs-lisp
   ;; this doesnt seem to be needed anymore? maybe its because of the

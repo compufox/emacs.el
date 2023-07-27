@@ -1,4 +1,4 @@
-#+PROPERTY: header-args:emacs-lisp :tangle ./functions.el
+#+PROPERTY: header-args:emacs-lisp 
 
 #+begin_src emacs-lisp
 (focks/when-on-bsd 
@@ -110,16 +110,6 @@ The following %-sequences are provided:
 (defun focks/stringify (&rest args)
   "converts every value in ARGS into a string and merges them together"
   (mapconcat (lambda (x) (format "%s" x))  args ""))
-
-;; only create this func when we have CL loaded.
-;; otherwise its pointless
-(require 'package)
-(when (package-installed-p 'cl)
-  (defun focks/list-cl-sources ()
-    "list files that depend on CL package
-  (these need to be changed to use cl-lib)"
-    (interactive)
-    (message (apply #'concat (file-dependents (feature-file 'cl))))))
 
 (defun focks/ensure-list (lst)
   "ensures that LST is a list"

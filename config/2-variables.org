@@ -1,4 +1,8 @@
-#+PROPERTY: header-args:emacs-lisp :tangle ./variables.el
+#+PROPERTY: header-args:emacs-lisp 
+
+* Variables
+
+** Configuration Variables
 
 #+begin_src emacs-lisp
   ;; cache the path to our configuration root

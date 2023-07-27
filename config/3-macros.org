@@ -1,0 +1,127 @@
+#+PROPERTY: header-args:emacs-lisp 
+
+* Macros
+
+** Operating System macros
+
+For a long time I was hopping back and forth between different operating systems but continued using the same Emacs configuration for each machine.
+I soon ran into the problem where a single config was not ideal for each environment.
+Instead of breaking chunks out into various os-specific files I opted to write some macros that would make it easier to perform various checks about what system the editor was currently running on.
+
+*** OS-p
+
+Although it is fairly trivial to write an operating system check (=(eq system-type 'darwin)=), it becomes a bit of a hassle, and is not very readable (in my opinion).
+
+=os-p= makes this a bit of an easier process, by defining predicate functions to test for operating systems while also being more legible.
+
+#+begin_src emacs-lisp
+  (defmacro focks/os-p (os &rest os-name)
+    "defines a predicate that checks the current system's OS"
+    `(defun ,(intern (mapconcat (lambda (x) (format "%s" x))
+                                (list os "-p"))) ()
+       (or ,@(mapcar (lambda (name) `(eq system-type ',name))
+                     os-name))))
+#+end_src
+
+*** When/Unless-on
+
+These macros define macros that allow for evaluating blocks of code only when you are running Emacs on certain operating systems.
+They also allow you to combine =system-type=-s so that you can specify code to run on a group of OS's but not on all of them (see end of file to see an example of this).
+
+#+begin_src emacs-lisp
+  (defmacro focks/when-on (os &rest type-names)
+    "define a macro (named when-on-OS) to run code when SYSTEM-TYPE matches any symbol in TYPE-NAMES
+
+  OS is a symbol (or string) to be placed in the macro name
+  TYPE-NAMES is a list of symbols that correspond to values returned by system-type"
+    `(defmacro ,(intern (mapconcat (lambda (x) (format "%s" x)) (list "focks/when-on-" os) "")) (&rest body)
+       `(when (or ,@(mapcar (lambda (name) `(eq system-type ',name))
+  			  ',type-names))
+  	,@body)))
+
+
+  (defmacro focks/unless-on (os &rest type-names)
+    "define a macro (named unless-on-OS) to run code when SYSTEM-TYPE matches any symbol in TYPE-NAMES
+
+  OS is a symbol (or string) to be placed in the macro name
+  TYPE-NAMES is a list of symbols that correspond to values returned by system-type"
+    `(defmacro ,(intern (mapconcat (lambda (x) (format "%s" x)) (list "focks/unless-on-" os) "")) (&rest body)
+       `(unless (or ,@(mapcar (lambda (name) `(eq system-type ',name))
+                              ',type-names))
+  	,@body)))
+#+end_src
+
+*** OS-cond
+
+While the prior macros are nice for quick when/unless blocks, I found myself in dire need of being able to eval one block of code and have it return different values for different operating systems.
+
+=os-cond= acts like a regular =cond= structure, but takes forms in the style of =(SYSTEM-TYPE FORMS)=, evaluating the first one that matches the current system-type.
+
+#+begin_src emacs-lisp
+  (defmacro focks/os-cond (&rest forms)
+    ""
+    `(cond
+      ,@(cl-loop for f in forms
+                 if (eq (car f) t)
+                   collect `(t ,@(cdr f))
+                 else
+                   collect `((eq system-type ',(car f))
+                             ,@(cdr f)))))
+#+end_src
+
+*** Bundling them all together
+
+After a while, I figured it might be easier to just... run all of the prior macros at once for a given =system-type=.
+
+So, I fixed that :3c
+
+=focks/create-standard-os-macros= takes a full list of the default =system-type= values and runs =os-p=, =when-on=, and =unless-on= for all of them.
+
+#+begin_src emacs-lisp
+  (defmacro focks/create-standard-os-macros ()
+  "runs prior OS detection macros for standard values of SYSTEM-TYPE"
+  `(progn
+     ,@(cl-loop for os in '((gnu . hurd) (gnu/linux . linux)
+                            (darwin . macos) (ms-dos . dos)
+                            (windows-nt . windows) (gnu/kfreebsd . bsd)
+                            haiku cygwin)
+                for os-name = (if (listp os) (cdr os) os)
+                for os-type = (if (listp os) (car os) os)
+
+                collect
+                `(progn
+                   (focks/os-p ,os-name ,os-type)
+                   (focks/when-on ,os-name ,os-type)
+                   (focks/unless-on ,os-name ,os-type)))))
+#+end_src
+
+** Hostname-specific code
+
+After consolidating back to (mostly) a single OS, I found that I still needed some ability to selectively run code on one machine and not the other.
+
+Hence, the =focks/when-machine= macro. It's fairly straight forward and doesn't do anything fun like the prior macros, but it is still handy when a need arises.
+
+#+begin_src emacs-lisp
+(defmacro focks/when-machine (hostname &rest body)
+  "a macro to only execute BODY when HOSTNAME matches the value returned by SYSTEM-NAME
+
+applies UPCASE to HOSTNAME parameter, and to the value returned by SYSTEM-NAME
+if using a system that returns SYSTEM-NAME as System.local, we drop the .local"
+  `(when (string-equal (upcase ,hostname)
+                       (upcase (car (split-string (system-name) "\\."))))
+     ,@body))
+
+#+end_src
+
+** Cheeky bit of execution
+
+Since the rest of the configuration relies on these macros to be defined, we make sure and run them exceedingly early.
+
+#+begin_src emacs-lisp
+;; runs os-p/when-on/unless-on for all system-types
+(focks/create-standard-os-macros)
+
+;; create specialized when/unless-on macros
+(focks/when-on unix gnu/linux aix berkeley-unix hpux usg-unix-v)
+(focks/unless-on bsdish darwin berkeley-unix) ;; you know, bsd enough to count lmao
+#+end_src
