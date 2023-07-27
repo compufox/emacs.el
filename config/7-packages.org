@@ -124,6 +124,10 @@ It downloads, installs and =require='s  use-package which is the way the rest of
   (use-package fennel-mode
     :ensure t)
 
+  (use-package cc-mode
+    :ensure t
+    :bind (("C-c i" . init-cpp-file)))
+  
   (use-package popwin
     :ensure t
     :init (popwin-mode t))

@@ -115,11 +115,6 @@ returns either 'dark or 'light"
 ;; loading a theme
 (focks/unless-on-macos
  (add-hook 'window-setup-hook 'focks/load-emacs-theme))
-
-;; sets shortcut for c++ mode
-(require 'cc-mode)
-(define-key c++-mode-map (kbd "C-c i") 'init-cpp-file)
-
 ;; loading loadhist package (required for cl-sources function)
 (require 'loadhist)
 #+end_src 
