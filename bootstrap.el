@@ -24,6 +24,7 @@
                            (rx string-start
                                (or "emacs-lisp" "emacs")
                                string-end))
+    (byte-compile-file tangled-file)
     (load tangled-file nil 'no-message)))
 
 ;; then we iterate thru our list of config files and
