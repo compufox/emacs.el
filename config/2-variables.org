@@ -4,10 +4,11 @@
 
 ** Configuration Variables
 
+Custom variables used throughout my custom functions/macros.
+
 #+begin_src emacs-lisp
   ;; cache the path to our configuration root
-  (eval-and-compile
-    (defvar focks/*config-root* (file-name-directory (file-truename "~/.emacs"))))
+  (defvar focks/*config-root* (file-name-directory (file-truename "~/.emacs")))
 
   ;; allow for local, git-ignored configurations
   (defvar focks/local-file (concat focks/*config-root* "local.el"))

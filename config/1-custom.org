@@ -4,7 +4,7 @@
 
 When I first started getting into Emacs, I obviously tried to use the built-in =customize= screens to build and setup my configuration.
 
-Between other configuration's I saw online and trying to provide my own functionality I quickly moved past using it in favor of configuring packages directly. This became even more trivial once I stumbled across =use-package= (see packages.org for examples on usage).
+Between other configuration's I saw online and trying to provide my own functionality I quickly moved past using it in favor of configuring packages directly. This became even more trivial once I stumbled across =use-package= (see [[file:7-packages.org][7-packages.org]] for examples on usage).
 
 ** TODO
 *** Move all custom settings from here into [[file:6-misc.org][6-misc.org]]
