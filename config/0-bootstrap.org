@@ -76,3 +76,5 @@ Once we get the directory listing we =mapcar= them across the tangle and load fu
     			                "config")
                                        'full ".org")))
 #+end_src 
+
+* Next: [[file:1-custom.org][1-custom.org]]

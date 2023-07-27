@@ -12,3 +12,5 @@
 (use-package solo-jazz-theme
    :ensure t)  
 #+end_src
+
+* Next: [[file:99-last.org][99-last.org]]

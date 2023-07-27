@@ -405,3 +405,5 @@ It downloads, installs and =require='s  use-package which is the way the rest of
     :custom
     (nerd-icons-font-family "Symbols Nerd Font Mono"))
 #+end_src
+
+* Next: [[file:8-themes.org][8-themes.org]]

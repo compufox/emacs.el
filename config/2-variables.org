@@ -20,3 +20,5 @@
   (defvar focks/face-height 120)
   (defvar focks/auto-update-macos-theme t)
 #+end_src
+
+* Next: [[file:3-macros.org][3-macros.org]]

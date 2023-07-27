@@ -125,3 +125,5 @@ Since the rest of the configuration relies on these macros to be defined, we mak
 (focks/when-on unix gnu/linux aix berkeley-unix hpux usg-unix-v)
 (focks/unless-on bsdish darwin berkeley-unix) ;; you know, bsd enough to count lmao
 #+end_src
+
+* Next: [[file:4-functions.org][4-functions.org]]

@@ -126,3 +126,5 @@ Mostly setting various editor values or settings some keys globally.
     ;; enable 'list-timers function
     (put 'list-timers 'disabled nil)
 #+end_src 
+
+* Next: [[file:7-packages.org][7-packages.org]]
