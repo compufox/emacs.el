@@ -12,6 +12,9 @@ fi
 [[ -f ~/.emacs ]] ; mv ~/.emacs ~/.emacs.bak
 [[ -d ~/.emacs.d ]] ; mv ~/.emacs.d ~/.emacs.d.bak
 
+echo "Creating bootstrap init file..."
+emacs --script "tangle-bootstrap.el"
+
 echo "Making link..."
 ln -sf $(pwd)/bootstrap.el ~/.emacs
 

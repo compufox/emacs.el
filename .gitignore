@@ -1,8 +1,9 @@
 /emacs.d/
+/.emacs.d/
 *.elc
-/local.el
+*.el
+!tangle-bootstrap.el
 .DS_Store
 *.otf
 *.ttf
 fonts/.gitignore
-config/*.el

@@ -17,6 +17,9 @@ if test -d ~/.emacs.d
   mv ~/.emacs.d ~/.emacs.d.bak
 end
 
+echo "Creating bootstrap init file..."
+emacs --script "tangle-bootstrap.el"
+
 echo "Making link..."
 ln -sf (pwd)/bootstrap.el ~/.emacs
 
@@ -31,5 +34,5 @@ if not string match -q (which fc-cache)
   fc-cache -v
 end
 
-echo "Touching local.el file"
+echo "Touching local.el file..."
 touch local.el
