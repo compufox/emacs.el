@@ -34,7 +34,7 @@ They also allow you to combine =system-type=-s so that you can specify code to r
 
   OS is a symbol (or string) to be placed in the macro name
   TYPE-NAMES is a list of symbols that correspond to values returned by system-type"
-    `(defmacro ,(intern (mapconcat (lambda (x) (format "%s" x)) (list "focks/when-on-" os) "")) (&rest body)
+    `(defmacro ,(intern (format "focks/when-on-%s" os)) (&rest body)
        `(when (or ,@(mapcar (lambda (name) `(eq system-type ',name))
   			  ',type-names))
   	,@body)))
@@ -45,7 +45,7 @@ They also allow you to combine =system-type=-s so that you can specify code to r
 
   OS is a symbol (or string) to be placed in the macro name
   TYPE-NAMES is a list of symbols that correspond to values returned by system-type"
-    `(defmacro ,(intern (mapconcat (lambda (x) (format "%s" x)) (list "focks/unless-on-" os) "")) (&rest body)
+    `(defmacro ,(intern (format "focks/unless-on-%s" os)) (&rest body)
        `(unless (or ,@(mapcar (lambda (name) `(eq system-type ',name))
                               ',type-names))
   	,@body)))
