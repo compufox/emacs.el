@@ -1,5 +1,7 @@
 #+PROPERTY: header-args:emacs-lisp :tangle (file-name-concat user-emacs-directory "init" "config.el")
 
+* Introduction
+
 Welcome!
 
 The configuration is sectioned out to aid readability and chunk similar code together
@@ -9,23 +11,6 @@ The configuration is sectioned out to aid readability and chunk similar code tog
 :PROPERTIES:
 :header-args:emacs-lisp: :tangle (file-name-concat user-emacs-directory "init" "strapped.el")
 :END:
-
-This part of the configuration exists solely to document the =bootstrap.el= file that handles the loading and parsing of this config.
-It does not get tangled or loaded during the standard start process.
-
-** Initial checks
-
-This chunk 
-
-#+begin_src emacs-lisp 
-  (defvar focks/*init-dir* (file-name-concat user-emacs-directory "init")
-    "directory where we store our tangled config")
-
-  ;; checks and ensures that the init directory is created
-  (unless (file-directory-p focks/*init-dir*)
-    (make-directory focks/*init-dir*))
-
-#+end_src
 
 ** straight.el
 
@@ -51,24 +36,22 @@ This is necessary since, later on, we load =org-roam= using =straight.el= and th
   ;; ...and then use that to download use-package & org-mode
   (straight-use-package 'org)
   (require 'org)
-#+end_Src
+#+end_src
 
 ** Tangle and Load
 
-Using the standard org-babel tangle function to tangle and load a file (=org-babel-load-file=) created clutter in my git repo that I did not like (among other things), so I wrote custom logic to manually tangle and load this config.
-
-And so finally, we reach the part where we actually begin tangling and loading.
+The standard function to tangle and load a file (=org-babel-load-file=) created clutter in my git repo that I did not like (among other things).
+To avoid this, I opted to manually tangle the file and load it after I was certain it had been created.
 
 This works by finding the actual directory where the configuration is held using =file-truename= on =~/.emacs=, which if proper setup instructions have been followed, should be a symlink into the git repo.
-Once we have the full path to the git repo we can get a file listing of the =config/= directory that contains our org files.
-Since the files are numbered with the order in which they need to be loaded, =directory-files= works exactly as expected.
-
-However, there are a few files that need to be ignored, including this one.
-So a quick lambda was thrown together to ensure that we filter out the =README=, =0-bootstrap=, and any directories that get added into the listing.
-
-Once we get the directory listing we =mapcar= them across the tangle and load function just defined and proceed with booting.
+Once we have the full path to the git repo we manually tangle this config, which spits out two files.
+The bootstrap code from this section gets tangled into one file, =strapped.el=, and the rest gets tangled into =config.el=.
+Both are placed in the "init directory", which is located underneath the user's =user-emacs-directory=.
 
 #+begin_src emacs-lisp
+  (defvar focks/*init-dir* (file-name-concat user-emacs-directory "init")
+    "directory where we store our tangled config")
+  
   (let ((config-file (file-name-concat (file-name-directory (file-truename "~/.emacs"))
                                        "config.org"))
         (tangled-file (file-name-concat focks/*init-dir* "config.el")))
@@ -83,10 +66,10 @@ Once we get the directory listing we =mapcar= them across the tangle and load fu
 
 When I first started getting into Emacs, I obviously tried to use the built-in =customize= screens to build and setup my configuration.
 
-Between other configuration's I saw online and trying to provide my own functionality I quickly moved past using it in favor of configuring packages directly. This became even more trivial once I stumbled across =use-package= (see [[file:7-packages.org][7-packages.org]] for examples on usage).
+Between other configuration's I saw online and trying to provide my own functionality I quickly moved past using it in favor of configuring packages directly. This became even more trivial once I stumbled across =use-package= (see [[#Packages][Packages]] for examples on usage).
 
 ** TODO
-*** Move all custom settings from here into [[file:6-misc.org][6-misc.org]]
+*** Move all custom settings from here into [[#Miscellaneous][Miscellaneous]]
 
 ** Variables
 
