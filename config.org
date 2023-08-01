@@ -35,7 +35,9 @@ This is necessary since, later on, we load =org-roam= using =straight.el= and th
 
   ;; ...and then use that to download use-package & org-mode
   (straight-use-package 'org)
+  (straight-use-package 'use-package)
   (require 'org)
+  (require 'use-package)
 #+end_src
 
 ** Tangle and Load
@@ -123,7 +125,7 @@ Custom variables used throughout my custom functions/macros.
   (defvar focks/*config-root* (file-name-directory (file-truename "~/.emacs")))
 
   ;; allow for local, git-ignored configurations
-  (defvar focks/local-file (concat focks/*config-root* "local.el"))
+  (defvar focks/local-file (file-name-concat focks/*config-root* "local.el"))
 
   ;; theme selection
   (defvar focks/*light-mode-theme* 'solo-jazz)
@@ -657,23 +659,18 @@ And since =straight= is a package manager in its own right, I figured it would b
 Here we begin by loading the package library and ensuring we have it configured to check the MELPA elisp repository.
 
 #+begin_src emacs-lisp
-    (require 'package)
-    (add-to-list 'package-archives
-    	     '("melpa" . "http://melpa.org/packages/"))
-    (package-initialize)
-    (unless package-archive-contents
-      (package-refresh-contents))
+  (require 'package)
+  (add-to-list 'package-archives
+  	     '("melpa" . "http://melpa.org/packages/"))
+  (package-initialize)
+  (unless package-archive-contents
+    (package-refresh-contents))
 #+end_src
 
 ** Use-Package
 
-This is the most important line in this file, honestly. Without it the rest of the configuration wouldn't function.
-
-It downloads, installs and =require='s  use-package which is the way the rest of the system loads and configures extensions.
-
-#+begin_src emacs-lisp
-  (straight-use-package 'use-package)
-#+end_src 
+=use-package= is built and loaded using =straight.el= at the beginning of the bootstrap code.
+What follows from here is loading and configuring the rest of my packages utilizing =use-package=.
 
 *** TODO
 **** Reorganize this section to have similar packages grouped together
