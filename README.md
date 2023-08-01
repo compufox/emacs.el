@@ -9,7 +9,6 @@
 The setup scripts will backup your current emacs config and emacs.d directory (to `~/.emacs.bak` and `~/.emacs.d.bak`) before symlinking emacs.el to `~/.emacs`. It will then attempt to install any fonts inside the `fonts/` directory and refresh the font cache.
 
 ## NOTES
-- If you are running on Windows, please ensure that `emacs` is in your path, as the `setup.ps1` script needs to run it to generate the `bootstrap.el` file.
 - If you are running on macOS, the editor will respond to system theme changes.
 This transition between light/dark mode themes is made smoother by using [emacs-plus](https://github.com/d12frosted/homebrew-emacs-plus).
 If you are using a different version of emacs that does not have the appropriate patches applied, it will default to using a method involving making shell calls to the included applescript "CheckSystemTheme.scpt" file.

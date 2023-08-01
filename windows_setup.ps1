@@ -16,11 +16,6 @@ If (Test-Path -Path $env:appdata\.emacs.d -PathType Container)
     mv $env:appdata\.emacs.d $env:appdata\.emacs.d.bak
 }
 
-# this makes the assumption that emacs is in the path. this is extra setup
-# that should be done before this script is ran
-echo "Tangling bootstrap file..."
-emacs --script $PSScriptroot\tangle-bootstrap.el
-
 echo "Making link..."
 New-Item -ItemType SymbolicLink -Path $env:appdata\.emacs -Target $PSScriptRoot\bootstrap.el
 

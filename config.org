@@ -1,0 +1,1102 @@
+#+PROPERTY: header-args:emacs-lisp :tangle (file-name-concat user-emacs-directory "init" "config.el")
+
+Welcome!
+
+The configuration is sectioned out to aid readability and chunk similar code together
+
+
+* Bootstrapping
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle (file-name-concat user-emacs-directory "init" "strapped.el")
+:END:
+
+This part of the configuration exists solely to document the =bootstrap.el= file that handles the loading and parsing of this config.
+It does not get tangled or loaded during the standard start process.
+
+** Initial checks
+
+This chunk 
+
+#+begin_src emacs-lisp 
+  (defvar focks/*init-dir* (file-name-concat user-emacs-directory "init")
+    "directory where we store our tangled config")
+
+  ;; checks and ensures that the init directory is created
+  (unless (file-directory-p focks/*init-dir*)
+    (make-directory focks/*init-dir*))
+
+#+end_src
+
+** straight.el
+
+To start with, we ensure that we download the =straight.el= installer, if it doesn't already exist on our system.
+Once it's downloaded we load it up and use it to install =org-mode=.
+
+This is necessary since, later on, we load =org-roam= using =straight.el= and that throws errors, as the version of =org-mode= clashes with the one built-in to Emacs.
+
+#+begin_src emacs-lisp
+  ;; download and setup straight.el...
+  (let ((bootstrap-file
+         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 6))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+
+  ;; ...and then use that to download use-package & org-mode
+  (straight-use-package 'org)
+  (require 'org)
+#+end_Src
+
+** Tangle and Load
+
+Using the standard org-babel tangle function to tangle and load a file (=org-babel-load-file=) created clutter in my git repo that I did not like (among other things), so I wrote custom logic to manually tangle and load this config.
+
+And so finally, we reach the part where we actually begin tangling and loading.
+
+This works by finding the actual directory where the configuration is held using =file-truename= on =~/.emacs=, which if proper setup instructions have been followed, should be a symlink into the git repo.
+Once we have the full path to the git repo we can get a file listing of the =config/= directory that contains our org files.
+Since the files are numbered with the order in which they need to be loaded, =directory-files= works exactly as expected.
+
+However, there are a few files that need to be ignored, including this one.
+So a quick lambda was thrown together to ensure that we filter out the =README=, =0-bootstrap=, and any directories that get added into the listing.
+
+Once we get the directory listing we =mapcar= them across the tangle and load function just defined and proceed with booting.
+
+#+begin_src emacs-lisp
+  (let ((config-file (file-name-concat (file-name-directory (file-truename "~/.emacs"))
+                                       "config.org"))
+        (tangled-file (file-name-concat focks/*init-dir* "config.el")))
+    (org-babel-tangle-file config-file)
+    
+    (when (file-exists-p tangled-file)
+      (load tangled-file nil 'no-message)))
+#+end_src 
+
+
+* Custom
+
+When I first started getting into Emacs, I obviously tried to use the built-in =customize= screens to build and setup my configuration.
+
+Between other configuration's I saw online and trying to provide my own functionality I quickly moved past using it in favor of configuring packages directly. This became even more trivial once I stumbled across =use-package= (see [[file:7-packages.org][7-packages.org]] for examples on usage).
+
+** TODO
+*** Move all custom settings from here into [[file:6-misc.org][6-misc.org]]
+
+** Variables
+
+#+begin_src emacs-lisp
+  (custom-set-variables
+   ;; custom-set-variables was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(backup-directory-alist '((".*" concat (getenv "HOME") "/.emacs.d/backups")))
+   '(column-number-mode t)
+   '(company-quickhelp-use-propertized-text t)
+   '(dired-use-ls-dired nil)
+   '(flycheck-color-mode-line-face-to-color 'mode-line-buffer-id)
+   '(global-emojify-mode t)
+   '(inhibit-startup-screen t)
+   '(make-backup-files nil)
+   '(save-place t nil (saveplace))
+   '(show-paren-mode t)
+   '(size-indication-mode t)
+   '(tool-bar-mode nil)
+   '(tool-bar-position 'left)
+   '(vc-annotate-background nil)
+   '(vc-annotate-very-old-color nil)
+   '(window-divider-mode nil))
+#+end_src
+
+** Faces
+
+Cartograph CF is such a beautiful font, I highly recommend you go check it out. The folks did a wonderful job creating it.
+
+#+begin_src emacs-lisp
+  (custom-set-faces
+   ;; custom-set-faces was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 113 :width normal :foundry "unknown" :family "Cartograph CF"))))
+   '(font-lock-comment-face ((t (:slant italic :family "Cartograph CF")))))
+#+end_src 
+
+
+* Variables
+
+** Configuration Variables
+
+Custom variables used throughout my custom functions/macros.
+
+#+begin_src emacs-lisp
+  ;; cache the path to our configuration root
+  (defvar focks/*config-root* (file-name-directory (file-truename "~/.emacs")))
+
+  ;; allow for local, git-ignored configurations
+  (defvar focks/local-file (concat focks/*config-root* "local.el"))
+
+  ;; theme selection
+  (defvar focks/*light-mode-theme* 'solo-jazz)
+  (defvar focks/*dark-mode-theme* 'challenger-deep)
+
+  (defvar focks/enable-dark-theme t)
+  (defvar focks/face-height 120)
+  (defvar focks/auto-update-macos-theme t)
+#+end_src
+
+
+* Macros
+
+** Operating System macros
+
+For a long time I was hopping back and forth between different operating systems but continued using the same Emacs configuration for each machine.
+I soon ran into the problem where a single config was not ideal for each environment.
+Instead of breaking chunks out into various os-specific files I opted to write some macros that would make it easier to perform various checks about what system the editor was currently running on.
+
+*** OS-p
+
+Although it is fairly trivial to write an operating system check (=(eq system-type 'darwin)=), it becomes a bit of a hassle, and is not very readable (in my opinion).
+
+=os-p= makes this a bit of an easier process, by defining predicate functions to test for operating systems while also being more legible.
+
+#+begin_src emacs-lisp
+  (defmacro focks/os-p (os &rest os-name)
+    "defines a predicate that checks the current system's OS"
+    `(defun ,(intern (mapconcat (lambda (x) (format "%s" x))
+                                (list os "-p"))) ()
+       (or ,@(mapcar (lambda (name) `(eq system-type ',name))
+                     os-name))))
+#+end_src
+
+*** When/Unless-on
+
+These macros define macros that allow for evaluating blocks of code only when you are running Emacs on certain operating systems.
+They also allow you to combine =system-type=-s so that you can specify code to run on a group of OS's but not on all of them (see end of file to see an example of this).
+
+#+begin_src emacs-lisp
+  (defmacro focks/when-on (os &rest type-names)
+    "define a macro (named when-on-OS) to run code when SYSTEM-TYPE matches any symbol in TYPE-NAMES
+
+  OS is a symbol (or string) to be placed in the macro name
+  TYPE-NAMES is a list of symbols that correspond to values returned by system-type"
+    `(defmacro ,(intern (format "focks/when-on-%s" os)) (&rest body)
+       `(when (or ,@(mapcar (lambda (name) `(eq system-type ',name))
+  			  ',type-names))
+  	,@body)))
+
+
+  (defmacro focks/unless-on (os &rest type-names)
+    "define a macro (named unless-on-OS) to run code when SYSTEM-TYPE matches any symbol in TYPE-NAMES
+
+  OS is a symbol (or string) to be placed in the macro name
+  TYPE-NAMES is a list of symbols that correspond to values returned by system-type"
+    `(defmacro ,(intern (format "focks/unless-on-%s" os)) (&rest body)
+       `(unless (or ,@(mapcar (lambda (name) `(eq system-type ',name))
+                              ',type-names))
+  	,@body)))
+#+end_src
+
+*** OS-cond
+
+While the prior macros are nice for quick when/unless blocks, I found myself in dire need of being able to eval one block of code and have it return different values for different operating systems.
+
+=os-cond= acts like a regular =cond= structure, but takes forms in the style of =(SYSTEM-TYPE FORMS)=, evaluating the first one that matches the current system-type.
+
+#+begin_src emacs-lisp
+  (defmacro focks/os-cond (&rest forms)
+    ""
+    `(cond
+      ,@(cl-loop for f in forms
+                 if (eq (car f) t)
+                   collect `(t ,@(cdr f))
+                 else
+                   collect `((eq system-type ',(car f))
+                             ,@(cdr f)))))
+#+end_src
+
+*** Bundling them all together
+
+After a while, I figured it might be easier to just... run all of the prior macros at once for a given =system-type=.
+
+So, I fixed that :3c
+
+=focks/create-standard-os-macros= takes a full list of the default =system-type= values and runs =os-p=, =when-on=, and =unless-on= for all of them.
+
+#+begin_src emacs-lisp
+  (defmacro focks/create-standard-os-macros ()
+  "runs prior OS detection macros for standard values of SYSTEM-TYPE"
+  `(progn
+     ,@(cl-loop for os in '((gnu . hurd) (gnu/linux . linux)
+                            (darwin . macos) (ms-dos . dos)
+                            (windows-nt . windows) (gnu/kfreebsd . bsd)
+                            haiku cygwin)
+                for os-name = (if (listp os) (cdr os) os)
+                for os-type = (if (listp os) (car os) os)
+
+                collect
+                `(progn
+                   (focks/os-p ,os-name ,os-type)
+                   (focks/when-on ,os-name ,os-type)
+                   (focks/unless-on ,os-name ,os-type)))))
+#+end_src
+
+** Hostname-specific code
+
+After consolidating back to (mostly) a single OS, I found that I still needed some ability to selectively run code on one machine and not the other.
+
+Hence, the =focks/when-machine= macro. It's fairly straight forward and doesn't do anything fun like the prior macros, but it is still handy when a need arises.
+
+#+begin_src emacs-lisp
+(defmacro focks/when-machine (hostname &rest body)
+  "a macro to only execute BODY when HOSTNAME matches the value returned by SYSTEM-NAME
+
+applies UPCASE to HOSTNAME parameter, and to the value returned by SYSTEM-NAME
+if using a system that returns SYSTEM-NAME as System.local, we drop the .local"
+  `(when (string-equal (upcase ,hostname)
+                       (upcase (car (split-string (system-name) "\\."))))
+     ,@body))
+
+#+end_src
+
+** Cheeky bit of execution
+
+Since the rest of the configuration relies on these macros to be defined, we make sure and run them exceedingly early.
+
+#+begin_src emacs-lisp
+;; runs os-p/when-on/unless-on for all system-types
+(focks/create-standard-os-macros)
+
+;; create specialized when/unless-on macros
+(focks/when-on unix gnu/linux aix berkeley-unix hpux usg-unix-v)
+(focks/unless-on bsdish darwin berkeley-unix) ;; you know, bsd enough to count lmao
+#+end_src
+
+
+#+begin_src emacs-lisp
+  (focks/when-on-bsd 
+   ;; the built-in battery-bsd-apm function doesnt seem to work on freebsd
+   ;;  it has an extra command line argument, and doesnt properly parse the
+   ;;  command output. here's my updated version
+   (defun battery-freebsd-apm ()
+     "Get APM status information from BSD apm binary.
+  The following %-sequences are provided:
+  %L AC line status (verbose)
+  %B Battery status (verbose)
+  %b Battery status, empty means high, `-' means low,
+   `!' means critical, and `+' means charging
+  %p Battery charge percentage
+  %s Remaining battery charge time in seconds
+  %m Remaining battery charge time in minutes
+  %h Remaining battery charge time in hours
+  %t Remaining battery charge time in the form `h:min'"
+     (let* ((apm-cmd "/usr/sbin/apm -blta")
+  	  (apm-output (split-string (shell-command-to-string apm-cmd)))
+  	  ;; Battery status
+  	  (battery-status
+  	   (let ((stat (string-to-number (nth 1 apm-output))))
+  	     (cond ((eq stat 0) '("high" . ""))
+  		   ((eq stat 1) '("low" . "-"))
+  		   ((eq stat 2) '("critical" . "!"))
+  		   ((eq stat 3) '("charging" . "+"))
+  		   ((eq stat 4) '("absent" . nil)))))
+  	  ;; Battery percentage
+  	  (battery-percentage (nth 2 apm-output))
+  	  ;; Battery life
+  	  (battery-life (nth 3 apm-output))
+  	  ;; AC status
+  	  (line-status
+  	   (let ((ac (string-to-number (nth 0 apm-output))))
+  	     (cond ((eq ac 0) "disconnected")
+  		   ((eq ac 1) "connected")
+  		   ((eq ac 2) "backup power"))))
+  	  seconds minutes hours remaining-time)
+       (unless (member battery-life '("unknown" "-1"))
+         (setq seconds (string-to-number battery-life)
+               minutes (truncate (/ seconds 60)))
+         (setq hours (truncate (/ minutes 60))
+  	     remaining-time (format "%d:%02d" hours
+  				    (- minutes (* 60 hours)))))
+       (list (cons ?L (or line-status "N/A"))
+  	   (cons ?B (or (car battery-status) "N/A"))
+  	   (cons ?b (or (cdr battery-status) "N/A"))
+  	   (cons ?p (if (string= battery-percentage "255")
+  		        "N/A"
+  		      battery-percentage))
+  	   (cons ?s (or (and seconds (number-to-string seconds)) "N/A"))
+  	   (cons ?m (or (and minutes (number-to-string minutes)) "N/A"))
+  	   (cons ?h (or (and hours (number-to-string hours)) "N/A"))
+  	   (cons ?t (or remaining-time "N/A"))))))
+
+  ;; custom projectile lisp project detection/compile command
+  (defun focks/parse-asdf-system-name (asd-file)
+    (let ((regxp (rx "defsystem" (? eol) (*? space)
+                     (*? punct) (group (+ (any "-" letter))))))
+      (with-temp-buffer
+        (insert-file-contents asd-file)
+        (string-match regxp (buffer-string))
+        (string-trim
+         (substring (buffer-string) (match-beginning 1) (match-end 1))))))
+
+  (defun focks/asdf-project-dir-p (&optional path)
+    (directory-files (or path (file-name-directory (buffer-file-name (current-buffer)))) 'full "?*.asd"))
+
+  (defun focks/has-makefile-p (path)
+    (directory-files path 'full "Make*"))
+
+  (defun focks/asdf-compile-cmd ()
+    ;; get project root (asd file)
+    ;; parse it for system name (immediately after defsystem)
+    ;; build quicklisp/asdf build command
+    (let* ((project-dir (projectile-project-root (file-name-directory (buffer-file-name (current-buffer)))))
+           (asd-file (car (focks/ensure-list (focks/asdf-project-dir-p project-dir))))
+           (asdf-system (focks/parse-asdf-system-name asd-file)))
+      (if (focks/has-makefile-p project-dir)
+          (concat "make -f " (car (focks/has-makefile-p project-dir)))
+        (concat "ros run --eval \""
+                "(handler-case "
+                "  (progn "
+                "    (ql:quickload :" asdf-system ") "
+                "    (asdf:make :" asdf-system ") "
+                "    (uiop:quit 0))"
+                "  (error (e) "
+                "    (format t \\\"~A~%%\\\" e) "
+                "    (uiop:quit 1)))"
+                "\""))))
+
+  (defun focks/get-system-arch ()
+    "gets the system architecture based off of the results of uname -a"
+    (car (last (split-string (shell-command-to-string "uname -a") nil t))))
+
+  (defun focks/buffer-existsp (buf-name)
+    "checks if buffer with BUF-NAME exists in (buffer-list)"
+    (member buf-name (mapcar #'buffer-name (buffer-list))))
+
+  (defun focks/get-file-info ()
+    "returns an alist with path and extension under :PATH and :EXTENSION"
+    `((:path . ,(cl-remove-if #'focks/blankp
+                              (file-name-split buffer-file-name)))
+      (:extension . ,(file-name-extension buffer-file-name))))
+
+  (defun focks/stringify (&rest args)
+    "converts every value in ARGS into a string and merges them together"
+    (mapconcat (lambda (x) (format "%s" x))  args ""))
+
+  (defun focks/ensure-list (lst)
+    "ensures that LST is a list"
+    (cl-typecase lst
+      (list lst)
+      (t (list lst))))
+
+  (defun focks/posframe-fallback (buffer-or-name arg-name value)
+    (let ((info (list :internal-border-width 3
+                      :background-color "dark violet")))
+      (or (plist-get info arg-name) value)))
+
+  (defun focks/load-emacs-theme ()
+    "loads custom themes based on focks/enable-dark-theme
+
+  ensures disabling all prior loaded themes before changing"
+    (cl-flet ((load-themes (x)
+                (load-theme x t)))
+      (mapc #'disable-theme custom-enabled-themes)
+      (if focks/enable-dark-theme
+          (mapc #'load-themes (focks/ensure-list focks/*dark-mode-theme*))
+        (mapc #'load-themes (focks/ensure-list focks/*light-mode-theme*)))))
+
+  (defun focks/blankp (string)
+    "returns t if STRING is an empty string"
+    (string= string ""))
+
+  (defun focks/font-available-p (font-family)
+    "predicate to check for the existance of the specified font family"
+    (find-font (font-spec :name font-family)))
+#+end_src
+
+
+* Interactive Functions
+
+** Purposeful Functions
+
+#+begin_src emacs-lisp  
+  (defun horz-flip-buffers ()
+    "Flips the open buffers between two windows"
+    (interactive)
+    (let ((c-buf (buffer-name))
+  	(o-buf (buffer-name (window-buffer (next-window)))))
+      (switch-to-buffer o-buf nil t)
+      (other-window 1)
+      (switch-to-buffer c-buf)
+      (other-window (- (length (window-list)) 1))))
+
+  (defun init-cpp-file (includes)
+    "Quickly and easily initializes a c++ file with main
+  INCLUDES is a space seperated list of headers to include"
+    (interactive "Mincludes: ")
+    (let ((path (concat "/" (string-join
+  			   (butlast
+  			    (cdr (assoc :path (focks/get-file-info)))) "/")
+  		      "/"))
+  	(inc-list (split-string includes " "))
+  	point)
+      (dolist (inc inc-list)
+        (insert "#include ")
+        (if (file-exists-p (concat path inc ".h"))
+  	  (insert (concat "\"" inc ".h\"\n"))
+  	(insert (concat "<" inc ">\n"))))
+      (insert "using namespace std;\n\n")
+      (insert "int main(int argc, char *argv[]) {\n")
+      (insert "  ")
+      (setq point (point))
+      (insert "\n  return 0;\n")
+      (insert "}\n")
+      
+      (goto-char point)))
+
+  (defun sly-qlot (directory)
+    (interactive (list (read-directory-name "Project directory: ")))
+    (require 'sly)
+    (sly-start :program "qlot"
+               :program-args '("exec" "ros" "-S" "." "run")
+               :directory directory
+               :name 'qlot
+               :env (list (concat "PATH=" (mapconcat 'identity exec-path ":")))))
+
+  (defun make-buffer (name)
+    "creates and switches to a new buffer with name NAME"
+    (interactive "Bname: ")
+    (let ((buff (generate-new-buffer name)))
+      (switch-to-buffer buff)
+      (text-mode)))
+
+  (defun scratch ()
+    "switches to the scratch buffer, creating it if needed"
+    (interactive)
+    (switch-to-buffer (get-buffer-create "*scratch*"))
+    (when (focks/blankp (buffer-string))
+      (insert ";; This buffer is for text that is not saved, and for Lisp evaluation.\n")
+      (insert ";; To create a file, visit it with C-x C-f and enter text in its buffer.\n\n")
+      (goto-char (point-max)))
+    (lisp-interaction-mode))
+#+end_src
+
+
+** For Funsies
+
+#+begin_src emacs-lisp
+  (defun emojofy ()
+    "turns a string into a formatted string for shitposting
+
+  prompts for PREFIX and WORD
+  copies the resulting formatted string into the kill-ring and displays a message
+   showing what was put there
+
+  ex: 
+  PREFIX=wide
+  WORD=test
+
+  RESULT: :wide_t::wide_e::wide_s::wide_t:"
+    (interactive)
+    (cl-flet ((emojify (letter)
+                (if (memq (get-char-code-property letter 'general-category)
+                          '(Ll Lu))
+                    (format ":%s_%c:" prefix letter)
+                  (format "%c" letter))))
+      (let* ((prefix (read-string "prefix: "))
+  	   (word (read-string "word: "))
+             (result (mapconcat #'emojify word "\u200d")))
+      (kill-new result)
+      (message result))))
+
+  (defun fox-me-up (&optional message)
+    "FOX ME UP INSIDE"
+    (interactive "Mmessage: ")
+    (let ((skeleton 
+  "  _,-=._              /|_/|
+    `-.}   `=._,.-=-._.,  @ @._,   <(%s)
+       `._ _,-.   )      _,.-'
+          `    G.m-\"^m`m'"))
+      (message
+       (format skeleton (if (or (not message)
+                                (focks/blankp message))
+                            "reet"
+                          message)))))
+
+#+end_src
+
+
+* Miscellaneous
+
+Code that may or may not belong elsewhere.
+Mostly setting various editor values or settings some keys globally.
+
+** TODO
+*** Reorganize into OS specific chunks
+
+#+begin_src emacs-lisp
+    ;; when we have ros installed go and include the path in the exec-path list
+    ;; TODO: see if we need this?
+    (when (executable-find "ros")
+      (let* ((ros-info (split-string (shell-command-to-string "ros version")
+                                     "\n" t))
+             (info-alist (mapcar #'(lambda (s)
+                                     (split-string s "=" t "'"))
+                                 ros-info))
+             (path (concat (cadr (assoc "homedir" info-alist #'string=))
+                           "bin")))
+        (setq exec-path (append exec-path (list path)))))
+
+    ;; run these options only when we're running in daemon mode
+    (when (daemonp)
+      (global-set-key (kbd "C-x M-C-c") 'kill-emacs))
+
+    (when (string= "arm64" (focks/get-system-arch))
+      (electric-pair-mode 1))
+
+    ;; sets up my custom key bindings
+    (global-set-key (kbd "C-x M-f") 'horz-flip-buffers)
+
+    ;; puts the line number in the left fringe
+    (when (version<= "26.0.50" emacs-version)
+      (global-display-line-numbers-mode))
+
+    ;; ensures that we NEVER have tabs in our code. ANYWHERE
+    (setq-default indent-tabs-mode nil)
+
+    ;; disable the scroll bar
+    (scroll-bar-mode 0)
+
+    ;; set the time format to 24hr and enable time display
+    ;; only if we're running from a console
+    (unless window-system
+      (setq display-time-24hr-format t)
+      (display-time-mode))
+
+    (focks/unless-on-windows
+     (setq ispell-program-name "aspell"))
+
+    ;; bsd specific loading
+    (focks/when-on-bsd
+     (setq ispell-dictionary "en_US"
+           ispell-aspell-dict-dir "/usr/local/share/aspell/"
+           ispell-aspell-data-dir "/usr/local/lib/aspell-0.60/"
+           ispell-dictionary-keyword "american"
+           battery-status-function #'battery-freebsd-apm))
+
+    ;; *nix specific loading
+    (focks/when-on-unix
+     (display-battery-mode)
+     (setq ispell-local-dictionary "en_US"))
+
+    ;; mac specific loading
+    (focks/when-on-macos
+     ;; this disables special character input in emacs when using the option key
+     ;; and ensures that the command key sends meta keypresses
+     (setq mac-option-modifier 'meta
+           mac-command-modifier 'meta
+
+           ;; turns off dark mode as default
+           focks/enable-dark-theme nil)
+
+     ;; if we're using a version of emacs with a certain patch
+     ;; we dont need to do all the homegrown stuff, and can just
+     ;; hook into ns-system-appearance-change-functions
+     (if (boundp 'ns-system-appearance)
+         (add-hook 'ns-system-appearance-change-functions
+                   (lambda (style)
+                     (mapc #'disable-theme custom-enabled-themes)
+                     (if (eq style 'light)
+                         (load-theme focks/*light-mode-theme* t)
+                       (load-theme focks/*dark-mode-theme* t))))
+       (progn
+         (defvar focks/*current-theme* nil)
+
+         ;; define a function that runs a custom applescript script that
+         ;; checks our theme and returns 'dark or 'light
+         (defun focks/macos-theme ()
+           "gets the current macOS window theme
+
+    returns either 'dark or 'light"
+           (let ((theme (shell-command-to-string (concat "osascript " focks/*config-root* "CheckSystemTheme.scpt"))))
+             (if (string= theme (concat "true" (char-to-string ?\n)))
+                 'dark
+               'light)))
+
+         ;; defines a function that checks the system theme
+         ;; and changes our emacs theme to match it
+         (defun focks/match-theme-to-system ()
+           "checks the system theme and changes the emacs theme to match"
+           (unless (equal focks/*current-theme* (macos-theme))
+             (setq focks/*current-theme* (macos-theme))
+             (setq focks/enable-dark-theme (eq focks/*current-theme* 'dark))
+             (focks/load-emacs-theme)
+             (set-face-attribute 'default nil :height focks/face-height)))
+
+         ;; sets up a hook that will run every 5 seconds to
+         ;; match the themes
+         (add-hook 'window-setup-hook
+                   (lambda ()
+                     ;; because the damn mac screen is good,
+                     ;;  we need to bump the font size up a lil lmao
+                     ;; note: needs to be in window-setup-hook otherwise
+                     ;;       it doesnt get run for the initial frame
+                     (set-face-attribute 'default nil :height focks/face-height)
+                     (when focks/auto-update-macos-theme
+                       (run-with-timer 0 5 'focks/match-theme-to-system)))))))
+
+    ;; loading a theme
+    (focks/unless-on-macos
+     (add-hook 'window-setup-hook 'focks/load-emacs-theme))
+
+    ;; enable 'list-timers function
+    (put 'list-timers 'disabled nil)
+#+end_src 
+
+
+* Package Loading
+
+One of the first fun things I did when refactoring my configuration was ensure that it was totally independent of needing anything installed to get it up and running.
+My initial attempt at this was to package =use-package= as a git submodule in this repo.
+However, this was a bit tedious and prone to being out of date (it's hard to keep a config, much less a SUBMODULE up to date when you're as lazy as me lmao).
+
+My second attempt involved manually downloading, unzipping, and =require=-ing use-package manually, if its directory didn't already exist.
+This *worked*, however around the same time I was trying to get into using =org-roam= to write notes and journal.
+The only way that =org-roam= is offered for installation is through =straight.el=.
+
+And since =straight= is a package manager in its own right, I figured it would be just as simple (if not simpler) to use it to install =use-package=, and so here we are.
+
+
+** Configure package options
+
+Here we begin by loading the package library and ensuring we have it configured to check the MELPA elisp repository.
+
+#+begin_src emacs-lisp
+    (require 'package)
+    (add-to-list 'package-archives
+    	     '("melpa" . "http://melpa.org/packages/"))
+    (package-initialize)
+    (unless package-archive-contents
+      (package-refresh-contents))
+#+end_src
+
+** Use-Package
+
+This is the most important line in this file, honestly. Without it the rest of the configuration wouldn't function.
+
+It downloads, installs and =require='s  use-package which is the way the rest of the system loads and configures extensions.
+
+#+begin_src emacs-lisp
+  (straight-use-package 'use-package)
+#+end_src 
+
+*** TODO
+**** Reorganize this section to have similar packages grouped together
+
+#+begin_src emacs-lisp
+  (use-package siege-mode
+    :ensure straight
+    :straight (:host github :repo "tslilc/siege-mode" :branch "master")
+    :hook ((programming-mode . siege-mode)))
+
+  (use-package swift-mode
+    :ensure t)
+
+  (use-package json-reformat
+    :ensure t)
+
+  (use-package json-mode
+    :ensure t
+    :pin melpa)
+
+  (use-package org-roam
+    :ensure t
+    :init
+    (setq org-roam-v2-ack t)
+    (let ((notes-dir (focks/os-cond
+                      (windows-nt (concat (getenv "USERPROFILE") "\\Syncthing\\Notes"))
+                      (t "~/Syncthing/Notes"))))
+      (unless (file-directory-p notes-dir)
+        (make-directory notes-dir)))
+    
+    :bind
+    (("C-c n l" . org-roam-buffer-toggle)
+     ("C-c n f" . org-roam-node-find)
+     ("C-c n i" . org-roam-node-insert)
+     ("C-c n c" . org-roam-capture)
+     ("C-c n d" . org-roam-dailies-goto-today)
+     ("C-c n t" . org-roam-dailies-goto-tomorrow))
+    
+    :custom
+    (org-roam-directory
+     (focks/os-cond
+       (windows-nt (concat (getenv "USERPROFILE") "\\Syncthing\\Notes"))
+       (t "~/Syncthing/Notes")))
+    
+    :config
+    (focks/when-on-windows
+      (unless (version<= "29.0.0" emacs-version)
+        (message "SQLite support is built into Emacs v29+ and is recommended for org-roam...")
+        (sleep-for 2.5)))
+    
+    (org-roam-setup))
+
+  (use-package org-roam-ui
+    :straight
+      (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
+    :after org-roam
+    :custom
+    ((org-roam-ui-sync-theme t)
+     (org-roam-ui-follow t)   
+     (org-roam-ui-update-on-save t)
+     (org-roam-ui-open-on-start t)))
+
+  ;; show function docstrings in the minibuffer
+  (use-package marginalia
+    :ensure t
+    :bind (("M-A" . marginalia-cycle)
+           :map minibuffer-local-map
+           ("M-A" . marginalia-cycle))
+    :init (marginalia-mode))
+
+  (use-package parinfer-rust-mode
+    :ensure t
+    :unless (string= "arm64" (focks/get-system-arch))
+    :hook (lisp-mode . parinfer-rust-mode)
+      
+    :custom
+    (parinfer-rust-library
+     (focks/os-cond
+      (windows-nt "~/.emacs.d/parinfer-rust/parinfer_rust.dll")
+      (t "~/.emacs.d/parinfer-rust/libparinfer_rust.so")))
+      
+    :init
+    (focks/unless-on-windows
+     (setq parinfer-rust-auto-download t)))
+
+  (use-package lua-mode
+    :ensure t)
+
+  (use-package fennel-mode
+    :ensure t)
+
+  (use-package cc-mode
+    :ensure t
+    :bind (("C-c i" . init-cpp-file)))
+
+  (use-package popwin
+    :ensure t
+    :init (popwin-mode t))
+
+  (use-package posframe
+    :ensure t
+    :custom
+    (posframe-arghandler #'focks/posframe-fallback))
+
+  (use-package frog-jump-buffer
+    :ensure t
+    :bind ("C-;" . frog-jump-buffer)
+    :config
+    (dolist (regexp '("TAGS" "^\\*Compile-log" "-debug\\*$" "^\\:" "errors\\*$" "^\\*Backtrace" "-ls\\*$"
+                      "stderr\\*$" "^\\*Flymake" "^\\*vc" "^\\*Warnings" "^\\*eldoc" "\\^*Shell Command"))
+      (push regexp frog-jump-buffer-ignore-buffers)))
+
+  (use-package eros
+    :ensure t
+    :init (eros-mode t))
+
+  (use-package css-eldoc
+    :ensure t
+    :hook ((css-mode . turn-on-css-eldoc)))
+
+  (use-package request
+    :ensure t)
+
+  (use-package markdown-mode
+    :ensure t)
+
+  (use-package eshell
+    :bind ("C-x M-e" . eshell))
+
+  (use-package info-look
+    :ensure t)
+
+  (use-package minions
+    :ensure t
+    :config (minions-mode 1))
+
+  (use-package doom-modeline
+    :ensure t
+    :init (doom-modeline-mode 1)
+    :custom
+    ((doom-modeline-buffer-encoding nil)
+     (doom-modeline-minor-modes t)
+     (doom-modeline-gnus-timer nil)
+     (doom-modeline-bar-width 3)
+     (doom-modeline-icon (unless (daemonp) t))
+     (inhibit-compacting-font-caches (focks/when-on-windows t))))
+
+  (use-package projectile
+    :ensure t
+    :init (projectile-mode +1)
+    :bind (:map projectile-mode-map
+  	 ("C-c p" . projectile-command-map))
+    :config
+    (projectile-register-project-type 'asdf 'focks/asdf-project-dir-p
+                                      :project-file "?*.asd"
+                                      :compile 'focks/asdf-compile-cmd))
+
+  (use-package treemacs
+    :ensure t
+    :bind ([f8] . treemacs))
+
+  (use-package treemacs-projectile
+    :after treemacs projectile
+    :ensure t)
+
+  (use-package treemacs-magit
+    :after treemacs magit
+    :ensure t)
+
+  (use-package company
+    :ensure t
+    :init (global-company-mode))
+
+  (use-package company-quickhelp
+    :ensure t
+    :hook (company-mode . company-quickhelp-mode))
+
+  (use-package company-box
+    :ensure t
+    :hook (company-mode . company-box-mode))
+
+  (use-package fish-mode
+    :ensure t)
+
+  (use-package hydra
+    :ensure t)
+
+  (use-package ivy
+    :ensure t
+    :init (ivy-mode 1)
+    :bind (:map ivy-minibuffer-map
+  	      ("RET" . ivy-alt-done))
+    :custom
+    (ivy-use-virtual-buffers 'recentf))
+
+  (use-package ivy-hydra
+    :ensure t
+    :after ivy hydra)
+
+  (use-package counsel
+    :ensure t
+    :init (counsel-mode 1))
+
+  (use-package counsel-projectile
+    :ensure t
+    :after counsel projectile
+    :init (counsel-projectile-mode))
+
+  (use-package swiper
+    :ensure t
+    :bind
+    ("C-s" . swiper)
+    ("C-r" . swiper))
+
+  ;; only install elcord when discord is installed
+  (use-package elcord
+    :ensure t
+    :when (executable-find "discord")
+    :hook ((lisp-mode . elcord-mode)))
+
+  (use-package prism
+    :ensure t
+    :hook ((lisp-mode . prism-mode)
+  	 (common-lisp-mode . prism-mode)
+  	 (ruby-mode . prism-mode)
+  	 (emacs-lisp-mode . prism-mode)))
+    
+  (use-package emr
+    :ensure t
+    :bind (("M-RET" . emr-show-refactor-menu)))
+
+  (use-package dimmer
+    :ensure t
+    :custom
+    (dimmer-fraction 0.4)
+    
+    :config
+    (dimmer-mode 1))
+
+  (use-package rainbow-delimiters
+    :ensure t
+    :hook ((lisp-mode . rainbow-delimiters-mode)
+  	 (emacs-lisp-mode . rainbow-delimiters-mode)
+  	 (sly-mode . rainbow-delimiters-mode)))
+
+  (use-package ido-completing-read+
+    :ensure t
+    :init (ido-ubiquitous-mode 1))
+
+  (use-package amx
+    :ensure t
+    :init (amx-mode))
+
+  ;; make sure we only use magit WHEN WE HAVE GIT :facepalm:
+  (use-package magit
+    :ensure t
+    :when (executable-find "git")
+    :bind ("C-x a" . magit-status))
+
+  ;; (use-package go-autocomplete
+  ;;   :disabled
+  ;;   :init (ac-config-default))
+
+  ;; (use-package go-complete
+  ;;   :disabled)
+
+  ;; (use-package go-mode
+  ;;   :disabled
+  ;;   :init
+  ;;   (focks/when-on-unix (setq shell-file-name (executable-find "fish")))
+  ;;   (when (memq window-system '(mac ns x))
+  ;;     (exec-path-from-shell-initialize)
+  ;;     (exec-path-from-shell-copy-env "GOPATH"))
+  ;;   (go-eldoc-setup))
+
+  (use-package flyspell
+    :ensure t
+    :bind ("C-'" . flyspell-auto-correct-previous-pos))
+
+  (use-package org
+    :mode ("\\.notes?$" . org-mode)
+    :hook (org-mode . (lambda ()
+  		      (when (or (executable-find "ispell")
+  				(executable-find "aspell"))
+  			(flyspell-mode)))))
+
+  (use-package poly-erb
+    :ensure t
+    :mode "\\.erb")
+
+  (use-package lisp-mode
+    :mode "\\.stumpwmrc$")
+
+  (use-package multiple-cursors
+    :ensure t
+    :bind (("C->" . mc/mark-next-like-this)
+  	 ("C-<" . mc/mark-previous-like-this)
+  	 ("C-c C-<" . mc/mark-all-like-this)))
+
+  (use-package win-switch
+    :ensure t
+    :bind (("C-x o" . win-switch-dispatch)
+  	 ("C-c o" . win-switch-dispatch-once)))
+
+  (use-package eldoc
+    :ensure t
+    :hook ((emacs-lisp-mode lisp-interaction-mode ielm-mode org-mode) . eldoc-mode))
+
+  (use-package macrostep
+    :ensure t
+    :bind (:map emacs-lisp-mode-map
+  	 ("C-c e" . macrostep-expand)))
+
+  (use-package text-mode
+    :hook ((text-mode . visual-line-mode)
+           (text-mode . turn-on-orgtbl)))
+
+  (use-package sly-macrostep
+    :after sly
+    :ensure t)
+
+  (use-package sly-named-readtables
+    :after sly
+    :ensure t)
+
+  (use-package sly-quicklisp
+    :after sly
+    :ensure t)
+
+  (use-package sly-asdf
+    :after sly
+    :ensure t)
+
+  (use-package sly
+    :ensure t
+    :bind (("s-l" . sly)
+  	 :map lisp-mode-map
+  	 ("C-c e" . macrostep-expand))
+    
+    :hook ((lisp-mode . sly-editing-mode))
+    
+    :custom
+    ((slime-contribs '(sly-fancy sly-macrostep sly-quicklisp sly-asdf
+                       sly-reply-ansi-color sly-named-readtables))
+     (inferior-lisp-program "ros run -Q")))
+
+  (use-package elpy
+    :disabled
+    :hook python-mode
+    :custom
+    (venv-location (focks/stringify (getenv "HOME") "/programming/python/")))
+
+  (use-package emojify
+    :ensure t
+    :hook (after-init . global-emojify-mode)
+    :custom
+    (emojify-display-style
+     (focks/os-cond
+      (windows-nt 'image)
+      (gnu/linux 'unicode)
+      (darwin 'unicode)
+      (t 'image))))
+
+  (use-package nerd-icons
+    :ensure t
+    :config
+    (unless (focks/font-available-p "Symbols Nerd Font Mono")
+      (os-cond
+       (windows-nt (messge "Please install nerd fonts manually thx :-*"))
+       (t (nerd-icons-install-fonts))))
+    :custom
+    (nerd-icons-font-family "Symbols Nerd Font Mono"))
+#+end_src
+
+** Theme Specification
+
+#+begin_src emacs-lisp
+;; dark theme 
+(use-package challenger-deep-theme
+  :ensure t)
+
+;; light theme
+(use-package twilight-bright-theme
+   :ensure t)
+
+(use-package solo-jazz-theme
+   :ensure t)  
+#+end_src
+
+
+
+* Some final things
+
+Finally, after everything else we check for our local configuration file and load it.
+
+#+begin_src emacs-lisp
+  (load focks/local-file)
+#+end_src
+
+Then we go and byte-compile our init file, just in case ;3c 
+
+#+begin_src emacs-lisp
+  ;; check and recompile the init file
+  (cl-eval-when (load)
+    (byte-compile-file (file-truename "~/.emacs")))
+#+end_src

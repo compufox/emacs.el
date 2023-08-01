@@ -2,7 +2,7 @@
 /.emacs.d/
 *.elc
 *.el
-!tangle-bootstrap.el
+!bootstrap.el
 .DS_Store
 *.otf
 *.ttf
