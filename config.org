@@ -66,7 +66,7 @@ Both are placed in the "init directory", which is located underneath the user's 
 
 When I first started getting into Emacs, I obviously tried to use the built-in =customize= screens to build and setup my configuration.
 
-Between other configuration's I saw online and trying to provide my own functionality I quickly moved past using it in favor of configuring packages directly. This became even more trivial once I stumbled across =use-package= (see [[#Packages][Packages]] for examples on usage).
+Between other configuration's I saw online and trying to provide my own functionality I quickly moved past using it in favor of configuring packages directly. This became even more trivial once I stumbled across =use-package= (see [[#package-loading][Package Loading]] for examples on usage).
 
 ** TODO
 *** Move all custom settings from here into [[#Miscellaneous][Miscellaneous]]
