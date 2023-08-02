@@ -169,7 +169,7 @@ They also allow you to combine =system-type=-s so that you can specify code to r
 
   OS is a symbol (or string) to be placed in the macro name
   TYPE-NAMES is a list of symbols that correspond to values returned by system-type"
-    `(defmacro ,(intern (format "focks/when-on-%s" os)) (&rest body)
+    `(defmacro ,(intern (format "when-on-%s" os)) (&rest body)
        `(when (or ,@(mapcar (lambda (name) `(eq system-type ',name))
   			  (flatten-list ',type-names)))
   	,@body)))
@@ -180,7 +180,7 @@ They also allow you to combine =system-type=-s so that you can specify code to r
 
   OS is a symbol (or string) to be placed in the macro name
   TYPE-NAMES is a list of symbols that correspond to values returned by system-type"
-    `(defmacro ,(intern (format "focks/unless-on-%s" os)) (&rest body)
+    `(defmacro ,(intern (format "unless-on-%s" os)) (&rest body)
        `(unless (or ,@(mapcar (lambda (name) `(eq system-type ',name))
                               (flatten-list ',type-names)))
   	,@body)))
@@ -219,7 +219,7 @@ So, I fixed that :3c
      ,@(cl-loop for os in '((gnu . hurd) (gnu/linux . linux)
                             (darwin . macos) (ms-dos . dos)
                             (windows-nt . windows) (gnu/kfreebsd . bsd)
-                            ((gnu/linux aix berkeley-unix hpux usg-unix-v darwin) . unix)
+                            ((gnu/linux aix berkeley-unix hpux usg-unix-v) . unix)
                             ((darwin gnu/kfreebsd berkeley-unix) . bsdish)
                             haiku cygwin)
                 for os-name = (if (listp os) (cdr os) os)
@@ -259,62 +259,9 @@ Since the rest of the configuration relies on these macros to be defined, we mak
   (focks/create-standard-os-macros)
 #+end_src
 
+* Functions
 
 #+begin_src emacs-lisp
-  (focks/when-on-bsd 
-   ;; the built-in battery-bsd-apm function doesnt seem to work on freebsd
-   ;;  it has an extra command line argument, and doesnt properly parse the
-   ;;  command output. here's my updated version
-   (defun battery-freebsd-apm ()
-     "Get APM status information from BSD apm binary.
-  The following %-sequences are provided:
-  %L AC line status (verbose)
-  %B Battery status (verbose)
-  %b Battery status, empty means high, `-' means low,
-   `!' means critical, and `+' means charging
-  %p Battery charge percentage
-  %s Remaining battery charge time in seconds
-  %m Remaining battery charge time in minutes
-  %h Remaining battery charge time in hours
-  %t Remaining battery charge time in the form `h:min'"
-     (let* ((apm-cmd "/usr/sbin/apm -blta")
-  	  (apm-output (split-string (shell-command-to-string apm-cmd)))
-  	  ;; Battery status
-  	  (battery-status
-  	   (let ((stat (string-to-number (nth 1 apm-output))))
-  	     (cond ((eq stat 0) '("high" . ""))
-  		   ((eq stat 1) '("low" . "-"))
-  		   ((eq stat 2) '("critical" . "!"))
-  		   ((eq stat 3) '("charging" . "+"))
-  		   ((eq stat 4) '("absent" . nil)))))
-  	  ;; Battery percentage
-  	  (battery-percentage (nth 2 apm-output))
-  	  ;; Battery life
-  	  (battery-life (nth 3 apm-output))
-  	  ;; AC status
-  	  (line-status
-  	   (let ((ac (string-to-number (nth 0 apm-output))))
-  	     (cond ((eq ac 0) "disconnected")
-  		   ((eq ac 1) "connected")
-  		   ((eq ac 2) "backup power"))))
-  	  seconds minutes hours remaining-time)
-       (unless (member battery-life '("unknown" "-1"))
-         (setq seconds (string-to-number battery-life)
-               minutes (truncate (/ seconds 60)))
-         (setq hours (truncate (/ minutes 60))
-  	     remaining-time (format "%d:%02d" hours
-  				    (- minutes (* 60 hours)))))
-       (list (cons ?L (or line-status "N/A"))
-  	   (cons ?B (or (car battery-status) "N/A"))
-  	   (cons ?b (or (cdr battery-status) "N/A"))
-  	   (cons ?p (if (string= battery-percentage "255")
-  		        "N/A"
-  		      battery-percentage))
-  	   (cons ?s (or (and seconds (number-to-string seconds)) "N/A"))
-  	   (cons ?m (or (and minutes (number-to-string minutes)) "N/A"))
-  	   (cons ?h (or (and hours (number-to-string hours)) "N/A"))
-  	   (cons ?t (or remaining-time "N/A"))))))
-
   ;; custom projectile lisp project detection/compile command
   (defun focks/parse-asdf-system-name (asd-file)
     (let ((regxp (rx "defsystem" (? eol) (*? space)
@@ -501,6 +448,105 @@ Since the rest of the configuration relies on these macros to be defined, we mak
 #+end_src
 
 
+* OS Specific Configuration
+
+** Windows
+#+begin_src emacs-lisp
+  
+#+end_src
+
+** macOS
+#+begin_src emacs-lisp
+  (when-on-macos
+   ;; this disables special character input in emacs when using the option key
+   ;; and ensures that the command key sends meta keypresses
+   (setq mac-option-modifier 'meta
+         mac-command-modifier 'meta)
+
+   ;; this used to be in a check for arm64 system arch
+   ;; however, the only systems i personally use that use
+   ;; arm64 are macs, sooooo.
+   (electric-pair-mode 1))
+#+end_src
+
+** *nix
+#+begin_src emacs-lisp
+  (when-on-unix
+   (display-battery-mode)
+   (setq ispell-local-dictionary "en_US"))
+#+end_src
+
+** BSD
+#+begin_src emacs-lisp
+  (when-on-bsd
+ 
+   ;; the built-in battery-bsd-apm function doesnt seem to work on freebsd
+   ;;  it has an extra command line argument, and doesnt properly parse the
+   ;;  command output. here's my updated version
+   (defun focks/battery-freebsd-apm ()
+     "Get APM status information from BSD apm binary.
+  The following %-sequences are provided:
+  %L AC line status (verbose)
+  %B Battery status (verbose)
+  %b Battery status, empty means high, `-' means low,
+   `!' means critical, and `+' means charging
+  %p Battery charge percentage
+  %s Remaining battery charge time in seconds
+  %m Remaining battery charge time in minutes
+  %h Remaining battery charge time in hours
+  %t Remaining battery charge time in the form `h:min'"
+     (let* ((apm-cmd "/usr/sbin/apm -blta")
+          (apm-output (split-string (shell-command-to-string apm-cmd)))
+          ;; Battery status
+          (battery-status
+           (let ((stat (string-to-number (nth 1 apm-output))))
+             (cond ((eq stat 0) '("high" . ""))
+                   ((eq stat 1) '("low" . "-"))
+                   ((eq stat 2) '("critical" . "!"))
+                   ((eq stat 3) '("charging" . "+"))
+                   ((eq stat 4) '("absent" . nil)))))
+          ;; Battery percentage
+          (battery-percentage (nth 2 apm-output))
+          ;; Battery life
+          (battery-life (nth 3 apm-output))
+          ;; AC status
+          (line-status
+           (let ((ac (string-to-number (nth 0 apm-output))))
+             (cond ((eq ac 0) "disconnected")
+                   ((eq ac 1) "connected")
+                   ((eq ac 2) "backup power"))))
+          seconds minutes hours remaining-time)
+       (unless (member battery-life '("unknown" "-1"))
+         (setq seconds (string-to-number battery-life)
+               minutes (truncate (/ seconds 60)))
+         (setq hours (truncate (/ minutes 60))
+             remaining-time (format "%d:%02d" hours
+                                    (- minutes (* 60 hours)))))
+       (list (cons ?L (or line-status "N/A"))
+           (cons ?B (or (car battery-status) "N/A"))
+           (cons ?b (or (cdr battery-status) "N/A"))
+           (cons ?p (if (string= battery-percentage "255")
+                        "N/A"
+                      battery-percentage))
+           (cons ?s (or (and seconds (number-to-string seconds)) "N/A"))
+           (cons ?m (or (and minutes (number-to-string minutes)) "N/A"))
+           (cons ?h (or (and hours (number-to-string hours)) "N/A"))
+           (cons ?t (or remaining-time "N/A")))))
+
+   (setq ispell-dictionary "en_US"
+         ispell-aspell-dict-dir "/usr/local/share/aspell/"
+         ispell-aspell-data-dir "/usr/local/lib/aspell-0.60/"
+         ispell-dictionary-keyword "american"
+         battery-status-function #'focks/battery-freebsd-apm))
+#+end_src
+
+** Unless
+#+begin_src emacs-lisp
+  (unless-on-windows
+   (setq ispell-program-name "aspell"))
+#+end_src
+
+
 * Theme Loading
 
 ** General
@@ -597,122 +643,43 @@ Mostly setting various editor values or settings some keys globally.
 *** Reorganize into OS specific chunks
 
 #+begin_src emacs-lisp
-    ;; when we have ros installed go and include the path in the exec-path list
-    ;; TODO: see if we need this?
-    (when (executable-find "ros")
-      (let* ((ros-info (split-string (shell-command-to-string "ros version")
-                                     "\n" t))
-             (info-alist (mapcar #'(lambda (s)
-                                     (split-string s "=" t "'"))
-                                 ros-info))
-             (path (concat (cadr (assoc "homedir" info-alist #'string=))
-                           "bin")))
-        (setq exec-path (append exec-path (list path)))))
+  ;; when we have ros installed go and include the path in the exec-path list
+  (when (executable-find "ros")
+    (let* ((ros-info (split-string (shell-command-to-string "ros version")
+                                   "\n" t))
+           (info-alist (mapcar #'(lambda (s)
+                                   (split-string s "=" t "'"))
+                               ros-info))
+           (path (file-name-concat (cadr (assoc "homedir" info-alist #'string=))
+                                   "bin")))
+      (setq exec-path (append exec-path (list path)))))
 
-    ;; run these options only when we're running in daemon mode
-    (when (daemonp)
-      (global-set-key (kbd "C-x M-C-c") 'kill-emacs))
+  ;; run these options only when we're running in daemon mode
+  (when (daemonp)
+    (global-set-key (kbd "C-x M-C-c") 'kill-emacs))
 
-    (when (string= "arm64" (focks/get-system-arch))
-      (electric-pair-mode 1))
+  ;; sets up my custom key bindings
+  (global-set-key (kbd "C-x M-f") 'horz-flip-buffers)
 
-    ;; sets up my custom key bindings
-    (global-set-key (kbd "C-x M-f") 'horz-flip-buffers)
+  ;; puts the line number in the left fringe
+  (when (version<= "26.0.50" emacs-version)
+    (global-display-line-numbers-mode))
 
-    ;; puts the line number in the left fringe
-    (when (version<= "26.0.50" emacs-version)
-      (global-display-line-numbers-mode))
+  ;; ensures that we NEVER have tabs in our code. ANYWHERE
+  (setq-default indent-tabs-mode nil)
 
-    ;; ensures that we NEVER have tabs in our code. ANYWHERE
-    (setq-default indent-tabs-mode nil)
+  ;; disable the scroll bar
+  (scroll-bar-mode 0)
 
-    ;; disable the scroll bar
-    (scroll-bar-mode 0)
+  ;; set the time format to 24hr and enable time display
+  ;; only if we're running from a console
+  (unless window-system
+    (setq display-time-24hr-format t)
+    (display-time-mode))
 
-    ;; set the time format to 24hr and enable time display
-    ;; only if we're running from a console
-    (unless window-system
-      (setq display-time-24hr-format t)
-      (display-time-mode))
 
-    (focks/unless-on-windows
-     (setq ispell-program-name "aspell"))
-
-    ;; bsd specific loading
-    (focks/when-on-bsd
-     (setq ispell-dictionary "en_US"
-           ispell-aspell-dict-dir "/usr/local/share/aspell/"
-           ispell-aspell-data-dir "/usr/local/lib/aspell-0.60/"
-           ispell-dictionary-keyword "american"
-           battery-status-function #'battery-freebsd-apm))
-
-    ;; *nix specific loading
-    (focks/when-on-unix
-     (display-battery-mode)
-     (setq ispell-local-dictionary "en_US"))
-
-    ;; mac specific loading
-    (focks/when-on-macos
-     ;; this disables special character input in emacs when using the option key
-     ;; and ensures that the command key sends meta keypresses
-     (setq mac-option-modifier 'meta
-           mac-command-modifier 'meta
-
-           ;; turns off dark mode as default
-           focks/enable-dark-theme nil)
-
-     ;; if we're using a version of emacs with a certain patch
-     ;; we dont need to do all the homegrown stuff, and can just
-     ;; hook into ns-system-appearance-change-functions
-     (if (boundp 'ns-system-appearance)
-         (add-hook 'ns-system-appearance-change-functions
-                   (lambda (style)
-                     (mapc #'disable-theme custom-enabled-themes)
-                     (if (eq style 'light)
-                         (load-theme focks/*light-mode-theme* t)
-                       (load-theme focks/*dark-mode-theme* t))))
-       (progn
-         (defvar focks/*current-theme* nil)
-
-         ;; define a function that runs a custom applescript script that
-         ;; checks our theme and returns 'dark or 'light
-         (defun focks/macos-theme ()
-           "gets the current macOS window theme
-
-    returns either 'dark or 'light"
-           (let ((theme (shell-command-to-string (concat "osascript " focks/*config-root* "CheckSystemTheme.scpt"))))
-             (if (string= theme (concat "true" (char-to-string ?\n)))
-                 'dark
-               'light)))
-
-         ;; defines a function that checks the system theme
-         ;; and changes our emacs theme to match it
-         (defun focks/match-theme-to-system ()
-           "checks the system theme and changes the emacs theme to match"
-           (unless (equal focks/*current-theme* (macos-theme))
-             (setq focks/*current-theme* (macos-theme))
-             (setq focks/enable-dark-theme (eq focks/*current-theme* 'dark))
-             (focks/load-emacs-theme)
-             (set-face-attribute 'default nil :height focks/face-height)))
-
-         ;; sets up a hook that will run every 5 seconds to
-         ;; match the themes
-         (add-hook 'window-setup-hook
-                   (lambda ()
-                     ;; because the damn mac screen is good,
-                     ;;  we need to bump the font size up a lil lmao
-                     ;; note: needs to be in window-setup-hook otherwise
-                     ;;       it doesnt get run for the initial frame
-                     (set-face-attribute 'default nil :height focks/face-height)
-                     (when focks/auto-update-macos-theme
-                       (run-with-timer 0 5 'focks/match-theme-to-system)))))))
-
-    ;; loading a theme
-    (focks/unless-on-macos
-     (add-hook 'window-setup-hook 'focks/load-emacs-theme))
-
-    ;; enable 'list-timers function
-    (put 'list-timers 'disabled nil)
+  ;; enable 'list-timers function
+  (put 'list-timers 'disabled nil)
 #+end_src 
 
 
@@ -791,7 +758,7 @@ What follows from here is loading and configuring the rest of my packages utiliz
        (t "~/Syncthing/Notes")))
     
     :config
-    (focks/when-on-windows
+    (when-on-windows
       (unless (version<= "29.0.0" emacs-version)
         (message "SQLite support is built into Emacs v29+ and is recommended for org-roam...")
         (sleep-for 2.5)))
@@ -828,7 +795,7 @@ What follows from here is loading and configuring the rest of my packages utiliz
       (t "~/.emacs.d/parinfer-rust/libparinfer_rust.so")))
       
     :init
-    (focks/unless-on-windows
+    (unless-on-windows
      (setq parinfer-rust-auto-download t)))
 
   (use-package lua-mode
@@ -891,7 +858,7 @@ What follows from here is loading and configuring the rest of my packages utiliz
      (doom-modeline-gnus-timer nil)
      (doom-modeline-bar-width 3)
      (doom-modeline-icon (unless (daemonp) t))
-     (inhibit-compacting-font-caches (focks/when-on-windows t))))
+     (inhibit-compacting-font-caches (when-on-windows t))))
 
   (use-package projectile
     :ensure t
@@ -1015,7 +982,7 @@ What follows from here is loading and configuring the rest of my packages utiliz
   ;; (use-package go-mode
   ;;   :disabled
   ;;   :init
-  ;;   (focks/when-on-unix (setq shell-file-name (executable-find "fish")))
+  ;;   (when-on-unix (setq shell-file-name (executable-find "fish")))
   ;;   (when (memq window-system '(mac ns x))
   ;;     (exec-path-from-shell-initialize)
   ;;     (exec-path-from-shell-copy-env "GOPATH"))
