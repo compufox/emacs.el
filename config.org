@@ -132,13 +132,7 @@ Custom variables used throughout my custom functions/macros.
   ;; allow for local, git-ignored configurations
   (defvar focks/local-file (file-name-concat focks/*config-root* "local.el"))
 
-  ;; theme selection
-  (defvar focks/*light-mode-theme* 'solo-jazz)
-  (defvar focks/*dark-mode-theme* 'challenger-deep)
-
-  (defvar focks/enable-dark-theme t)
   (defvar focks/face-height 120)
-  (defvar focks/auto-update-macos-theme t)
 #+end_src
 
 
@@ -386,17 +380,6 @@ Since the rest of the configuration relies on these macros to be defined, we mak
                       :background-color "dark violet")))
       (or (plist-get info arg-name) value)))
 
-  (defun focks/load-emacs-theme ()
-    "loads custom themes based on focks/enable-dark-theme
-
-  ensures disabling all prior loaded themes before changing"
-    (cl-flet ((load-themes (x)
-                (load-theme x t)))
-      (mapc #'disable-theme custom-enabled-themes)
-      (if focks/enable-dark-theme
-          (mapc #'load-themes (focks/ensure-list focks/*dark-mode-theme*))
-        (mapc #'load-themes (focks/ensure-list focks/*light-mode-theme*)))))
-
   (defun focks/blankp (string)
     "returns t if STRING is an empty string"
     (string= string ""))
@@ -514,6 +497,93 @@ Since the rest of the configuration relies on these macros to be defined, we mak
                                 (focks/blankp message))
                             "reet"
                           message)))))
+
+#+end_src
+
+
+* Theme Loading
+
+** General
+#+begin_src emacs-lisp
+  ;; theme selection
+  (defvar focks/*light-mode-theme* 'solo-jazz)
+  (defvar focks/*dark-mode-theme* 'challenger-deep)
+  (defvar focks/enable-dark-theme t)
+  (defvar focks/auto-update-macos-theme t)
+
+  ;; dark theme 
+  (use-package challenger-deep-theme
+    :ensure t)
+
+  ;; light theme
+  (use-package solo-jazz-theme
+    :ensure t)
+
+  (defun focks/load-emacs-theme ()
+      "loads custom themes based on focks/enable-dark-theme
+
+    ensures disabling all prior loaded themes before changing"
+      (cl-flet ((load-themes (x)
+                  (load-theme x t)))
+        (mapc #'disable-theme custom-enabled-themes)
+        (if focks/enable-dark-theme
+            (mapc #'load-themes (ensure-list focks/*dark-mode-theme*))
+          (mapc #'load-themes (ensure-list focks/*light-mode-theme*)))))
+
+  (unless-on-macos
+   (add-hook 'window-setup-hook 'focks/load-emacs-theme))
+#+end_src
+
+** macOS Specific
+#+begin_src emacs-lisp
+  (when-on-macos
+ 
+   ;; turns off dark mode as default
+   (setq focks/enable-dark-theme nil)
+ 
+   ;; if we're using a version of emacs with a certain patch
+   ;; we dont need to do all the homegrown stuff, and can just
+   ;; hook into ns-system-appearance-change-functions
+   (if (boundp 'ns-system-appearance)
+       (add-hook 'ns-system-appearance-change-functions
+                 (lambda (style)
+                   (mapc #'disable-theme custom-enabled-themes)
+                   (if (eq style 'light)
+                       (load-theme focks/*light-mode-theme* t)
+                     (load-theme focks/*dark-mode-theme* t))))
+     (progn
+       (defvar focks/*current-theme* nil)
+
+       ;; define a function that runs a custom applescript script that
+       ;; checks our theme and returns 'dark or 'light
+       (defun focks/macos-theme ()
+         "gets the current macOS window theme
+
+  returns either 'dark or 'light"
+         (let ((theme (shell-command-to-string (concat "osascript " focks/*config-root* "CheckSystemTheme.scpt"))))
+           (if (string= theme (concat "true" (char-to-string ?\n)))
+               'dark
+             'light)))
+
+       ;; defines a function that checks the system theme
+       ;; and changes our emacs theme to match it
+       (defun focks/match-theme-to-system ()
+         "checks the system theme and changes the emacs theme to match"
+         (unless (equal focks/*current-theme* (macos-theme))
+           (setq focks/*current-theme* (macos-theme))
+           (setq focks/enable-dark-theme (eq focks/*current-theme* 'dark))
+           (focks/load-emacs-theme)
+           (set-face-attribute 'default nil :height focks/face-height)))
+
+       ;; sets up a hook that will run every 5 seconds to
+       ;; match the themes
+       (add-hook 'window-setup-hook
+                 (lambda ()
+                   ;; note: needs to be in window-setup-hook otherwise
+                   ;;       it doesnt get run for the initial frame
+                   (set-face-attribute 'default nil :height focks/face-height)
+                   (when focks/auto-update-macos-theme
+                     (run-with-timer 0 5 'focks/match-theme-to-system)))))))
 
 #+end_src
 
@@ -1049,23 +1119,6 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :custom
     (nerd-icons-font-family "Symbols Nerd Font Mono"))
 #+end_src
-
-** Theme Specification
-
-#+begin_src emacs-lisp
-;; dark theme 
-(use-package challenger-deep-theme
-  :ensure t)
-
-;; light theme
-(use-package twilight-bright-theme
-   :ensure t)
-
-(use-package solo-jazz-theme
-   :ensure t)  
-#+end_src
-
-
 
 * Some final things
 
