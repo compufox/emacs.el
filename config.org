@@ -283,7 +283,7 @@ Since the rest of the configuration relies on these macros to be defined, we mak
     ;; parse it for system name (immediately after defsystem)
     ;; build quicklisp/asdf build command
     (let* ((project-dir (projectile-project-root (file-name-directory (buffer-file-name (current-buffer)))))
-           (asd-file (car (focks/ensure-list (focks/asdf-project-dir-p project-dir))))
+           (asd-file (car (ensure-list (focks/asdf-project-dir-p project-dir))))
            (asdf-system (focks/parse-asdf-system-name asd-file)))
       (if (focks/has-makefile-p project-dir)
           (concat "make -f " (car (focks/has-makefile-p project-dir)))
@@ -308,28 +308,19 @@ Since the rest of the configuration relies on these macros to be defined, we mak
 
   (defun focks/get-file-info ()
     "returns an alist with path and extension under :PATH and :EXTENSION"
-    `((:path . ,(cl-remove-if #'focks/blankp
-                              (file-name-split buffer-file-name)))
+    `((:path . ,(butlast
+                 (cl-remove-if #'string-blank-p
+                               (file-name-split buffer-file-name))))
       (:extension . ,(file-name-extension buffer-file-name))))
 
   (defun focks/stringify (&rest args)
     "converts every value in ARGS into a string and merges them together"
     (mapconcat (lambda (x) (format "%s" x))  args ""))
 
-  (defun focks/ensure-list (lst)
-    "ensures that LST is a list"
-    (cl-typecase lst
-      (list lst)
-      (t (list lst))))
-
   (defun focks/posframe-fallback (buffer-or-name arg-name value)
     (let ((info (list :internal-border-width 3
                       :background-color "dark violet")))
       (or (plist-get info arg-name) value)))
-
-  (defun focks/blankp (string)
-    "returns t if STRING is an empty string"
-    (string= string ""))
 
   (defun focks/font-available-p (font-family)
     "predicate to check for the existance of the specified font family"
@@ -346,7 +337,7 @@ Since the rest of the configuration relies on these macros to be defined, we mak
     "Flips the open buffers between two windows"
     (interactive)
     (let ((c-buf (buffer-name))
-  	(o-buf (buffer-name (window-buffer (next-window)))))
+        (o-buf (buffer-name (window-buffer (next-window)))))
       (switch-to-buffer o-buf nil t)
       (other-window 1)
       (switch-to-buffer c-buf)
@@ -356,24 +347,22 @@ Since the rest of the configuration relies on these macros to be defined, we mak
     "Quickly and easily initializes a c++ file with main
   INCLUDES is a space seperated list of headers to include"
     (interactive "Mincludes: ")
-    (let ((path (concat "/" (string-join
-  			   (butlast
-  			    (cdr (assoc :path (focks/get-file-info)))) "/")
-  		      "/"))
-  	(inc-list (split-string includes " "))
-  	point)
+    (let ((path (apply #'file-name-concat 
+                       `("/" ,@(cdr (assoc :path (focks/get-file-info))))))
+          (inc-list (split-string includes " "))
+          point)
       (dolist (inc inc-list)
         (insert "#include ")
         (if (file-exists-p (concat path inc ".h"))
-  	  (insert (concat "\"" inc ".h\"\n"))
-  	(insert (concat "<" inc ">\n"))))
+          (insert (concat "\"" inc ".h\"\n"))
+        (insert (concat "<" inc ">\n"))))
       (insert "using namespace std;\n\n")
       (insert "int main(int argc, char *argv[]) {\n")
       (insert "  ")
       (setq point (point))
       (insert "\n  return 0;\n")
       (insert "}\n")
-      
+
       (goto-char point)))
 
   (defun sly-qlot (directory)
@@ -396,7 +385,7 @@ Since the rest of the configuration relies on these macros to be defined, we mak
     "switches to the scratch buffer, creating it if needed"
     (interactive)
     (switch-to-buffer (get-buffer-create "*scratch*"))
-    (when (focks/blankp (buffer-string))
+    (when (string-blank-p (buffer-string))
       (insert ";; This buffer is for text that is not saved, and for Lisp evaluation.\n")
       (insert ";; To create a file, visit it with C-x C-f and enter text in its buffer.\n\n")
       (goto-char (point-max)))
@@ -1093,12 +1082,4 @@ Finally, after everything else we check for our local configuration file and loa
 
 #+begin_src emacs-lisp
   (load focks/local-file)
-#+end_src
-
-Then we go and byte-compile our init file, just in case ;3c 
-
-#+begin_src emacs-lisp
-  ;; check and recompile the init file
-  (cl-eval-when (load)
-    (byte-compile-file (file-truename "~/.emacs")))
 #+end_src
