@@ -12,6 +12,20 @@ The configuration is sectioned out to aid readability and chunk similar code tog
 :header-args:emacs-lisp: :tangle (file-name-concat user-emacs-directory "init" "strapped.el")
 :END:
 
+** Global variables
+
+These two variables are used throughout the bootstrap and general configuration, so we define them as early as possible (immediately).
+
+=*config-root*= is determined by running =file-truename= on our =~/.emacs= file which, if the setup instructions have been followed, will be a symlink pointing back to =bootstrap.el= in our git repo.
+
+#+begin_src emacs-lisp
+  (defvar focks/*init-dir* (file-name-concat user-emacs-directory "init")
+    "directory where we store our tangled config")
+
+  (defvar focks/*config-root* (file-name-directory (file-truename "~/.emacs"))
+    "our configuration directory")
+#+end_src
+
 ** straight.el
 
 To start with, we ensure that we download the =straight.el= installer, if it doesn't already exist on our system.
@@ -45,24 +59,18 @@ This is necessary since, later on, we load =org-roam= using =straight.el= and th
 The standard function to tangle and load a file (=org-babel-load-file=) created clutter in my git repo that I did not like (among other things).
 To avoid this, I opted to manually tangle the file and load it after I was certain it had been created.
 
-This works by finding the actual directory where the configuration is held using =file-truename= on =~/.emacs=, which if proper setup instructions have been followed, should be a symlink into the git repo.
-Once we have the full path to the git repo we manually tangle this config, which spits out two files.
+By manually tangling this config file, we generate two elisp files that get dropped into our =*init-dir*=.
 The bootstrap code from this section gets tangled into one file, =strapped.el=, and the rest gets tangled into =config.el=.
-Both are placed in the "init directory", which is located underneath the user's =user-emacs-directory=.
 
 #+begin_src emacs-lisp
-  (defvar focks/*init-dir* (file-name-concat user-emacs-directory "init")
-    "directory where we store our tangled config")
-  
-  (let ((config-file (file-name-concat (file-name-directory (file-truename "~/.emacs"))
-                                       "config.org"))
-        (tangled-file (file-name-concat focks/*init-dir* "config.el")))
+  (let* ((config-file (file-name-concat focks/*config-root* "config.org"))
+         (tangled-file (file-name-concat focks/*init-dir* "config.el")))
+    ;; this only tangles the file if there's a change
     (org-babel-tangle-file config-file)
     
     (when (file-exists-p tangled-file)
       (load tangled-file nil 'no-message)))
 #+end_src 
-
 
 * Custom
 
@@ -121,9 +129,6 @@ Cartograph CF is such a beautiful font, I highly recommend you go check it out. 
 Custom variables used throughout my custom functions/macros.
 
 #+begin_src emacs-lisp
-  ;; cache the path to our configuration root
-  (defvar focks/*config-root* (file-name-directory (file-truename "~/.emacs")))
-
   ;; allow for local, git-ignored configurations
   (defvar focks/local-file (file-name-concat focks/*config-root* "local.el"))
 
