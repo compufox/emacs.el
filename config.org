@@ -29,7 +29,7 @@ These two variables are used throughout the bootstrap and general configuration,
 ** straight.el
 
 To start with, we ensure that we download the =straight.el= installer, if it doesn't already exist on our system.
-Once it's downloaded we load it up and use it to install =org-mode=.
+Once it's downloaded we load it up and use it to install =org-mode= and =use-package=.
 
 This is necessary since, later on, we load =org-roam= using =straight.el= and that throws errors, as the version of =org-mode= clashes with the one built-in to Emacs.
 
@@ -106,35 +106,6 @@ Between other configuration's I saw online and trying to provide my own function
    '(vc-annotate-very-old-color nil)
    '(window-divider-mode nil))
 #+end_src
-
-** Faces
-
-Cartograph CF is such a beautiful font, I highly recommend you go check it out. The folks did a wonderful job creating it.
-
-#+begin_src emacs-lisp
-  (custom-set-faces
-   ;; custom-set-faces was added by Custom.
-   ;; If you edit it by hand, you could mess it up, so be careful.
-   ;; Your init file should contain only one such instance.
-   ;; If there is more than one, they won't work right.
-   '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 113 :width normal :foundry "unknown" :family "Cartograph CF"))))
-   '(font-lock-comment-face ((t (:slant italic :family "Cartograph CF")))))
-#+end_src 
-
-
-* Variables
-
-** Configuration Variables
-
-Custom variables used throughout my custom functions/macros.
-
-#+begin_src emacs-lisp
-  ;; allow for local, git-ignored configurations
-  (defvar focks/local-file (file-name-concat focks/*config-root* "local.el"))
-
-  (defvar focks/face-height 120)
-#+end_src
-
 
 * Macros
 
@@ -247,15 +218,24 @@ After consolidating back to (mostly) a single OS, I found that I still needed so
 Hence, the =focks/when-machine= macro. It's fairly straight forward and doesn't do anything fun like the prior macros, but it is still handy when a need arises.
 
 #+begin_src emacs-lisp
-(defmacro focks/when-machine (hostname &rest body)
-  "a macro to only execute BODY when HOSTNAME matches the value returned by SYSTEM-NAME
+  (defmacro focks/when-machine (hostname &rest body)
+    "a macro to only execute BODY when HOSTNAME matches the value returned by SYSTEM-NAME
 
-applies UPCASE to HOSTNAME parameter, and to the value returned by SYSTEM-NAME
-if using a system that returns SYSTEM-NAME as System.local, we drop the .local"
-  `(when (string-equal (upcase ,hostname)
-                       (upcase (car (split-string (system-name) "\\."))))
-     ,@body))
+  applies UPCASE to HOSTNAME parameter, and to the value returned by SYSTEM-NAME
+  if using a system that returns SYSTEM-NAME as System.local, we drop the .local"
+    `(when (string-equal (upcase ,hostname)
+                         (upcase (car (split-string (system-name) "\\."))))
+       ,@body))
 
+  (defmacro focks/machine-cond (&rest forms)
+    `(cond
+      ,@(cl-loop for form in (car forms)
+                 if (eq (car form) t)
+                   collect `(t ,@(cdr form))
+                 else
+                   collect `((string= ,(upcase (car form))
+                                      (upcase (car (split-string (system-name) "\\."))))
+                             ,@(cdr form)))))
 #+end_src
 
 ** Cheeky bit of execution
@@ -266,6 +246,24 @@ Since the rest of the configuration relies on these macros to be defined, we mak
   ;; runs os-p/when-on/unless-on for all system-types
   (focks/create-standard-os-macros)
 #+end_src
+
+
+* Variables
+
+** Configuration Variables
+
+Custom variables used throughout my custom functions/macros.
+
+#+begin_src emacs-lisp
+  (defvar focks/local-file (file-name-concat focks/*config-root* "local.el"))
+
+  (defvar focks/face-height
+    (focks/machine-cond
+     (("Suicune" 140)
+      ("Wartortle" 150)
+      (t 120))))
+#+end_src
+
 
 * Functions
 
@@ -645,6 +643,19 @@ Mostly setting various editor values or settings some keys globally.
 *** Reorganize into OS specific chunks
 
 #+begin_src emacs-lisp
+  (set-face-attribute 'default nil
+                      :height focks/face-height
+                      :slant 'normal
+                      :width 'normal
+                      :weight 'normal
+                      :family (font-get (or (focks/font-available-p "Cartograph CF")
+                                            (focks/font-available-p "Chalkboard")
+                                            (focks/font-available-p "MS Comic Sans"))
+                                        :name))
+  (setq font-lock-comment-face '(:slant italic :family "Cartograph CF"))
+
+
+
   ;; when we have ros installed go and include the path in the exec-path list
   (when (executable-find "ros")
     (let* ((ros-info (split-string (shell-command-to-string "ros version")
