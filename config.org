@@ -153,9 +153,15 @@ Although it is fairly trivial to write an operating system check (=(eq system-ty
 #+begin_src emacs-lisp
   (defmacro focks/os-p (os &rest os-name)
     "defines a predicate that checks the current system's OS"
-    `(defun ,(intern (format "%s-p" os)) ()
-       (or ,@(mapcar (lambda (name) `(eq system-type ',name))
-                     (flatten-list os-name)))))
+    (let* ((os-list (flatten-list os-name))
+           (type-length (length os-list)))
+      `(defun ,(intern (format "%s-p" os)) ()
+         ,(concat "a predicate to check if SYSTEM-TYPE is "
+                  (mapconcat #'prin1-to-string (butlast os-list) ", ")
+                  (when (> type-length 1) ", or ")
+                  (mapcan #'prin1-to-string (last os-list)))
+         (or ,@(mapcar (lambda (name) `(eq system-type ',name))
+                       os-list)))))
 #+end_src
 
 *** When/Unless-on
@@ -200,8 +206,10 @@ While the prior macros are nice for quick when/unless blocks, I found myself in 
                  if (eq (car f) t)
                    collect `(t ,@(cdr f))
                  else
-                   collect `((eq system-type ',(car f))
-                             ,@(cdr f)))))
+                 collect `((or ,@(mapcar #'(lambda (name)
+                                             (ensure-list (intern (format "%s-p" name))))
+                                         (ensure-list (car f))))
+                           ,@(cdr f)))))
 #+end_src
 
 *** Bundling them all together
@@ -300,7 +308,9 @@ Since the rest of the configuration relies on these macros to be defined, we mak
 
   (defun focks/get-system-arch ()
     "gets the system architecture based off of the results of uname -a"
-    (car (last (split-string (shell-command-to-string "uname -a") nil t))))
+    (focks/os-cond
+     ((unix macos) (car (split-string (shell-command-to-string "uname -m") nil t)))
+     (t "x86_64")))
 
   (defun focks/buffer-existsp (buf-name)
     "checks if buffer with BUF-NAME exists in (buffer-list)"
@@ -727,11 +737,11 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :init
     (setq org-roam-v2-ack t)
     (let ((notes-dir (focks/os-cond
-                      (windows-nt (concat (getenv "USERPROFILE") "\\Syncthing\\Notes"))
+                      (windows (concat (getenv "USERPROFILE") "\\Syncthing\\Notes"))
                       (t "~/Syncthing/Notes"))))
       (unless (file-directory-p notes-dir)
         (make-directory notes-dir)))
-    
+  
     :bind
     (("C-c n l" . org-roam-buffer-toggle)
      ("C-c n f" . org-roam-node-find)
@@ -739,24 +749,24 @@ What follows from here is loading and configuring the rest of my packages utiliz
      ("C-c n c" . org-roam-capture)
      ("C-c n d" . org-roam-dailies-goto-today)
      ("C-c n t" . org-roam-dailies-goto-tomorrow))
-    
+  
     :custom
     (org-roam-directory
      (focks/os-cond
-       (windows-nt (concat (getenv "USERPROFILE") "\\Syncthing\\Notes"))
-       (t "~/Syncthing/Notes")))
-    
+      (windows (concat (getenv "USERPROFILE") "\\Syncthing\\Notes"))
+      (t "~/Syncthing/Notes")))
+  
     :config
     (when-on-windows
-      (unless (version<= "29.0.0" emacs-version)
-        (message "SQLite support is built into Emacs v29+ and is recommended for org-roam...")
-        (sleep-for 2.5)))
-    
+     (unless (version<= "29.0.0" emacs-version)
+       (message "SQLite support is built into Emacs v29+ and is recommended for org-roam...")
+       (sleep-for 2.5)))
+  
     (org-roam-setup))
 
   (use-package org-roam-ui
     :straight
-      (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
+    (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
     :after org-roam
     :custom
     ((org-roam-ui-sync-theme t)
@@ -776,13 +786,13 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :ensure t
     :unless (string= "arm64" (focks/get-system-arch))
     :hook (lisp-mode . parinfer-rust-mode)
-      
+  
     :custom
     (parinfer-rust-library
      (focks/os-cond
       (windows-nt "~/.emacs.d/parinfer-rust/parinfer_rust.dll")
       (t "~/.emacs.d/parinfer-rust/libparinfer_rust.so")))
-      
+  
     :init
     (unless-on-windows
      (setq parinfer-rust-auto-download t)))
@@ -853,7 +863,7 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :ensure t
     :init (projectile-mode +1)
     :bind (:map projectile-mode-map
-  	 ("C-c p" . projectile-command-map))
+                ("C-c p" . projectile-command-map))
     :config
     (projectile-register-project-type 'asdf 'focks/asdf-project-dir-p
                                       :project-file "?*.asd"
@@ -893,7 +903,7 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :ensure t
     :init (ivy-mode 1)
     :bind (:map ivy-minibuffer-map
-  	      ("RET" . ivy-alt-done))
+                ("RET" . ivy-alt-done))
     :custom
     (ivy-use-virtual-buffers 'recentf))
 
@@ -925,10 +935,10 @@ What follows from here is loading and configuring the rest of my packages utiliz
   (use-package prism
     :ensure t
     :hook ((lisp-mode . prism-mode)
-  	 (common-lisp-mode . prism-mode)
-  	 (ruby-mode . prism-mode)
-  	 (emacs-lisp-mode . prism-mode)))
-    
+           (common-lisp-mode . prism-mode)
+           (ruby-mode . prism-mode)
+           (emacs-lisp-mode . prism-mode)))
+
   (use-package emr
     :ensure t
     :bind (("M-RET" . emr-show-refactor-menu)))
@@ -937,15 +947,15 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :ensure t
     :custom
     (dimmer-fraction 0.4)
-    
+  
     :config
     (dimmer-mode 1))
 
   (use-package rainbow-delimiters
     :ensure t
     :hook ((lisp-mode . rainbow-delimiters-mode)
-  	 (emacs-lisp-mode . rainbow-delimiters-mode)
-  	 (sly-mode . rainbow-delimiters-mode)))
+           (emacs-lisp-mode . rainbow-delimiters-mode)
+           (sly-mode . rainbow-delimiters-mode)))
 
   (use-package ido-completing-read+
     :ensure t
@@ -984,9 +994,9 @@ What follows from here is loading and configuring the rest of my packages utiliz
   (use-package org
     :mode ("\\.notes?$" . org-mode)
     :hook (org-mode . (lambda ()
-  		      (when (or (executable-find "ispell")
-  				(executable-find "aspell"))
-  			(flyspell-mode)))))
+                        (when (or (executable-find "ispell")
+                                  (executable-find "aspell"))
+                          (flyspell-mode)))))
 
   (use-package poly-erb
     :ensure t
@@ -998,13 +1008,13 @@ What follows from here is loading and configuring the rest of my packages utiliz
   (use-package multiple-cursors
     :ensure t
     :bind (("C->" . mc/mark-next-like-this)
-  	 ("C-<" . mc/mark-previous-like-this)
-  	 ("C-c C-<" . mc/mark-all-like-this)))
+           ("C-<" . mc/mark-previous-like-this)
+           ("C-c C-<" . mc/mark-all-like-this)))
 
   (use-package win-switch
     :ensure t
     :bind (("C-x o" . win-switch-dispatch)
-  	 ("C-c o" . win-switch-dispatch-once)))
+           ("C-c o" . win-switch-dispatch-once)))
 
   (use-package eldoc
     :ensure t
@@ -1013,7 +1023,7 @@ What follows from here is loading and configuring the rest of my packages utiliz
   (use-package macrostep
     :ensure t
     :bind (:map emacs-lisp-mode-map
-  	 ("C-c e" . macrostep-expand)))
+                ("C-c e" . macrostep-expand)))
 
   (use-package text-mode
     :hook ((text-mode . visual-line-mode)
@@ -1038,14 +1048,14 @@ What follows from here is loading and configuring the rest of my packages utiliz
   (use-package sly
     :ensure t
     :bind (("s-l" . sly)
-  	 :map lisp-mode-map
-  	 ("C-c e" . macrostep-expand))
-    
+           :map lisp-mode-map
+           ("C-c e" . macrostep-expand))
+  
     :hook ((lisp-mode . sly-editing-mode))
-    
+  
     :custom
     ((slime-contribs '(sly-fancy sly-macrostep sly-quicklisp sly-asdf
-                       sly-reply-ansi-color sly-named-readtables))
+                                 sly-reply-ansi-color sly-named-readtables))
      (inferior-lisp-program "ros run -Q")))
 
   (use-package elpy
@@ -1060,9 +1070,7 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :custom
     (emojify-display-style
      (focks/os-cond
-      (windows-nt 'image)
-      (gnu/linux 'unicode)
-      (darwin 'unicode)
+      ((macos unix) 'unicode)
       (t 'image))))
 
   (use-package nerd-icons
@@ -1070,7 +1078,7 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :config
     (unless (focks/font-available-p "Symbols Nerd Font Mono")
       (os-cond
-       (windows-nt (messge "Please install nerd fonts manually thx :-*"))
+       (windows (message "Please install nerd fonts manually thx :-*"))
        (t (nerd-icons-install-fonts))))
     :custom
     (nerd-icons-font-family "Symbols Nerd Font Mono"))
