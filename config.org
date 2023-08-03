@@ -583,15 +583,14 @@ Custom variables used throughout my custom functions/macros.
 #+begin_src emacs-lisp
   (when-on-macos
 
-   ;; turns off dark mode as default
-   (setq focks/enable-dark-theme nil)
-
    ;; if we're using a version of emacs with a certain patch
    ;; we dont need to do all the homegrown stuff, and can just
    ;; hook into ns-system-appearance-change-functions
    (if (boundp 'ns-system-appearance)
-       (add-hook 'ns-system-appearance-change-functions
-                 #'focks/load-emacs-theme)
+       (progn
+         (setq focks/enable-dark-theme ns-system-appearance)
+         (add-hook 'ns-system-appearance-change-functions
+                   #'focks/load-emacs-theme))
      (progn
        (defvar focks/*current-theme* nil)
 
@@ -610,21 +609,16 @@ Custom variables used throughout my custom functions/macros.
        ;; and changes our emacs theme to match it
        (defun focks/match-theme-to-system ()
          "checks the system theme and changes the emacs theme to match"
-         (unless (equal focks/*current-theme* (macos-theme))
-           (setq focks/*current-theme* (macos-theme))
-           (setq focks/enable-dark-theme (eq focks/*current-theme* 'dark))
-           (focks/load-emacs-theme)
-           (set-face-attribute 'default nil :height focks/face-height)))
+         (unless (equal focks/*current-theme* (focks/macos-theme))
+           (setq focks/*current-theme* (focks/macos-theme))
+           (focks/load-emacs-theme focks/*current-theme*)))
 
        ;; sets up a hook that will run every 5 seconds to
        ;; match the themes
-       (add-hook 'window-setup-hook
-                 (lambda ()
-                   ;; note: needs to be in window-setup-hook otherwise
-                   ;;       it doesnt get run for the initial frame
-                   (set-face-attribute 'default nil :height focks/face-height)
-                   (when focks/auto-update-macos-theme
-                     (run-with-timer 0 5 'focks/match-theme-to-system)))))))
+       (when focks/auto-update-macos-theme
+         (add-hook 'window-setup-hook
+                   #'(lambda ()
+                       (run-with-timer 0 5 #'focks/match-theme-to-system)))))))
 
 #+end_src
 
