@@ -565,38 +565,33 @@ Custom variables used throughout my custom functions/macros.
   (use-package solo-jazz-theme
     :ensure t)
 
-  (defun focks/load-emacs-theme ()
+  (defun focks/load-emacs-theme (&optional mode)
       "loads custom themes based on focks/enable-dark-theme
 
     ensures disabling all prior loaded themes before changing"
       (cl-flet ((load-themes (x)
                   (load-theme x t)))
         (mapc #'disable-theme custom-enabled-themes)
-        (if focks/enable-dark-theme
+        (if (or (eq mode 'dark) focks/enable-dark-theme)
             (mapc #'load-themes (ensure-list focks/*dark-mode-theme*))
           (mapc #'load-themes (ensure-list focks/*light-mode-theme*)))))
 
-  (unless-on-macos
-   (add-hook 'window-setup-hook 'focks/load-emacs-theme))
+  (add-hook 'window-setup-hook 'focks/load-emacs-theme)
 #+end_src
 
 ** macOS Specific
 #+begin_src emacs-lisp
   (when-on-macos
- 
+
    ;; turns off dark mode as default
    (setq focks/enable-dark-theme nil)
- 
+
    ;; if we're using a version of emacs with a certain patch
    ;; we dont need to do all the homegrown stuff, and can just
    ;; hook into ns-system-appearance-change-functions
    (if (boundp 'ns-system-appearance)
        (add-hook 'ns-system-appearance-change-functions
-                 (lambda (style)
-                   (mapc #'disable-theme custom-enabled-themes)
-                   (if (eq style 'light)
-                       (load-theme focks/*light-mode-theme* t)
-                     (load-theme focks/*dark-mode-theme* t))))
+                 #'focks/load-emacs-theme)
      (progn
        (defvar focks/*current-theme* nil)
 
