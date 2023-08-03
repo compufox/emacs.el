@@ -284,17 +284,20 @@ Since the rest of the configuration relies on these macros to be defined, we mak
     (directory-files (or path (file-name-directory (buffer-file-name (current-buffer)))) 'full "?*.asd"))
 
   (defun focks/has-makefile-p (path)
-    (directory-files path 'full "Make*"))
+    (let ((dir (if (file-directory-p path)
+                   path
+                 (file-name-directory path))))
+      (directory-files dir 'full "Make*")))
 
   (defun focks/asdf-compile-cmd ()
     ;; get project root (asd file)
     ;; parse it for system name (immediately after defsystem)
     ;; build quicklisp/asdf build command
-    (let* ((project-dir (projectile-project-root (file-name-directory (buffer-file-name (current-buffer)))))
-           (asd-file (car (ensure-list (focks/asdf-project-dir-p project-dir))))
-           (asdf-system (focks/parse-asdf-system-name asd-file)))
-      (if (focks/has-makefile-p project-dir)
-          (concat "make -f " (car (focks/has-makefile-p project-dir)))
+    (let* ((asd-file (car (ensure-list (focks/asdf-project-dir-p))))
+           (asdf-system (focks/parse-asdf-system-name asd-file))
+           (makefile (focks/has-makefile-p asd-file)))
+      (if makefile
+          (concat "make -f " (car makefile))
         (concat "ros run --eval \""
                 "(handler-case "
                 "  (progn "
