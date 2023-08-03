@@ -633,14 +633,17 @@ Mostly setting various editor values or settings some keys globally.
 
 #+begin_src emacs-lisp
   (set-face-attribute 'default nil
-                      :height focks/face-height
-                      :slant 'normal
-                      :width 'normal
-                      :weight 'normal
-                      :family (font-get (or (focks/font-available-p "Cartograph CF")
-                                            (focks/font-available-p "Chalkboard")
-                                            (focks/font-available-p "MS Comic Sans"))
-                                        :name))
+		      :height focks/face-height
+		      :slant 'normal
+		      :width 'normal
+		      :weight 'normal
+		      :family
+		      (string-replace "\\" ""
+				      (prin1-to-string
+				       (font-get (or (focks/font-available-p "Cartograph CF")
+						     (focks/font-available-p "Chalkboard")
+						     (focks/font-available-p "Comic Sans MS"))
+						 :family))))
   (setq font-lock-comment-face '(:slant italic :family "Cartograph CF"))
 
 
