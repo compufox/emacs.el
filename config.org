@@ -572,7 +572,7 @@ Custom variables used throughout my custom functions/macros.
       (cl-flet ((load-themes (x)
                   (load-theme x t)))
         (mapc #'disable-theme custom-enabled-themes)
-        (if (or (eq mode 'dark) focks/enable-dark-theme)
+        (if (eq 'dark (or mode focks/enable-dark-theme))
             (mapc #'load-themes (ensure-list focks/*dark-mode-theme*))
           (mapc #'load-themes (ensure-list focks/*light-mode-theme*)))))
 
