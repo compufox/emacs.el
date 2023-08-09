@@ -310,8 +310,16 @@ Custom variables used throughout my custom functions/macros.
   (defun focks/get-system-arch ()
     "gets the system architecture based off of the results of uname -a"
     (focks/os-cond
-     ((unix macos) (car (split-string (shell-command-to-string "uname -m") nil t)))
-     (t "x86_64")))
+     ((unix macos) (string-trim (shell-command-to-string "uname -m")))
+     (windows (let ((type (string-trim
+                           (shell-command-to-string "powershell.exe -Command \"& {(Get-WMIObject -Class Win32_Processor).Architecture}\""))))
+                (cond
+                 ((string= type "0") "x86")
+                 ((string= type "1") "MIPS")
+                 ((string= type "2") "Alpha")
+                 ((string= type "3") "PowerPC")
+                 ((string= type "6") "ia64")
+                 ((string= type "9") "x64"))))))
 
   (defun focks/buffer-existsp (buf-name)
     "checks if buffer with BUF-NAME exists in (buffer-list)"
