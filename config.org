@@ -560,10 +560,18 @@ Custom variables used throughout my custom functions/macros.
 ** General
 #+begin_src emacs-lisp
   ;; theme selection
-  (defvar focks/*light-mode-theme* 'solo-jazz)
-  (defvar focks/*dark-mode-theme* 'challenger-deep)
-  (defvar focks/enable-dark-theme t)
-  (defvar focks/auto-update-macos-theme t)
+  (defvar focks/*current-theme* 'dark
+    "our current theme
+  values can either be 'DARK or 'LIGHT")
+
+  (defvar focks/auto-update-macos-theme t
+    "flag for whether we should automatically change theme on macOS when system theme changes")
+
+  (defvar focks/*light-theme* '(solo-jazz)
+    "list of themes to load when *current-theme* is 'light")
+  (defvar focks/*dark-theme* '(challenger-deep)
+    "list of themes to load when *current-theme* is 'dark")
+
 
   ;; dark theme 
   (use-package challenger-deep-theme
@@ -574,15 +582,15 @@ Custom variables used throughout my custom functions/macros.
     :ensure t)
 
   (defun focks/load-emacs-theme (&optional mode)
-      "loads custom themes based on focks/enable-dark-theme
+      "loads custom themes based on focks/*current-theme*
 
-    ensures disabling all prior loaded themes before changing"
+  ensures disabling all prior loaded themes before changing"
       (cl-flet ((load-themes (x)
                   (load-theme x t)))
         (mapc #'disable-theme custom-enabled-themes)
-        (if (eq 'dark (or mode focks/enable-dark-theme))
-            (mapc #'load-themes (ensure-list focks/*dark-mode-theme*))
-          (mapc #'load-themes (ensure-list focks/*light-mode-theme*)))))
+        (if (eq 'dark (or mode focks/*current-theme*))
+            (mapc #'load-themes focks/*dark-theme*)
+          (mapc #'load-themes focks/*light-theme*))))
 
   (add-hook 'window-setup-hook 'focks/load-emacs-theme)
 #+end_src
@@ -590,43 +598,42 @@ Custom variables used throughout my custom functions/macros.
 ** macOS Specific
 #+begin_src emacs-lisp
   (when-on-macos
-
-   ;; if we're using a version of emacs with a certain patch
-   ;; we dont need to do all the homegrown stuff, and can just
-   ;; hook into ns-system-appearance-change-functions
-   (if (boundp 'ns-system-appearance)
+   (when focks/auto-update-macos-theme
+     ;; if we're using a version of emacs with a certain patch
+     ;; we dont need to do all the homegrown stuff, and can just
+     ;; hook into ns-system-appearance-change-functions
+     (if (boundp 'ns-system-appearance)
+         (progn
+           (setq focks/*current-theme* ns-system-appearance)
+           (add-hook 'ns-system-appearance-change-functions
+                     #'focks/load-emacs-theme))
        (progn
-         (setq focks/enable-dark-theme ns-system-appearance)
-         (add-hook 'ns-system-appearance-change-functions
-                   #'focks/load-emacs-theme))
-     (progn
-       (defvar focks/*current-theme* nil)
-
-       ;; define a function that runs a custom applescript script that
-       ;; checks our theme and returns 'dark or 'light
-       (defun focks/macos-theme ()
-         "gets the current macOS window theme
+         ;; define a function that runs a custom applescript script that
+         ;; checks our theme and returns 'dark or 'light
+         (defun focks/macos-theme ()
+           "gets the current macOS window theme by running a supplied helper applescript program
 
   returns either 'dark or 'light"
-         (let ((theme (shell-command-to-string (concat "osascript " focks/*config-root* "CheckSystemTheme.scpt"))))
-           (if (string= theme (concat "true" (char-to-string ?\n)))
-               'dark
-             'light)))
-
-       ;; defines a function that checks the system theme
-       ;; and changes our emacs theme to match it
-       (defun focks/match-theme-to-system ()
-         "checks the system theme and changes the emacs theme to match"
-         (unless (equal focks/*current-theme* (focks/macos-theme))
-           (setq focks/*current-theme* (focks/macos-theme))
-           (focks/load-emacs-theme focks/*current-theme*)))
-
-       ;; sets up a hook that will run every 5 seconds to
-       ;; match the themes
-       (when focks/auto-update-macos-theme
-         (add-hook 'window-setup-hook
-                   #'(lambda ()
-                       (run-with-timer 0 5 #'focks/match-theme-to-system)))))))
+           (let ((theme (shell-command-to-string (concat "osascript " focks/*config-root* "CheckSystemTheme.scpt"))))
+             (if (string= theme (concat "true" (char-to-string ?\n)))
+                 'dark
+               'light)))
+       
+         ;; defines a function that checks the system theme
+         ;; and changes our emacs theme to match it
+         (defun focks/match-theme-to-system ()
+           "checks the system theme and changes the emacs theme to match"
+           (let ((current (focks/macos-theme)))
+             (unless (equal focks/*current-theme* current)
+               (setq focks/*current-theme* current)
+               (focks/load-emacs-theme focks/*current-theme*))))
+       
+         ;; sets up a hook that will run every 5 seconds to
+         ;; match the themes
+         (when focks/auto-update-macos-theme
+           (add-hook 'window-setup-hook
+                     #'(lambda ()
+                         (run-with-timer 0 5 #'focks/match-theme-to-system))))))))
 
 #+end_src
 
