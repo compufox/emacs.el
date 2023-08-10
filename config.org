@@ -257,7 +257,8 @@ Custom variables used throughout my custom functions/macros.
 #+begin_src emacs-lisp
   (defvar focks/local-file (file-name-concat focks/*config-root* "local.el"))
 
-  (defvar focks/face-height 120)
+  (defvar focks/face-height 120
+    "default face height. override in local.el")
 #+end_src
 
 
