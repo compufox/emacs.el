@@ -583,6 +583,24 @@ Custom variables used throughout my custom functions/macros.
   ensures disabling all prior loaded themes before changing"
       (cl-flet ((load-themes (x)
                   (load-theme x t)))
+        (unless (member (face-attribute 'default :family)
+                        '("Cartograph CF" "Chalkboard" "Comic Sans MS"))
+          (let* ((font-family (prin1-to-string
+          		     (font-get (or (focks/font-available-p "Cartograph CF")
+          				   (focks/font-available-p "Chalkboard")
+          				   (focks/font-available-p "Comic Sans MS"))
+          			       :family)))
+                 (sanitized (string-replace "\\" "" font-family)))
+            
+            (set-face-attribute 'default nil
+          	              :height focks/face-height
+          	              :slant 'normal
+          	              :width 'normal
+          	              :weight 'normal
+          	              :family sanitized)
+            
+            (setq font-lock-comment-face `(:slant italic :family ,sanitized))))
+        
         (mapc #'disable-theme custom-enabled-themes)
         (if (eq 'dark (or mode focks/*current-theme*))
             (mapc #'load-themes focks/*dark-theme*)
@@ -639,22 +657,6 @@ Code that may or may not belong elsewhere.
 Mostly setting various editor values or settings some keys globally.
 
 #+begin_src emacs-lisp
-  (set-face-attribute 'default nil
-		      :height focks/face-height
-		      :slant 'normal
-		      :width 'normal
-		      :weight 'normal
-		      :family
-		      (string-replace "\\" ""
-				      (prin1-to-string
-				       (font-get (or (focks/font-available-p "Cartograph CF")
-						     (focks/font-available-p "Chalkboard")
-						     (focks/font-available-p "Comic Sans MS"))
-						 :family))))
-  (setq font-lock-comment-face '(:slant italic :family "Cartograph CF"))
-
-
-
   ;; when we have ros installed go and include the path in the exec-path list
   (when (executable-find "ros")
     (let* ((ros-info (split-string (shell-command-to-string "ros version")
