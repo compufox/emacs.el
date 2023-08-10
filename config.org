@@ -568,6 +568,8 @@ Custom variables used throughout my custom functions/macros.
   (defvar focks/*dark-theme* '(challenger-deep)
     "list of themes to load when *current-theme* is 'dark")
 
+  (defvar focks/*fonts* '("Cartograph CF" "Chalkboard" "Comic Sans MS")
+    "list of fonts, in order of preference")
 
   ;; dark theme 
   (use-package challenger-deep-theme
@@ -584,12 +586,11 @@ Custom variables used throughout my custom functions/macros.
       (cl-flet ((load-themes (x)
                   (load-theme x t)))
         (unless (member (face-attribute 'default :family)
-                        '("Cartograph CF" "Chalkboard" "Comic Sans MS"))
+                        focks/*fonts*)
           (let* ((font-family (prin1-to-string
-          		     (font-get (or (focks/font-available-p "Cartograph CF")
-          				   (focks/font-available-p "Chalkboard")
-          				   (focks/font-available-p "Comic Sans MS"))
-          			       :family)))
+          		     (font-get (car (cl-remove-if-not #'identity
+                                                                (mapcar #'focks/font-available-p focks/*fonts*)))
+          		               :family)))
                  (sanitized (string-replace "\\" "" font-family)))
             
             (set-face-attribute 'default nil
