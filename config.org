@@ -257,11 +257,7 @@ Custom variables used throughout my custom functions/macros.
 #+begin_src emacs-lisp
   (defvar focks/local-file (file-name-concat focks/*config-root* "local.el"))
 
-  (defvar focks/face-height
-    (focks/machine-cond
-     (("Suicune" 140)
-      ("Wartortle" 150)
-      (t 120))))
+  (defvar focks/face-height 120)
 #+end_src
 
 
@@ -634,7 +630,6 @@ Custom variables used throughout my custom functions/macros.
            (add-hook 'window-setup-hook
                      #'(lambda ()
                          (run-with-timer 0 5 #'focks/match-theme-to-system))))))))
-
 #+end_src
 
 
@@ -642,9 +637,6 @@ Custom variables used throughout my custom functions/macros.
 
 Code that may or may not belong elsewhere.
 Mostly setting various editor values or settings some keys globally.
-
-** TODO
-*** Reorganize into OS specific chunks
 
 #+begin_src emacs-lisp
   (set-face-attribute 'default nil
