@@ -406,6 +406,30 @@ Custom variables used throughout my custom functions/macros.
       (insert ";; To create a file, visit it with C-x C-f and enter text in its buffer.\n\n")
       (goto-char (point-max)))
     (lisp-interaction-mode))
+
+  (defun generate-cl-makefile (system)
+    "generates a makefile for a common lisp project"
+    (interactive "Mlisp system name: ")
+    (let ((cwd (file-name-directory buffer-file-truename))
+          (makefile-template
+           "define LISP_CMDS
+  \"(handler-case                    \\
+      (progn (ql:quickload :%s) \\
+             (asdf:make :%s))   \\
+    (error (e)                      \\
+      (format t \\\"~A~%%\\\" e)         \\
+      (uiop:quit 1)))\"
+  endef
+
+  .PHONY: clean all
+
+  all:
+          ros --eval $(LISP_CMDS)
+
+  clean: 
+          rm -ri bin/"))
+      (with-temp-file (file-name-concat cwd "Makefile")
+        (insert (format makefile-template system system)))))
 #+end_src
 
 
