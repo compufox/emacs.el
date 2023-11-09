@@ -259,6 +259,32 @@ Custom variables used throughout my custom functions/macros.
 
   (defvar focks/face-height 120
     "default face height. override in local.el")
+
+  (defvar asdf-build-op-template
+    "\n  :build-operation \"program-op\"
+    :build-pathname \"bin/%s\"
+    :entry-point \"%s::main\")"
+    "build operation template for ASDF systems")
+
+  (defvar asdf-compression-op
+    "\n\n#+sb-core-compression
+  (defmethod asdf:perform ((o asdf:image-op) (c asdf:system))
+    (uiop:dump-image (asdf:output-file o c) :executable t :compression t))"
+    "compression operation for ASDF systems")
+
+  (defvar asdf-makefile-template
+    "define LISP_CMDS
+  \"(handler-case                    \\
+      (progn (ql:quickload :%s) \\
+             (asdf:make :%s))   \\
+    (error (e)                      \\
+      (format t \\\"~A~%%\\\" e)         \\
+      (uiop:quit 1)))\"
+  endef\n
+  .PHONY: clean all\n
+  all:\n        ros --eval $(LISP_CMDS)\n
+  clean: \n        rm -ri bin/"
+    "ASDF makefile template")
 #+end_src
 
 
@@ -407,35 +433,47 @@ Custom variables used throughout my custom functions/macros.
       (goto-char (point-max)))
     (lisp-interaction-mode))
 
-  (cl-defun generate-cl-makefile ()
+  (cl-defun asdf-generate-makefile ()
     "generates a makefile for a common lisp project"
     (interactive)
     (let* ((cwd (file-name-directory buffer-file-truename))
-           (asd-file (car (focks/asdf-project-dir-p cwd)))
-           (makefile-template
-            "define LISP_CMDS
-  \"(handler-case                    \\
-      (progn (ql:quickload :%s) \\
-             (asdf:make :%s))   \\
-    (error (e)                      \\
-      (format t \\\"~A~%%\\\" e)         \\
-      (uiop:quit 1)))\"
-  endef
-
-  .PHONY: clean all
-
-  all:
-          ros --eval $(LISP_CMDS)
-
-  clean: 
-          rm -ri bin/"))
+           (asd-file (car (focks/asdf-project-dir-p cwd))))
       (unless asd-file
-        (message "no ASD system definition in directory")
+        (message "no ASDF system definition in directory")
         (cl-return))
 
       (let ((system (focks/parse-asdf-system-name asd-file)))
         (with-temp-file (file-name-concat cwd "Makefile")
-          (insert (format makefile-template system system))))))
+          (insert (format asdf-makefile-template system system))))))
+
+  (cl-defun asdf-add-build-instructions ()
+    "adds general build instructions into ASDF system definition"
+    (interactive)
+    (let* ((cwd (file-name-directory buffer-file-truename))
+           (asd-file (car (focks/asdf-project-dir-p cwd))))
+      (unless asd-file
+        (message "no ASDF system definition in directory")
+        (cl-reutrn))
+
+      (let ((system (focks/parse-asdf-system-name asd-file)))
+        (with-temp-file asd-file
+          (insert-file-contents asd-file)
+          (string-match (rx (group (syntax close-parenthesis)
+                                   (syntax whitespace)
+                                   string-end))
+                        (buffer-string))
+          (goto-char (match-end 1))
+          (delete-backward-char 1)
+          (insert (format asdf-build-op-template
+                          system system)
+                  asdf-compression-op)))))
+
+  (defun asdf-add-build-and-makefile ()
+    "generates a makefile and adds build instructions into the system definition for the lisp project thats currently being edited"
+    (interactive)
+    (when (y-or-n-p "Generate a Makefile and add build instructions for the current lisp system?")
+      (asdf-generate-makefile)
+      (asdf-add-build-instructions)))
 #+end_src
 
 
@@ -913,7 +951,7 @@ What follows from here is loading and configuring the rest of my packages utiliz
                 ("C-c p" . projectile-command-map))
     :config
     (projectile-register-project-type 'asdf 'focks/asdf-project-dir-p
-                                      :project-file "?*.asd"
+                                      :project-file ".*asd"
                                       :compile 'focks/asdf-compile-cmd))
 
   (use-package treemacs
