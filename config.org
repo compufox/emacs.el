@@ -276,7 +276,7 @@ Custom variables used throughout my custom functions/macros.
          (substring (buffer-string) (match-beginning 1) (match-end 1))))))
 
   (defun focks/asdf-project-dir-p (&optional path)
-    (directory-files (or path (file-name-directory (buffer-file-name (current-buffer)))) 'full "?*.asd"))
+    (directory-files (or path (file-name-directory (buffer-file-name (current-buffer)))) 'full ".*asd"))
 
   (defun focks/has-makefile-p (path)
     (let ((dir (if (file-directory-p path)
@@ -407,12 +407,13 @@ Custom variables used throughout my custom functions/macros.
       (goto-char (point-max)))
     (lisp-interaction-mode))
 
-  (defun generate-cl-makefile (system)
+  (cl-defun generate-cl-makefile ()
     "generates a makefile for a common lisp project"
-    (interactive "Mlisp system name: ")
-    (let ((cwd (file-name-directory buffer-file-truename))
-          (makefile-template
-           "define LISP_CMDS
+    (interactive)
+    (let* ((cwd (file-name-directory buffer-file-truename))
+           (asd-file (car (focks/asdf-project-dir-p cwd)))
+           (makefile-template
+            "define LISP_CMDS
   \"(handler-case                    \\
       (progn (ql:quickload :%s) \\
              (asdf:make :%s))   \\
@@ -428,8 +429,13 @@ Custom variables used throughout my custom functions/macros.
 
   clean: 
           rm -ri bin/"))
-      (with-temp-file (file-name-concat cwd "Makefile")
-        (insert (format makefile-template system system)))))
+      (unless asd-file
+        (message "no ASD system definition in directory")
+        (cl-return))
+
+      (let ((system (focks/parse-asdf-system-name asd-file)))
+        (with-temp-file (file-name-concat cwd "Makefile")
+          (insert (format makefile-template system system))))))
 #+end_src
 
 
