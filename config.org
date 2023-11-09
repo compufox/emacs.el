@@ -727,6 +727,9 @@ Code that may or may not belong elsewhere.
 Mostly setting various editor values or settings some keys globally.
 
 #+begin_src emacs-lisp
+  ;; so i dont have to type 'yes' out each time smh smh
+  (defalias 'yes-or-no-p 'y-or-n-p)
+
   ;; when we have ros installed go and include the path in the exec-path list
   (when (executable-find "ros")
     (let* ((ros-info (split-string (shell-command-to-string "ros version")
