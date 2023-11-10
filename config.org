@@ -435,8 +435,13 @@ Custom variables used throughout my custom functions/macros.
   (cl-defun asdf-generate-makefile (&optional dir)
     "generates a makefile for a common lisp project"
     (interactive)
-    (let* ((cwd (or dir (projectile-project-root) (file-name-directory buffer-file-truename)))
-           (asd-file (car (focks/asdf-project-dir-p cwd))))
+    (let* ((cwd (or dir
+                    (projectile-project-root)
+                    (file-name-directory buffer-file-truename)))
+           (files (focks/asdf-project-dir-p cwd))
+           (asd-file (if (< 1 (length files))
+                         (ivy-read "Select ASDF file: " files)
+                       (car files))))
       (unless asd-file
         (message "no ASDF system definition in directory")
         (cl-return))
@@ -448,8 +453,13 @@ Custom variables used throughout my custom functions/macros.
   (cl-defun asdf-add-build-instructions (&optional dir)
     "adds general build instructions into ASDF system definition"
     (interactive)
-    (let* ((cwd (or dir (projectile-project-root) (file-name-directory buffer-file-truename)))
-           (asd-file (car (focks/asdf-project-dir-p cwd))))
+    (let* ((cwd (or dir
+                    (projectile-project-root)
+                    (file-name-directory buffer-file-truename)))
+           (files (focks/asdf-project-dir-p cwd))
+           (asd-file (if (< 1 (length files))
+                         (ivy-read "Select ASDF file: " files)
+                       (car files))))
       (unless asd-file
         (message "no ASDF system definition in directory")
         (cl-reutrn))
@@ -467,15 +477,19 @@ Custom variables used throughout my custom functions/macros.
                           system system)
                   asdf-compression-op)))))
 
-  (defun asdf-add-build-and-makefile ()
+  (cl-defun asdf-add-build-and-makefile ()
     "generates a makefile and adds build instructions into the system definition for the lisp project thats currently being edited"
     (interactive)
     (cl-flet ((ivy-find-dir (prompt)
                 (let ((counsel--find-file-predicate #'file-directory-p))
                   (ivy-read prompt #'read-file-name-internal :matcher #'counsel--find-file-matcher))))
-      (let ((asdf-dir (when current-prefix-arg (ivy-find-dir "ASDF Project Dir: "))))
-        (when (and (y-or-n-p "Generate a Makefile and add build instructions for lisp system?")
-                   (and current-prefix-arg asdf-dir))
+      (let ((asdf-dir (and current-prefix-arg (ivy-find-dir "ASDF Project Dir: "))))
+        (when current-prefix-arg
+          (unless (or asdf-dir (focks/asdf-project-dir-p asdf-dir))
+            (message "No ASDF directory selected.")
+            (cl-return)))
+        
+        (when (yes-or-no-p "Generate a Makefile and add build instructions for lisp system?")
           (asdf-generate-makefile asdf-dir)
           (asdf-add-build-instructions asdf-dir)))))
 #+end_src
