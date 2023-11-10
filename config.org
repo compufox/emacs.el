@@ -847,7 +847,7 @@ What follows from here is loading and configuring the rest of my packages utiliz
                       (t "~/Syncthing/Notes"))))
       (unless (file-directory-p notes-dir)
         (make-directory notes-dir)))
-  
+
     :bind
     (("C-c n l" . org-roam-buffer-toggle)
      ("C-c n f" . org-roam-node-find)
@@ -855,19 +855,19 @@ What follows from here is loading and configuring the rest of my packages utiliz
      ("C-c n c" . org-roam-capture)
      ("C-c n d" . org-roam-dailies-goto-today)
      ("C-c n t" . org-roam-dailies-goto-tomorrow))
-  
+
     :custom
     (org-roam-directory
      (focks/os-cond
       (windows (concat (getenv "USERPROFILE") "\\Syncthing\\Notes"))
       (t "~/Syncthing/Notes")))
-  
+
     :config
     (when-on-windows
      (unless (version<= "29.0.0" emacs-version)
        (message "SQLite support is built into Emacs v29+ and is recommended for org-roam...")
        (sleep-for 2.5)))
-  
+
     (org-roam-setup))
 
   (use-package org-roam-ui
@@ -892,13 +892,13 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :ensure t
     :unless (string= "arm64" (focks/get-system-arch))
     :hook (lisp-mode . parinfer-rust-mode)
-  
+
     :custom
     (parinfer-rust-library
      (focks/os-cond
       (windows-nt "~/.emacs.d/parinfer-rust/parinfer_rust.dll")
       (t "~/.emacs.d/parinfer-rust/libparinfer_rust.so")))
-  
+
     :init
     (unless-on-windows
      (setq parinfer-rust-auto-download t)))
@@ -1053,7 +1053,7 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :ensure t
     :custom
     (dimmer-fraction 0.4)
-  
+
     :config
     (dimmer-mode 1))
 
@@ -1109,6 +1109,7 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :mode "\\.erb")
 
   (use-package lisp-mode
+    :bind (("C-c g" . asdf-add-build-and-makefile))
     :mode "\\.stumpwmrc$")
 
   (use-package multiple-cursors
@@ -1156,9 +1157,9 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :bind (("s-l" . sly)
            :map lisp-mode-map
            ("C-c e" . macrostep-expand))
-  
+
     :hook ((lisp-mode . sly-editing-mode))
-  
+
     :custom
     ((slime-contribs '(sly-fancy sly-macrostep sly-quicklisp sly-asdf
                                  sly-reply-ansi-color sly-named-readtables))
