@@ -389,8 +389,7 @@ Custom variables used throughout my custom functions/macros.
     "Quickly and easily initializes a c++ file with main
   INCLUDES is a space seperated list of headers to include"
     (interactive "Mincludes: ")
-    (let ((path (apply #'file-name-concat 
-                       `("/" ,@(cdr (assoc :path (focks/get-file-info))))))
+    (let ((path (directory-file-name buffer-file-truename))
           (inc-list (split-string includes " "))
           point)
       (dolist (inc inc-list)
