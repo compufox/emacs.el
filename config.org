@@ -433,10 +433,10 @@ Custom variables used throughout my custom functions/macros.
       (goto-char (point-max)))
     (lisp-interaction-mode))
 
-  (cl-defun asdf-generate-makefile ()
+  (cl-defun asdf-generate-makefile (&optional dir)
     "generates a makefile for a common lisp project"
     (interactive)
-    (let* ((cwd (file-name-directory buffer-file-truename))
+    (let* ((cwd (or dir (file-name-directory buffer-file-truename)))
            (asd-file (car (focks/asdf-project-dir-p cwd))))
       (unless asd-file
         (message "no ASDF system definition in directory")
@@ -446,10 +446,10 @@ Custom variables used throughout my custom functions/macros.
         (with-temp-file (file-name-concat cwd "Makefile")
           (insert (format asdf-makefile-template system system))))))
 
-  (cl-defun asdf-add-build-instructions ()
+  (cl-defun asdf-add-build-instructions (&optional dir)
     "adds general build instructions into ASDF system definition"
     (interactive)
-    (let* ((cwd (file-name-directory buffer-file-truename))
+    (let* ((cwd (or dir (file-name-directory buffer-file-truename)))
            (asd-file (car (focks/asdf-project-dir-p cwd))))
       (unless asd-file
         (message "no ASDF system definition in directory")
@@ -471,9 +471,14 @@ Custom variables used throughout my custom functions/macros.
   (defun asdf-add-build-and-makefile ()
     "generates a makefile and adds build instructions into the system definition for the lisp project thats currently being edited"
     (interactive)
-    (when (y-or-n-p "Generate a Makefile and add build instructions for the current lisp system?")
-      (asdf-generate-makefile)
-      (asdf-add-build-instructions)))
+    (cl-flet ((ivy-find-dir (prompt)
+                (let ((counsel--find-file-predicate #'file-directory-p))
+                  (ivy-read prompt #'read-file-name-internal :matcher #'counsel--find-file-matcher))))
+      (let ((asdf-dir (when current-prefix-arg (ivy-find-dir "ASDF Project Dir: "))))
+        (when (and (y-or-n-p "Generate a Makefile and add build instructions for lisp system?")
+                   (and current-prefix-arg asdf-dir))
+          (asdf-generate-makefile asdf-dir)
+          (asdf-add-build-instructions asdf-dir)))))
 #+end_src
 
 
