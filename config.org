@@ -435,7 +435,7 @@ Custom variables used throughout my custom functions/macros.
   (cl-defun asdf-generate-makefile (&optional dir)
     "generates a makefile for a common lisp project"
     (interactive)
-    (let* ((cwd (or dir (file-name-directory buffer-file-truename)))
+    (let* ((cwd (or dir (projectile-project-root) (file-name-directory buffer-file-truename)))
            (asd-file (car (focks/asdf-project-dir-p cwd))))
       (unless asd-file
         (message "no ASDF system definition in directory")
@@ -448,7 +448,7 @@ Custom variables used throughout my custom functions/macros.
   (cl-defun asdf-add-build-instructions (&optional dir)
     "adds general build instructions into ASDF system definition"
     (interactive)
-    (let* ((cwd (or dir (file-name-directory buffer-file-truename)))
+    (let* ((cwd (or dir (projectile-project-root) (file-name-directory buffer-file-truename)))
            (asd-file (car (focks/asdf-project-dir-p cwd))))
       (unless asd-file
         (message "no ASDF system definition in directory")
