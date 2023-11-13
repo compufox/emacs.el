@@ -1158,6 +1158,19 @@ What follows from here is loading and configuring the rest of my packages utiliz
            :map lisp-mode-map
            ("C-c e" . macrostep-expand))
 
+    :config
+    (setq sly-words-of-encouragement
+          `("Let the hacking commence!"
+            "Hacks and glory await!"
+            "Hack and be merry!"
+            "Your hacking starts... NOW!"
+            "May the source be with you!"
+            "Take this REPL, and may it serve you well."
+            "Lemonodor-fame is but a hack away!"
+            "Are we consing yet?"
+            ,(format "%s, this could be the start of a beautiful program."
+                     (sly-user-first-name))))
+  
     :hook ((lisp-mode . sly-editing-mode))
 
     :custom
