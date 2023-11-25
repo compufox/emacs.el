@@ -1173,6 +1173,10 @@ What follows from here is loading and configuring the rest of my packages utiliz
   
     :hook ((lisp-mode . sly-editing-mode))
 
+    :init
+    (add-hook 'sly-mrepl-mode-hook
+              (lambda () (electric-pair-local-mode -1)))
+
     :custom
     ((slime-contribs '(sly-fancy sly-macrostep sly-quicklisp sly-asdf
                                  sly-reply-ansi-color sly-named-readtables))
