@@ -1170,17 +1170,23 @@ What follows from here is loading and configuring the rest of my packages utiliz
             "Are we consing yet?"
             ,(format "%s, this could be the start of a beautiful program."
                      (sly-user-first-name))))
-  
+
     :hook ((lisp-mode . sly-editing-mode))
 
     :init
     (add-hook 'sly-mrepl-mode-hook
               (lambda () (electric-pair-local-mode -1)))
+    (add-hook 'sly-mode-hook
+              (lambda ()
+                (unless (sly-connected-p)
+                  (save-excursion (sly)))))
 
     :custom
     ((slime-contribs '(sly-fancy sly-macrostep sly-quicklisp sly-asdf
                                  sly-reply-ansi-color sly-named-readtables))
-     (inferior-lisp-program "ros run -Q")))
+     (inferior-lisp-program (if (executable-find "lisp")
+                                "lisp run -L sbcl -Q"
+                                "ros run -Q"))))
 
   (use-package elpy
     :disabled
