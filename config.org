@@ -432,7 +432,7 @@ Custom variables used throughout my custom functions/macros.
       (goto-char (point-max)))
     (lisp-interaction-mode))
 
-  (cl-defun asdf-generate-makefile (&optional dir)
+  (defun asdf-generate-makefile (&optional dir)
     "generates a makefile for a common lisp project"
     (interactive)
     (let* ((cwd (or dir
@@ -442,15 +442,13 @@ Custom variables used throughout my custom functions/macros.
            (asd-file (if (< 1 (length files))
                          (ivy-read "Select ASDF file: " files)
                        (car files))))
-      (unless asd-file
-        (message "no ASDF system definition in directory")
-        (cl-return))
+      (if asd-file
+          (let ((system (focks/parse-asdf-system-name asd-file)))
+            (with-temp-file (file-name-concat cwd "Makefile")
+              (insert (format asdf-makefile-template system system))))
+        (message "no ASDF system definition in directory"))))
 
-      (let ((system (focks/parse-asdf-system-name asd-file)))
-        (with-temp-file (file-name-concat cwd "Makefile")
-          (insert (format asdf-makefile-template system system))))))
-
-  (cl-defun asdf-add-build-instructions (&optional dir)
+  (defun asdf-add-build-instructions (&optional dir)
     "adds general build instructions into ASDF system definition"
     (interactive)
     (let* ((cwd (or dir
@@ -460,22 +458,20 @@ Custom variables used throughout my custom functions/macros.
            (asd-file (if (< 1 (length files))
                          (ivy-read "Select ASDF file: " files)
                        (car files))))
-      (unless asd-file
-        (message "no ASDF system definition in directory")
-        (cl-reutrn))
-
-      (let ((system (focks/parse-asdf-system-name asd-file)))
-        (with-temp-file asd-file
-          (insert-file-contents asd-file)
-          (string-match (rx (group (syntax close-parenthesis)
-                                   (syntax whitespace)
-                                   string-end))
-                        (buffer-string))
-          (goto-char (match-end 1))
-          (delete-backward-char 1)
-          (insert (format asdf-build-op-template
-                          system system)
-                  asdf-compression-op)))))
+      (if asd-file
+          (let ((system (focks/parse-asdf-system-name asd-file)))
+            (with-temp-file asd-file
+              (insert-file-contents asd-file)
+              (string-match (rx (group (syntax close-parenthesis)
+                                       (syntax whitespace)
+                                       string-end))
+                            (buffer-string))
+              (goto-char (match-end 1))
+              (delete-backward-char 1)
+              (insert (format asdf-build-op-template
+                              system system)
+                      asdf-compression-op)))
+        (message "no ASDF system definition in directory"))))
 
   (cl-defun asdf-add-build-and-makefile ()
     "generates a makefile and adds build instructions into the system definition for the lisp project thats currently being edited"
