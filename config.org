@@ -824,8 +824,17 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :straight (:host github :repo "tslilc/siege-mode" :branch "master")
     :hook ((programming-mode . siege-mode)))
 
+  (use-package lsp-sourcekit
+    :after lsp-mode
+    :ensure t
+    :when (macos-p)
+    :config
+    (setq lsp-sourcekit-executable (string-trim (shell-command-to-string "xcrun --find sourcekit-lsp"))))
+
   (use-package swift-mode
-    :ensure t)
+    :ensure t
+    :hook (swift-mode . (lambda ()
+                          (when-on-macos (lsp)))))
 
   (use-package json-reformat
     :ensure t)
