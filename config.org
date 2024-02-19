@@ -763,8 +763,7 @@ Mostly setting various editor values or settings some keys globally.
   (global-set-key (kbd "C-x M-f") 'horz-flip-buffers)
 
   ;; puts the line number in the left fringe
-  (when (version<= "26.0.50" emacs-version)
-    (global-display-line-numbers-mode))
+  (global-display-line-numbers-mode)
 
   ;; ensures that we NEVER have tabs in our code. ANYWHERE
   (setq-default indent-tabs-mode nil)
@@ -778,9 +777,12 @@ Mostly setting various editor values or settings some keys globally.
     (setq display-time-24hr-format t)
     (display-time-mode))
 
-
   ;; enable 'list-timers function
   (put 'list-timers 'disabled nil)
+
+  ;; ensures we keep our init file clean of Customize mess
+  (setq custom-file (file-name-concat user-emacs-directory "custom.el"))
+  (load custom-file)
 #+end_src 
 
 
