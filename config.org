@@ -982,17 +982,17 @@ What follows from here is loading and configuring the rest of my packages utiliz
                                       :project-file ".*asd"
                                       :compile 'focks/asdf-compile-cmd))
 
-  (use-package treemacs
-    :ensure t
-    :bind ([f8] . treemacs))
+  ;; (use-package treemacs
+  ;;   :ensure t
+  ;;   :bind ([f8] . treemacs))
 
-  (use-package treemacs-projectile
-    :after treemacs projectile
-    :ensure t)
+  ;; (use-package treemacs-projectile
+  ;;   :after treemacs projectile
+  ;;   :ensure t)
 
-  (use-package treemacs-magit
-    :after treemacs magit
-    :ensure t)
+  ;; (use-package treemacs-magit
+  ;;   :after treemacs magit
+  ;;   :ensure t)
 
   (use-package company
     :ensure t
