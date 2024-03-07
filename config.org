@@ -780,9 +780,17 @@ Mostly setting various editor values or settings some keys globally.
   ;; enable 'list-timers function
   (put 'list-timers 'disabled nil)
 
+  ;; enable desktop saving
+  (desktop-save-mode 1)
+
+  ;; also ensure we can save/load desktop files from project directories
+  (setq desktop-path
+        (list "." (expand-file-name user-emacs-directory) (expand-file-name "~")))
+
   ;; ensures we keep our init file clean of Customize mess
   (setq custom-file (file-name-concat user-emacs-directory "custom.el"))
   (load custom-file)
+
 #+end_src 
 
 
