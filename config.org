@@ -952,7 +952,27 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :ensure t)
 
   (use-package eshell
-    :bind ("C-x M-e" . eshell))
+    :bind ("C-x M-e" . eshell)
+    :custom
+    ((eshell-prompt-function
+      (lambda()
+        (concat 
+         (funcall #'(lambda (p-lst)
+                      (if (> (length p-lst) 1)
+                          (concat
+                           (mapconcat (lambda (elm)
+                                        (unless (equal elm "") (substring elm 0 1)))
+                                      (butlast p-lst (- (length p-lst)
+                                                        (1- (length p-lst))))
+                                      "/")
+                           "/"
+                           (mapconcat #'identity
+                                      (last p-lst (- (length p-lst)
+                                                     (1- (length p-lst))))
+                                      "/"))
+                        (mapconcat #'identity p-lst "/")))
+                  (split-string "~/Documents/EmacsConfig/fonts/testing" "/"))
+         (if (= (user-uid) 0) " # " " $ "))))))
 
   (use-package info-look
     :ensure t)
