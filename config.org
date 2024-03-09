@@ -777,8 +777,16 @@ Mostly setting various editor values or settings some keys globally.
     (setq display-time-24hr-format t)
     (display-time-mode))
 
-  ;; enable 'list-timers function
+
+  ;;;
+  ;; ENABLE DISABLED FUNCTIONS
+
+  ;; 'list-timers 
   (put 'list-timers 'disabled nil)
+
+  ;; downcase-region (C-x C-l)
+  (put 'downcase-region 'disabled nil)
+
 
   ;; enable desktop saving
   (desktop-save-mode 1)
@@ -979,7 +987,8 @@ What follows from here is loading and configuring the rest of my packages utiliz
                                                      (1- (length p-lst))))
                                       "/"))
                         (mapconcat #'identity p-lst "/")))
-                  (split-string "~/Documents/EmacsConfig/fonts/testing" "/"))
+                  (split-string (string-replace (expand-file-name "~") "~" (eshell/pwd))
+                                "/"))
          (if (= (user-uid) 0) " # " " $ "))))))
 
   (use-package info-look
