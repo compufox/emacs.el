@@ -427,8 +427,7 @@ Custom variables used throughout my custom functions/macros.
     (interactive)
     (switch-to-buffer (get-buffer-create "*scratch*"))
     (when (string-blank-p (buffer-string))
-      (insert ";; This buffer is for text that is not saved, and for Lisp evaluation.\n")
-      (insert ";; To create a file, visit it with C-x C-f and enter text in its buffer.\n\n")
+      (insert initial-scratch-message)
       (goto-char (point-max)))
     (lisp-interaction-mode))
 
