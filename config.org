@@ -926,10 +926,14 @@ What follows from here is loading and configuring the rest of my packages utiliz
      (setq parinfer-rust-auto-download t)))
 
   (use-package lua-mode
-    :ensure t)
+    :ensure t
+    :after company
+    :init
+    (setq-local company-backends '((company-lua company-etags company-dabbrev-code))))
 
-  (use-package fennel-mode
-    :ensure t)
+  (use-package company-lua
+    :ensure t
+    :after company)
 
   (use-package cc-mode
     :ensure t
