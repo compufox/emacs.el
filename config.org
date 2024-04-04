@@ -538,7 +538,11 @@ Custom variables used throughout my custom functions/macros.
 
 ** Windows
 #+begin_src emacs-lisp
-  
+  (when-on-windows
+   (prefer-coding-system 'unix)
+   (set-default-coding-systems 'unix)
+   (set-language-environment "UTF-8")
+   (set-selection-coding-system 'unix))
 #+end_src
 
 ** macOS
