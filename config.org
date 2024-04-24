@@ -508,7 +508,9 @@ Custom variables used throughout my custom functions/macros.
     "pulls two lists from region.
 
   lists should be separated by 2+ newlines
-  differences are returned in a message to the user."
+  differences are returned in a message to the user.
+
+  if a prefix arg is passed with C-u the results are displayed in a temp buffer"
     (interactive (if (use-region-p)
   		   (list (region-beginning) (region-end))
   		 '(nil nil)))
@@ -522,14 +524,20 @@ Custom variables used throughout my custom functions/macros.
   	     (list1 (cl-first (string-split region (rx (>= 2 (seq "\n" (0+ whitespace)))) 'omit-nulls)))
   	     (list2 (cl-second (string-split region (rx (>= 2 (seq "\n" (0+ whitespace)))) 'omit-nulls)))
   	     (diffs (focks/compare-lists (string-split list1 separator 'omit-nulls)
-  					 (string-split list2 separator 'omit-nulls))))
-
-      
-  	(message (format (if (cl-some #'identity diffs)
-  			     "In first list only: %s\nIn second list only: %s"
-  			   "No differences found...")
-  			 (string-join (cl-first diffs) ", ")
-  			 (string-join (cl-second diffs) ", "))))
+  					 (string-split list2 separator 'omit-nulls)))
+               (diff-message (format (if (cl-some #'identity diffs)
+  			               "In first list only: %s\nIn second list only: %s"
+  			             "No differences found...")
+  			           (string-join (cl-first diffs) ", ")
+  			           (string-join (cl-second diffs) ", "))))
+  	(if current-prefix-arg
+              ;; this keeps the temp buffer smol and baby
+              (let ((temp-buffer-show-hook
+                     #'(lambda ()
+                         (shrink-window-if-larger-than-buffer))))
+                (with-output-to-temp-buffer "<List Differences>"
+                  (princ diff-message)))
+            (message diff-message)))
       (message "No region selected...")))
 #+end_src
 
