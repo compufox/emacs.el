@@ -516,15 +516,22 @@ Custom variables used throughout my custom functions/macros.
   		 '(nil nil)))
     (if (and start end)
     
-        (let* ((separator (let ((input (ivy-read "Element separator? " '("newline" ",") :preselect 0)))
-  			  (if (equal "newline" input) "\n" input)))
+        (let* ((separator
+                (let ((input (ivy-read "Element separator? " '("newline" "space") :preselect 0)))
+                  (cond
+                   ((equal "newline" input) "\n")
+                   ((equal "space" input) " ")
+                   (t input))))
   	     (region (if rectangle-mark-mode
   			 (string-join (mapcar #'string-trim (extract-rectangle start end)) separator)
   		       (buffer-substring start end)))
   	     (list1 (cl-first (string-split region (rx (>= 2 (seq "\n" (0+ whitespace)))) 'omit-nulls)))
   	     (list2 (cl-second (string-split region (rx (>= 2 (seq "\n" (0+ whitespace)))) 'omit-nulls)))
-  	     (diffs (focks/compare-lists (string-split list1 separator 'omit-nulls)
-  					 (string-split list2 separator 'omit-nulls)))
+  	     (diffs (focks/compare-lists
+                       (mapcar #'string-trim
+                               (string-split list1 separator 'omit-nulls))
+  		     (mapcar #'string-trim 
+                               (string-split list2 separator 'omit-nulls))))
                (diff-message (format (if (cl-some #'identity diffs)
   			               "In first list only: %s\nIn second list only: %s"
   			             "No differences found...")
