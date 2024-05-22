@@ -1317,6 +1317,15 @@ What follows from here is loading and configuring the rest of my packages utiliz
        (t (nerd-icons-install-fonts))))
     :custom
     (nerd-icons-font-family "Symbols Nerd Font Mono"))
+
+  (use-package vundo
+    :ensure t
+  
+    :custom
+    (vundo-glyph-alist vundo-unicode-symbols)
+
+    :bind
+    (("C-c C-/" . vundo)))
 #+end_src
 
 * Some final things
