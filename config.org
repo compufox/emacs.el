@@ -285,6 +285,14 @@ Custom variables used throughout my custom functions/macros.
   all:\n\tros --eval $(LISP_CMDS)\n
   clean:\n\trm -ri bin/"
     "ASDF makefile template")
+
+  (defvar focks/*save-scratch* nil
+    "if non-nil, this enables the SCRATCH buffer to be saved on exit")
+
+  (defvar focks/*scratch-dump-path* user-emacs-directory
+    "the location to store the dumped scratch contents
+
+  defaults to USER-EMACS-DIRECTORY")
 #+end_src
 
 
@@ -373,16 +381,31 @@ Custom variables used throughout my custom functions/macros.
 
   returns a list containing elements in L1 but not L2 and vice versa"
     (cl-flet ((not-in-list (elt lst)
-  	      (unless (member elt lst)
-  		elt)))
+              (unless (member elt lst)
+                elt)))
       (list (cl-remove-if-not #'identity
-  			    (mapcar #'(lambda (e)
-  					(not-in-list e l2))
-  				    l1))
-  	  (cl-remove-if-not #'identity
-  			    (mapcar #'(lambda (e)
-  					(not-in-list e l1))
-  				    l2)))))
+                            (mapcar #'(lambda (e)
+                                        (not-in-list e l2))
+                                    l1))
+          (cl-remove-if-not #'identity
+                            (mapcar #'(lambda (e)
+                                        (not-in-list e l1))
+                                    l2)))))
+
+  (defun focks/dump-scratch ()
+    (with-current-buffer "*scratch*"
+      (unless (and (string= (buffer-string) initial-scratch-message)
+                   (string-blank-p (buffer-string)))
+        (write-region nil 'end-ignored
+                      (file-truename (file-name-concat focks/*scratch-dump-path* "scratch.dump"))))))
+
+  (defun focks/load-scratch ()
+    (let ((dumped (file-truename (file-name-concat focks/*scratch-dump-path* "scratch.dump"))))
+    (when (file-exists-p dumped)
+      (with-current-buffer "*scratch*"
+        (delete-region (point-min) (point-max))
+        (insert-file-contents dumped)
+        (text-mode)))))
 #+end_src
 
 
@@ -860,6 +883,17 @@ Mostly setting various editor values or settings some keys globally.
   (setq custom-file (file-name-concat user-emacs-directory "custom.el"))
   (load custom-file)
 
+  ;; if focks/*save-scratch* is non-nil, this hook will ensure that we
+  ;; save and load our scratch buffer on every launch/quit
+  (add-hook 'emacs-startup-hook
+            #'(lambda ()
+                (when focks/*save-scratch*
+                  (focks/load-scratch))))
+
+  (add-hook 'kill-emacs-hook
+            #'(lambda ()
+                (when focks/*save-scratch*
+                  (focks/dump-scratch))))
 #+end_src 
 
 
