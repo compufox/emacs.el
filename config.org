@@ -1354,12 +1354,20 @@ What follows from here is loading and configuring the rest of my packages utiliz
 
   (use-package vundo
     :ensure t
-  
+
     :custom
     (vundo-glyph-alist vundo-unicode-symbols)
 
     :bind
     (("C-c C-/" . vundo)))
+
+  (use-package gdscript-mode
+    :ensure straight
+    :after lsp-mode
+    :hook (gdscript-mode . lsp-mode)
+    :straight (gdscript-mode :type git
+                             :host github
+                             :repo "godotengine/emacs-gdscript-mode"))
 #+end_src
 
 * Some final things
