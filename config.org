@@ -957,7 +957,8 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :pin melpa)
 
   (use-package org-roam
-    :ensure t
+    :disabled
+    ;:ensure t
     :init
     (setq org-roam-v2-ack t)
     (let ((notes-dir (focks/os-cond
@@ -1214,11 +1215,22 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :ensure t
     :init (amx-mode))
 
+  (use-package magit-section
+    :ensure t
+    :pin melpa)
+
   ;; make sure we only use magit WHEN WE HAVE GIT :facepalm:
   (use-package magit
     :ensure t
+    :pin melpa
     :when (executable-find "git")
     :bind ("C-x a" . magit-status))
+
+  (use-package magit-todos
+    :ensure t
+    :pin melpa
+    :after magit
+    :config (magit-todos-mode 1))
 
   ;; (use-package go-autocomplete
   ;;   :disabled
@@ -1368,6 +1380,27 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :straight (gdscript-mode :type git
                              :host github
                              :repo "godotengine/emacs-gdscript-mode"))
+
+  (use-package ligature
+    :ensure t
+    :config
+
+    ;; these ligatures are configured for Cartograph CF 2.9.4
+    ;; https://connary.com/cartograph.html
+    (ligature-set-ligatures 't '("www" ">=" "<=" "<-" "->" "%%" "~~"
+                                 "<|" "|>" "[|" "|]"))
+    (ligature-set-ligatures 'prog-mode
+                            '("www" ".-" ".=" ":::" "::" ":="
+                              ";;" "!==" "!=" "*/" "/**" "//!"
+                              "///" "/*" "//" "/>" "[|" "|]"
+                              "-->" "->>" "->" "__" "=/=" "=>"
+                              "===" "==>" "=>>" "=:" "==" ">->"
+                              ">=>" ">>=" ">=" "<!--" "<==>"
+                              "<|||" "</>" "<--" "<->" "<-<"
+                              "<==" "<=>" "<=<" "<<-" "<<="
+                              "<||" "</" "<-" "<=" "<|" "~-"
+                              "~~" "%%" "|||>" "||>" "|>"))
+    (global-ligature-mode t))
 #+end_src
 
 * Some final things
