@@ -1215,20 +1215,14 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :ensure t
     :init (amx-mode))
 
-  (use-package magit-section
-    :ensure t
-    :pin melpa)
-
   ;; make sure we only use magit WHEN WE HAVE GIT :facepalm:
   (use-package magit
-    :ensure t
-    :pin melpa
+    :straight t
     :when (executable-find "git")
     :bind ("C-x a" . magit-status))
 
   (use-package magit-todos
-    :ensure t
-    :pin melpa
+    :straight t
     :after magit
     :config (magit-todos-mode 1))
 
