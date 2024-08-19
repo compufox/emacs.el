@@ -881,6 +881,8 @@ Mostly setting various editor values or settings some keys globally.
 
   ;; ensures we keep our init file clean of Customize mess
   (setq custom-file (file-name-concat user-emacs-directory "custom.el"))
+  (unless (file-exists-p custom-file)
+    (make-empty-file custom-file))
   (load custom-file)
 
   ;; if focks/*save-scratch* is non-nil, this hook will ensure that we
