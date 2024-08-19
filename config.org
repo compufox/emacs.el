@@ -618,6 +618,19 @@ Custom variables used throughout my custom functions/macros.
 
 * OS Specific Configuration
 
+** Configure package options
+
+Go ahead and load the packaging subsystem so that we can have access to MELPA packages early
+
+#+begin_src emacs-lisp
+  (require 'package)
+  (add-to-list 'package-archives
+  	     '("melpa" . "http://melpa.org/packages/"))
+  (package-initialize)
+  (unless package-archive-contents
+    (package-refresh-contents))
+#+end_src
+
 ** Windows
 #+begin_src emacs-lisp
   (when-on-windows
@@ -911,19 +924,6 @@ The only way that =org-roam= is offered for installation is through =straight.el
 
 And since =straight= is a package manager in its own right, I figured it would be just as simple (if not simpler) to use it to install =use-package=, and so here we are.
 
-
-** Configure package options
-
-Here we begin by loading the package library and ensuring we have it configured to check the MELPA elisp repository.
-
-#+begin_src emacs-lisp
-  (require 'package)
-  (add-to-list 'package-archives
-  	     '("melpa" . "http://melpa.org/packages/"))
-  (package-initialize)
-  (unless package-archive-contents
-    (package-refresh-contents))
-#+end_src
 
 ** Use-Package
 
