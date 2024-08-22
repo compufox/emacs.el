@@ -1232,10 +1232,11 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :when (executable-find "git")
     :bind ("C-x a" . magit-status))
 
-  (use-package magit-todos
-    :straight t
-    :after magit
-    :config (magit-todos-mode 1))
+  (unless-on-windows 
+   (use-package magit-todos
+     :straight t
+     :after magit
+     :config (magit-todos-mode 1)))
 
   ;; (use-package go-autocomplete
   ;;   :disabled
