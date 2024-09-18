@@ -787,11 +787,9 @@ Go ahead and load the packaging subsystem so that we can have access to MELPA pa
             (mapc #'load-themes focks/*dark-theme*)
           (mapc #'load-themes focks/*light-theme*))))
 
-  (if (daemonp)
-      (add-hook 'after-make-frame-functions
-                (lamdba (x)
-                  (focks/load-emacs-theme)))
-    (add-hook 'window-setup-hook 'focks/load-emacs-theme))
+  (add-hook (if (daemonp) 'server-after-make-frame-hook 'window-setup-hook)
+            #'(lambda ()
+                (focks/load-emacs-theme)))
 #+end_src
 
 ** macOS Specific
@@ -1198,6 +1196,20 @@ What follows from here is loading and configuring the rest of my packages utiliz
 
     :config
     (dimmer-mode 1))
+
+  ;; this is disabled in daemon-mode until bugfixes get merged
+  (use-package prism
+    :ensure t
+    :unless (daemonp)
+    :hook (prog-mode . prism-mode))
+
+  ;; this bandaid seems to work in the meantime
+  (when (daemonp)
+    (add-hook 'after-make-frame-functions
+              (lambda (x)
+                (use-package prism
+                  :ensure t
+                  :hook (prog-mode . prism-mode)))))
 
   (use-package rainbow-delimiters
     :ensure t
