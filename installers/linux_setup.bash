@@ -1,6 +1,10 @@
 #!/bin/env bash
 font_dir = "~/.fonts"
 
+if [ "$(basename $PWD)" == "installers" ] ; then
+    cd ..
+fi
+
 if [ "$(uname)" == "Darwin" ] ; then
     font_dir = "~/Library/Fonts"
 fi

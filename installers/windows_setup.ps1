@@ -6,6 +6,14 @@ If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     Break
 }
 
+
+# the script may be running from the installers directory.
+# if it is then we need to go up a directory to ensure that
+# our PWD is set as the rest of the script expects
+$current_dir = (Split-Path -Path $PWD -Leaf)
+
+If ($current_dir -eq "installers") { cd .. }
+
 If (Test-Path -Path $env:appdata\.emacs -PathType Leaf)
 {
     mv $env:appdata\.emacs $env:appdata\.emacs.bak

@@ -809,7 +809,7 @@ Go ahead and load the packaging subsystem so that we can have access to MELPA pa
            "gets the current macOS window theme by running a supplied helper applescript program
 
   returns either 'dark or 'light"
-           (let ((theme (shell-command-to-string (concat "osascript " focks/*config-root* "CheckSystemTheme.scpt"))))
+           (let ((theme (shell-command-to-string (concat "osascript " focks/*config-root* "extras/CheckSystemTheme.scpt"))))
              (if (string= theme (concat "true" (char-to-string ?\n)))
                  'dark
                'light)))
