@@ -852,10 +852,6 @@ Mostly setting various editor values or settings some keys globally.
                                    "bin")))
       (setq exec-path (append exec-path (list path)))))
 
-  ;; run these options only when we're running in daemon mode
-  (when (daemonp)
-    (global-set-key (kbd "C-x M-C-c") 'kill-emacs))
-
   ;; sets up my custom key bindings
   (global-set-key (kbd "C-x M-f") 'horz-flip-buffers)
 
@@ -1034,13 +1030,13 @@ What follows from here is loading and configuring the rest of my packages utiliz
      (setq parinfer-rust-auto-download t)))
 
   (use-package lua-mode
-    :ensure t
+    :disabled
     :after company
     :init
     (setq-local company-backends '((company-lua company-etags company-dabbrev-code))))
 
   (use-package company-lua
-    :ensure t
+    :disabled
     :after company)
 
   (use-package cc-mode
@@ -1187,19 +1183,6 @@ What follows from here is loading and configuring the rest of my packages utiliz
     ("C-s" . swiper)
     ("C-r" . swiper))
 
-  ;; only install elcord when discord is installed
-  (use-package elcord
-    :ensure t
-    :when (executable-find "discord")
-    :hook ((lisp-mode . elcord-mode)))
-
-  (use-package prism
-    :ensure t
-    :hook ((lisp-mode . prism-mode)
-           (common-lisp-mode . prism-mode)
-           (ruby-mode . prism-mode)
-           (emacs-lisp-mode . prism-mode)))
-
   (use-package emr
     :ensure t
     :bind (("M-RET" . emr-show-refactor-menu)))
@@ -1237,22 +1220,6 @@ What follows from here is loading and configuring the rest of my packages utiliz
      :straight t
      :after magit
      :config (magit-todos-mode 1)))
-
-  ;; (use-package go-autocomplete
-  ;;   :disabled
-  ;;   :init (ac-config-default))
-
-  ;; (use-package go-complete
-  ;;   :disabled)
-
-  ;; (use-package go-mode
-  ;;   :disabled
-  ;;   :init
-  ;;   (when-on-unix (setq shell-file-name (executable-find "fish")))
-  ;;   (when (memq window-system '(mac ns x))
-  ;;     (exec-path-from-shell-initialize)
-  ;;     (exec-path-from-shell-copy-env "GOPATH"))
-  ;;   (go-eldoc-setup))
 
   (use-package flyspell
     :ensure t
@@ -1364,7 +1331,7 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :ensure t
     :config
     (unless (focks/font-available-p "Symbols Nerd Font Mono")
-      (os-cond
+      (focks/os-cond
        (windows (message "Please install nerd fonts manually thx :-*"))
        (t (nerd-icons-install-fonts))))
     :custom
