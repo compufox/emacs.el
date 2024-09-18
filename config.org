@@ -787,7 +787,11 @@ Go ahead and load the packaging subsystem so that we can have access to MELPA pa
             (mapc #'load-themes focks/*dark-theme*)
           (mapc #'load-themes focks/*light-theme*))))
 
-  (add-hook 'window-setup-hook 'focks/load-emacs-theme)
+  (if (daemonp)
+      (add-hook 'after-make-frame-functions
+                (lamdba (x)
+                  (focks/load-emacs-theme)))
+    (add-hook 'window-setup-hook 'focks/load-emacs-theme))
 #+end_src
 
 ** macOS Specific
@@ -1113,7 +1117,7 @@ What follows from here is loading and configuring the rest of my packages utiliz
      (doom-modeline-minor-modes t)
      (doom-modeline-gnus-timer nil)
      (doom-modeline-bar-width 3)
-     (doom-modeline-icon (unless (daemonp) t))
+     (doom-modeline-icon t)
      (inhibit-compacting-font-caches (when-on-windows t))))
 
   (use-package projectile
