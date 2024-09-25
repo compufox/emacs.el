@@ -625,10 +625,16 @@ Go ahead and load the packaging subsystem so that we can have access to MELPA pa
 #+begin_src emacs-lisp
   (require 'package)
   (add-to-list 'package-archives
-  	     '("melpa" . "http://melpa.org/packages/"))
+             '("melpa" . "http://melpa.org/packages/"))
   (package-initialize)
   (unless package-archive-contents
     (package-refresh-contents))
+
+  (electric-pair-mode 1)
+  (add-hook 'prog-mode-hook
+            #'(lambda ()
+                (when (member major-mode '(emacs-lisp-mode lisp-mode lisp-interaction-mode))
+                  (electric-pair-local-mode -1))))
 #+end_src
 
 ** Windows
@@ -646,11 +652,8 @@ Go ahead and load the packaging subsystem so that we can have access to MELPA pa
    ;; this disables special character input in emacs when using the option key
    ;; and ensures that the command key sends meta keypresses
    (setq mac-option-modifier 'meta
-         mac-command-modifier 'meta)
-
-   ;; this used to be in a check for arm64 system arch
-   ;; however, the only macos systems i use *are* arm64...
-   (electric-pair-mode 1))
+         mac-command-modifier 'meta))
+ 
 #+end_src
 
 ** *nix
@@ -1018,18 +1021,17 @@ What follows from here is loading and configuring the rest of my packages utiliz
 
   (use-package parinfer-rust-mode
     :ensure t
-    :unless (string= "arm64" (focks/get-system-arch))
-    :hook (lisp-mode . parinfer-rust-mode)
+    :hook ((lisp-mode . parinfer-rust-mode)
+           (emacs-lisp-mode . parinfer-rust-mode))
 
     :custom
     (parinfer-rust-library
      (focks/os-cond
-      (windows-nt "~/.emacs.d/parinfer-rust/parinfer_rust.dll")
+      (windows "~/.emacs.d/parinfer-rust/parinfer_rust.dll")
       (t "~/.emacs.d/parinfer-rust/libparinfer_rust.so")))
 
     :init
-    (unless-on-windows
-     (setq parinfer-rust-auto-download t)))
+    (setq parinfer-rust-auto-download t))
 
   (use-package lua-mode
     :disabled
@@ -1314,9 +1316,9 @@ What follows from here is loading and configuring the rest of my packages utiliz
             "Take this REPL, may it serve you well."
             "Lemonodor-fame is but a hack away!"
             "Are we consing yet?"))
-     (setq sly-lisp-implementations
-           '((roswell ("ros" "-Q" "run"))
-             (roswell-4gb-dynamic ("ros" "run" "--" "--dynamic-space-size" "4Gb"))))
+    (setq sly-lisp-implementations
+          '((roswell ("ros" "-Q" "run"))
+            (roswell-4gb-dynamic ("ros" "run" "--" "--dynamic-space-size" "4Gb"))))
     (add-hook 'sly-mrepl-mode-hook
               (lambda () (electric-pair-local-mode -1)))
     (add-hook 'sly-mode-hook
