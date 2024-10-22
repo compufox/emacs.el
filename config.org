@@ -947,7 +947,7 @@ What follows from here is loading and configuring the rest of my packages utiliz
     (setq lsp-sourcekit-executable
           (string-trim (shell-command-to-string
                         (focks/os-cond
-                         (macos "xcrun --find sourcekit-lsp")
+                         (macos "xcrun --find sourcekit-lsp --toolchain swift")
                          (windows "where.exe sourcekit-lsp")
                          (t "where sourcekit-lsp"))))))
 
@@ -958,7 +958,11 @@ What follows from here is loading and configuring the rest of my packages utiliz
   (use-package swift-mode
     :ensure t
     :hook (swift-mode . (lambda ()
-                          (when (executable-find "sourcekit-lsp")
+                          (when (shell-command-to-string
+                                  (focks/os-cond
+                                   (macos "xcrun --find sourcekit-lsp --toolchain swift")
+                                   (windows "where.exe sourcekit-lsp")
+                                   (t "where sourcekit-lsp")))
                             (lsp)))))
 
   (use-package json-reformat
