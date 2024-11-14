@@ -594,7 +594,7 @@ Custom variables used throughout my custom functions/macros.
                     (format ":%s_%c:" prefix letter)
                   (format "%c" letter))))
       (let* ((prefix (read-string "prefix: "))
-  	   (word (read-string "word: "))
+           (word (read-string "word: "))
              (result (mapconcat #'emojify word "\u200d")))
       (kill-new result)
       (message result))))
@@ -609,7 +609,7 @@ Custom variables used throughout my custom functions/macros.
           `    G.m-\"^m`m'"))
       (message
        (format skeleton (if (or (not message)
-                                (focks/blankp message))
+                                (string-blank-p message))
                             "reet"
                           message)))))
 
