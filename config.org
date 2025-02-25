@@ -1343,11 +1343,14 @@ What follows from here is loading and configuring the rest of my packages utiliz
   (use-package emojify
     :ensure t
     :hook (after-init . global-emojify-mode)
+    :bind ("C-c ." . emoji-insert)
     :custom
-    (emojify-display-style
-     (focks/os-cond
-      ((macos unix) 'unicode)
-      (t 'image))))
+    ((emojify-display-style 'unicode)
+     (emojify-emoji-styles '(unicode)))
+    :config
+    (when-on-windows
+     (set-fontset-font t 'emoji (font-spec :family "Segoe UI Emoji"))
+     (set-fontset-font t 'symbol (font-spec :family "Segoe UI Symbols"))))
 
   (use-package nerd-icons
     :ensure t
