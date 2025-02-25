@@ -101,7 +101,7 @@ Between other configuration's I saw online and trying to provide my own function
    '(show-paren-mode t)
    '(size-indication-mode t)
    '(tool-bar-mode nil)
-   '(tool-bar-position 'left)
+   '(tool-bar-position 'top)
    '(vc-annotate-background nil)
    '(vc-annotate-very-old-color nil)
    '(window-divider-mode nil))
