@@ -1,7 +1,8 @@
 ;; ensure that our PATH is set correctly if we're not on windows
 (when (equal system-type 'darwin)
   (setenv "PATH"
-          (concat (expand-file-name "~/bin") ":"
+          (concat (expand-file-name "~/.swiftly/bin") ":"
+                  (expand-file-name "~/bin") ":"
                   (expand-file-name "~/.roswell/bin") ":"
                   "/opt/homebrew/sbin:"
                   "/opt/homebrew/bin:"

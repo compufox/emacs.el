@@ -940,16 +940,27 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :straight (:host github :repo "tslilc/siege-mode" :branch "master")
     :hook ((programming-mode . siege-mode)))
 
+  (use-package lsp-mode
+    :ensure t)
+
+  (use-package dap-mode
+    :ensure t
+    :config
+    (setq dap-auto-configure-features '(sessions locals controls tooltip)
+          dap-lldb-debug-program (list (concat (getenv "HOME") "/.swiftly/bin/lldb-dap")))
+    (require 'dap-lldb))
+
   (use-package lsp-sourcekit
     :after lsp-mode
     :ensure t
     :config
     (setq lsp-sourcekit-executable
-          (string-trim (shell-command-to-string
-                        (focks/os-cond
-                         (macos "xcrun --find sourcekit-lsp --toolchain swift")
-                         (windows "where.exe sourcekit-lsp")
-                         (t "where sourcekit-lsp"))))))
+          (string-trim (focks/os-cond
+                        (macos "swiftly run sourcekit-lsp")
+                        (t (shell-command-to-string
+                            (focks/os-cond
+                             (windows "where.exe sourcekit-lsp")
+                             (t "which sourcekit-lsp"))))))))
 
   (use-package lsp-ui
     :after lsp-mode
@@ -960,7 +971,7 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :hook (swift-mode . (lambda ()
                           (when (shell-command-to-string
                                   (focks/os-cond
-                                   (macos "xcrun --find sourcekit-lsp --toolchain swift")
+                                   (macos "which swiftly")
                                    (windows "where.exe sourcekit-lsp")
                                    (t "where sourcekit-lsp")))
                             (lsp)))))
