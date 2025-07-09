@@ -955,12 +955,10 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :ensure t
     :config
     (setq lsp-sourcekit-executable
-          (string-trim (focks/os-cond
-                        (macos "swiftly run sourcekit-lsp")
-                        (t (shell-command-to-string
-                            (focks/os-cond
-                             (windows "where.exe sourcekit-lsp")
-                             (t "which sourcekit-lsp"))))))))
+          (string-trim (shell-command-to-string
+                        (focks/os-cond
+                         (windows "where.exe sourcekit-lsp")
+                         (t "which sourcekit-lsp"))))))
 
   (use-package lsp-ui
     :after lsp-mode
