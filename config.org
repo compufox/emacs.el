@@ -973,7 +973,7 @@ What follows from here is loading and configuring the rest of my packages utiliz
                                   (focks/os-cond
                                    (macos "which swiftly")
                                    (windows "where.exe sourcekit-lsp")
-                                   (t "where sourcekit-lsp")))
+                                   (t "which sourcekit-lsp")))
                             (lsp)))))
 
   (use-package json-reformat
