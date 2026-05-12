@@ -968,6 +968,22 @@ What follows from here is loading and configuring the rest of my packages utiliz
     :after lsp-mode
     :ensure t)
 
+  (use-package racket-mode
+    :ensure t)
+
+  (use-package geiser-racket
+    :mode "\\.rkt$"
+    :ensure t)
+
+  (use-package mindstream
+    :ensure t
+    :custom (mindstream--template-path "~/.config/mindstream/templates")
+    :config (mindstream-mode))
+
+  (use-package quack
+    :mode "\\.rkt$"
+    :ensure t)
+
   (use-package swift-mode
     :ensure t
     :hook (swift-mode . (lambda ()
@@ -977,6 +993,10 @@ What follows from here is loading and configuring the rest of my packages utiliz
                                    (windows "where.exe sourcekit-lsp")
                                    (t "which sourcekit-lsp")))
                             (lsp)))))
+
+  (use-package rustic
+    :ensure t
+    :custom (rustic-cargo-use-last-stored-arguments t))
 
   (use-package json-reformat
     :ensure t)

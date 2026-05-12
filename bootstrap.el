@@ -4,6 +4,7 @@
           (concat (expand-file-name "~/.swiftly/bin") ":"
                   (expand-file-name "~/bin") ":"
                   (expand-file-name "~/.roswell/bin") ":"
+                  "/opt/homebrew/opt/rustup/bin:"
                   "/opt/homebrew/sbin:"
                   "/opt/homebrew/bin:"
                   "/usr/local/bin:"
