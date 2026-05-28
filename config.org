@@ -573,7 +573,7 @@ Custom variables used throughout my custom functions/macros.
   (defun compute-bra-size (band-size bust-size)
     "interactive wrapper around bra-size-math function"
     (interactive "sBand Size: \nsBust Size: ")
-    (require 'calc) ;; this is needed because #'math-convert-units is in calc's package
+    (require 'calc-units) ;; this is needed because #'math-convert-units is in calc-unit's package
     (message (bra-size-math band-size bust-size)))
 
   (defun bra-size-math (band-expr bust-expr &optional region)
