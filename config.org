@@ -569,6 +569,47 @@ Custom variables used throughout my custom functions/macros.
                   (princ diff-message)))
             (message diff-message)))
       (message "No region selected...")))
+
+  (defun compute-bra-size (band-size bust-size)
+    "interactive wrapper around bra-size-math function"
+    (interactive "sBand Size: \nsBust Size: ")
+    (require 'calc) ;; this is needed because #'math-convert-units is in calc's package
+    (message (bra-size-math band-size bust-size)))
+
+  (defun bra-size-math (band-expr bust-expr &optional region)
+    "since this function uses emacs' internal unit conversion, BAND-EXPR and BUST-EXPR need to be passed with units ('9 in', '90 cm', etc). 
+  REGION is a symbol representing which region's sizing charts to use. possible values are 'US, 'EU, 'UK. (defaults to 'US)
+
+  this is taken from https://pulusound.fi/blog/emacs-bra-size-calculator"
+    (cl-flet ((to-unit (expr unit)
+                (string-to-number
+                 (calc-eval (math-convert-units
+                             (calc-eval expr 'raw)
+                             (calc-eval unit 'raw)
+                             t)))))
+      (let* ((region-info-alist
+              '((eu . ((unit . "cm")
+                       (cups . ((12 . "AA") (14 . "A") (16 . "B") (18 . "C")
+                                (20 . "D") (22 . "E") (24 . "F") (26 . "G")
+                                (28 . "H") (30 . "I") (32 . "J") (34 . "K")))))
+                (uk . ((unit . "in")
+                       (cups . ((1 . "AA") (2 . "A") (3 . "B") (4 . "C")
+                                (5 . "D") (6 . "DD") (7 . "E") (8 . "F")
+                                (9 . "FF") (10 . "G") (11 . "GG") (12 . "H")))))
+                (us . ((unit . "in")
+                       (cups . ((1 . "AA") (2 . "A") (3 . "B") (4 . "C")
+                                (5 . "D") (6 . "DD/E") (7 . "DDD/F") (8 . "DDDD/G")
+                                (9 . "H") (10 . "I") (11 . "J") (12 . "K")))))))
+             (region (or region 'us))
+             (region-info (alist-get region region-info-alist))
+             (unit (alist-get 'unit region-info))
+             (cups (alist-get 'cups region-info))
+             (band (to-unit band-expr unit))
+             (bust (to-unit bust-expr unit))
+             (diff (- bust band))
+             (cup (or (cdr (seq-find (lambda (x) (< diff (car x))) cups))
+                      (format "%s+" (cdar (last cups))))))
+        (format "%s%s" (round band) cup diff))))
 #+end_src
 
 
